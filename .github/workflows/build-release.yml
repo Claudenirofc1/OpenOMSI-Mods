@@ -81,6 +81,7 @@ jobs:
         shell: cmd
         run: |
           cd src
+          set "OPENOMSI_VERSION=%TAG:~1%"
           scripts\build-windows.cmd
       - name: Montar o pacote
         shell: pwsh
@@ -106,8 +107,8 @@ jobs:
           rel="${TAG}-hofauto"
           zip="openOMSI-HOF-Auto-${TAG}.zip"
           notes="Projeto independente, NAO oficial. Base: openOMSI oficial ${TAG} + HOF automatico. Baixe o ZIP, extraia tudo e de duplo clique em Instalar.cmd. Para voltar ao original: Desinstalar.cmd. Codigo-fonte: ORIGEM-DO-CODIGO.txt dentro do ZIP."
-          if gh release view "$rel" >/dev/null 2>&1; then
-            gh release upload "$rel" "$zip" --clobber
+          if gh release view "$rel" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$rel" "$zip" --clobber -R "$GITHUB_REPOSITORY"
           else
-            gh release create "$rel" "$zip" --title "HOF Auto para openOMSI ${TAG}" --notes "$notes"
+            gh release create "$rel" "$zip" -R "$GITHUB_REPOSITORY" --title "HOF Auto para openOMSI ${TAG}" --notes "$notes"
           fi
