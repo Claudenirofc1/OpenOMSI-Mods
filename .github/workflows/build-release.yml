@@ -142,5 +142,5 @@ jobs:
           if gh release view "$rel" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$rel" "$zip" --clobber -R "$GITHUB_REPOSITORY"
           else
-            gh release create "$rel" "$zip" -R "$GITHUB_REPOSITORY" --title "HOF Auto para openOMSI ${TAG}" --notes "$notes"
+            gh release create "$rel" "$zip" -R "$GITHUB_REPOSITORY" --prerelease --title "HOF Auto para openOMSI ${TAG}" --notes "$notes"
           fi
