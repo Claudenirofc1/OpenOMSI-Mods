@@ -18,6 +18,26 @@ O instalador mostra caixas para cada mod e grava a escolha em `.openomsi\hofauto
 
 > Este projeto **não é oficial** e não tem relação com a organização openOMSI nem com o autor do openOMSI. O nome openOMSI é usado só para dizer a que jogo isto se aplica.
 
+
+## OpenOMSI Mod Manager (`Gerenciador.cmd`)
+
+Duplo clique em `Gerenciador.cmd` abre o menu. É o mesmo instalador, com mais funções:
+
+| Função | O que faz |
+|---|---|
+| **Instalar** | Escolhe os mods (caixas), faz backup versionado dos 4 executáveis e confere hashes. |
+| **Atualizar** | Lê a versão do seu jogo, consulta **só as releases deste repositório** (HTTPS), baixa o ZIP da versão compatível, confere o hash de cada arquivo contra o `manifest.json` e instala. Sem release para a sua versão do jogo: recusa e avisa. |
+| **Reparar** | Diagnostica (versão, hashes, mods, ffmpeg, backups), **mostra os problemas e a proposta e pede autorização** antes de reinstalar. |
+| **Diagnóstico** | Só mostra o estado, não altera nada. |
+| **Exportar / Importar perfil** | Copia escolhas, câmeras das portas, dashcam e retrovisores para a pasta que você escolher (ideal: pendrive/outra unidade) e traz de volta depois de formatar. |
+| **Restaurar** | `Desinstalar.cmd` devolve os originais do backup mais recente. |
+
+Segurança: recusa instalar se a versão do jogo for incompatível com o pacote ou se um arquivo não bater com o manifesto; recusa mexer com o jogo aberto; uma instalação interrompida é desfeita sozinha na próxima execução; as operações locais funcionam offline. O gerenciador **não** modifica nem reverte a instalação oficial do jogo: ele só troca os 4 executáveis (com backup).
+
+Manifesto (`manifest.json`, gerado pela release): módulos e versões, versões compatíveis do openOMSI, hash de cada arquivo, dependências (ex.: `ffmpeg` para a dashcam), como atualizar e restaurar. Um novo módulo entra acrescentando uma entrada ali e o patch correspondente; o gerenciador não precisa ser refeito.
+
+> Estado: a lógica do gerenciador foi escrita e revisada, mas **ainda não foi executada** (sem PowerShell no ambiente de desenvolvimento). Trate como pronto para teste no seu Windows.
+
 ## Como instalar (sem comandos)
 
 1. Abra a página **[Releases](../../releases)** e baixe o `openOMSI-HOF-Auto-vX.Y.Z.zip` mais novo.

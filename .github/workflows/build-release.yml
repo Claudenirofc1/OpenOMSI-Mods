@@ -95,6 +95,25 @@ jobs:
             Copy-Item "src/dist/windows/$e" "$pk/exe/$e"
           }
           Copy-Item nosso/installer/* $pk/
+          $base = $env:TAG.TrimStart('v')
+          $files = [ordered]@{}
+          foreach ($e in 'openomsi.exe','openomsi-launcher.exe','openomsi-launcher-app.exe','omsi-plugin-host32.exe') { $files[$e] = (Get-FileHash -Algorithm SHA256 "$pk/exe/$e").Hash }
+          $man = [ordered]@{
+            manager = '1.1.0'
+            package = "$env:TAG-hofauto"
+            base = $base
+            compatible_openomsi = @($base)
+            build = (git -C nosso rev-parse --short HEAD)
+            modules = @(
+              [ordered]@{ id = 'hof_auto'; version = '1.0.0'; requires = @(); switch = 'hof_auto' },
+              [ordered]@{ id = 'door_cams'; version = '0.1.0'; requires = @(); switch = 'door_cams' },
+              [ordered]@{ id = 'dashcam'; version = '0.1.0'; requires = @('ffmpeg'); switch = 'dashcam' }
+            )
+            files = $files
+            update = 'Gerenciador.cmd > Atualizar (consulta as releases deste repositorio)'
+            restore = 'Desinstalar.cmd (backup versionado em %LOCALAPPDATA%\\openOMSI-HOF-Auto\\backup)'
+          }
+          $man | ConvertTo-Json -Depth 6 | Set-Content "$pk/manifest.json" -Encoding UTF8
           Copy-Item nosso/LICENSE $pk/
           Copy-Item nosso/patches/hof-auto.patch $pk/hof-auto.patch
           $sha = (git -C nosso rev-parse --short HEAD)
