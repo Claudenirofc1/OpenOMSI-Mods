@@ -48,6 +48,11 @@ jobs:
     env:
       TAG: ${{ needs.resolver.outputs.tag }}
     steps:
+      - name: Quebras de linha como no Linux (o patch usa LF)
+        shell: bash
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
       - name: Este repositorio
         uses: actions/checkout@v4
         with:
@@ -62,7 +67,7 @@ jobs:
         shell: bash
         run: |
           cd src
-          git apply --3way ../nosso/patches/hof-auto.patch
+          git apply --3way --ignore-whitespace ../nosso/patches/hof-auto.patch
           git status --short
       - uses: dtolnay/rust-toolchain@stable
       - name: Testes do HOF automatico
