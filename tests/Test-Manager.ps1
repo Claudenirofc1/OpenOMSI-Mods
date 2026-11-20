@@ -48,7 +48,7 @@ Copy-Item -Path $pkExe -Destination (Join-Path $pacote 'exe') -Recurse -Force
 Check 'manifest gerado' (Test-Path (Join-Path $pacote 'manifest.json'))
 $script:ps1 = Join-Path $pacote 'Instalar-HOF-Auto.ps1'
 $man = Get-Content -LiteralPath (Join-Path $pacote 'manifest.json') -Raw -Encoding UTF8 | ConvertFrom-Json
-Check 'manifest tem 3 modulos com compatibilidade propria' ((@($man.modules).Count -eq 3) -and (@($man.modules[0].compatible_openomsi) -contains '0.3.54'))
+Check 'manifest tem 4 modulos com compatibilidade propria' ((@($man.modules).Count -eq 4) -and (@($man.modules[0].compatible_openomsi) -contains '0.3.54'))
 
 function Novo-Ambiente([string]$nome) {
     $r = Join-Path $raiz $nome

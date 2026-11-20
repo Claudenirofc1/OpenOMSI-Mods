@@ -2390,3 +2390,835 @@ index cd1a36a4..b1ff8fc9 100644
      /// Render the scene from `camera` into a texture made by `add_render_texture`.
      /// `aspect`: the projection's width over height (OMSI draws its mirrors 1.6 wide into
      /// square textures, and their meshes show the middle of that).
+diff --git a/crates/omsi-sim/src/ai_traffic.rs b/crates/omsi-sim/src/ai_traffic.rs
+index 6b80fa98..4cbd0d94 100644
+--- a/crates/omsi-sim/src/ai_traffic.rs
++++ b/crates/omsi-sim/src/ai_traffic.rs
+@@ -33,6 +33,7 @@ pub mod scenery;
+ pub mod setup;
+ pub mod stats;
+ pub mod tick;
++pub mod unstick;
+ pub mod viewer;
+ pub mod waving;
+ #[cfg(test)]
+@@ -367,4 +368,6 @@ pub struct TrafficSim {
+     pub removals: [u64; Removal::COUNT],
+     /// The requests to put vehicles on the road, and their answers (`admission`).
+     pub admission: admission::Admission,
++    /// The optional recovery of cars stopped for good (`unstick`).
++    pub unstick: unstick::Unstick,
+ }
+diff --git a/crates/omsi-sim/src/ai_traffic/admission.rs b/crates/omsi-sim/src/ai_traffic/admission.rs
+index 3f68594b..7978d568 100644
+--- a/crates/omsi-sim/src/ai_traffic/admission.rs
++++ b/crates/omsi-sim/src/ai_traffic/admission.rs
+@@ -225,6 +225,13 @@ impl Admission {
+         Err(refused)
+     }
+ 
++    /// Leave the place `s` metres along `lane` alone for `secs` seconds from `now` (a car that
++    /// stood there for good was taken off: no new car is put on the same blockage).
++    pub fn keep_clear(&mut self, lane: usize, s: f32, now: f32, secs: f32) {
++        let e = self.entrances.entry(entrance(lane, s)).or_default();
++        e.until = e.until.max(now + secs);
++    }
++
+     fn refused(&mut self, lane: usize, s: f32, now: f32) {
+         let e = self.entrances.entry(entrance(lane, s)).or_default();
+         e.refused += 1;
+diff --git a/crates/omsi-sim/src/ai_traffic/setup.rs b/crates/omsi-sim/src/ai_traffic/setup.rs
+index 554cd017..24d9ec29 100644
+--- a/crates/omsi-sim/src/ai_traffic/setup.rs
++++ b/crates/omsi-sim/src/ai_traffic/setup.rs
+@@ -195,6 +195,7 @@ impl TrafficSim {
+             berths: Default::default(),
+             removals: [0; Removal::COUNT],
+             admission: Default::default(),
++            unstick: Default::default(),
+         };
+         // (the lanes' spawn density from what the map makes of each group, and the weight of
+         // the street lanes with it)
+diff --git a/crates/omsi-sim/src/ai_traffic/tick.rs b/crates/omsi-sim/src/ai_traffic/tick.rs
+index 2bba0896..73e87f8c 100644
+--- a/crates/omsi-sim/src/ai_traffic/tick.rs
++++ b/crates/omsi-sim/src/ai_traffic/tick.rs
+@@ -197,6 +197,7 @@ impl TrafficSim {
+             // its sounds stop and the renders go back to the world at the next sync
+             self.retired.push(c.id);
+         }
++        self.unstick_step();
+     }
+ 
+     /// Where every car is: its lane with its lateral place (and the lane a passing car is
+diff --git a/crates/omsi-sim/src/ai_traffic/unstick.rs b/crates/omsi-sim/src/ai_traffic/unstick.rs
+new file mode 100644
+index 00000000..4a4dc369
+--- /dev/null
++++ b/crates/omsi-sim/src/ai_traffic/unstick.rs
+@@ -0,0 +1,703 @@
++//! Optional recovery of AI traffic that has stopped for good (add-on `ai_unstick`, switched
++//! with `ai_unstick=0` in `hofauto-mods.cfg`; on by default where the file does not say).
++//!
++//! It sits on top of what the game already does (`deadlock` sorts out circles of cars that
++//! wait on each other by the rules, `GIVE_UP_STOOD` drops a random car that has stood for 200 s,
++//! `lateral` goes round what stands in the lane) and acts only where all of that has not
++//! been enough. Time standing is never a reason by itself:
++//!
++//! - A car is *investigated* once it has made no progress (2 m) for
++//!   `max(150 s, 2.5 x the longest red of the map's lights)` of time in which nothing
++//!   legitimate held it: seconds at a red light, at a stop of a timetable bus, for people
++//!   crossing, for the player's vehicle, while overtaking or parking, are not counted.
++//! - It is a *culprit* only when it is the head of what stands (nobody ahead of it that
++//!   moves or legitimately waits), or one of a circle that holds each other, and it has been
++//!   confirmed on `CONFIRM_SCANS` scans in a row.
++//! - Only the culprit goes, only when nobody can see it vanish (`TrafficSim::unseen`), never a
++//!   timetable bus, never the player's vehicle (it is not an AI car), never a car that waits for
++//!   a light that cycles or stands legitimately. The cars behind it get `VERIFY` seconds to
++//!   move; only if they stand on for that long is the next culprit looked for.
++//! - The place is kept clear of new cars for `KEEP_CLEAR` seconds (the population's own
++//!   backoff), so no car lands on the same blockage.
++//! - Every decision is logged (`ai-unstick:` lines in the game log).
++//!
++//! The decision (`Unstick::scan`) works on plain snapshots so it is tested without the world.
++
++use super::*;
++
++/// Seconds without progress before a car is looked at, at least.
++pub const FLOOR: f32 = 150.0;
++/// ... or this many times the longest red light of the map.
++pub const FACTOR: f32 = 2.5;
++/// The limit when the map has lights whose timing cannot be read: more careful.
++pub const UNKNOWN_LIGHTS: f32 = 300.0;
++/// Seconds between scans (sim time).
++pub const SCAN_EVERY: f32 = 5.0;
++/// Scans in a row a culprit must be found on before it is removed.
++pub const CONFIRM_SCANS: u8 = 3;
++/// Seconds the cars behind a removed one have to get moving before they count again.
++pub const VERIFY: f32 = 60.0;
++/// Seconds the place of a removal is left alone by the population.
++pub const KEEP_CLEAR: f32 = 120.0;
++/// Standing yielders at one junction count only after this many times the limit.
++pub const YIELD_FACTOR: f32 = 2.0;
++/// Yielders this close (m) are taken to wait on each other.
++pub const YIELD_NEAR: f64 = 40.0;
++/// Progress that resets the clock (m).
++const PROGRESS: f32 = 2.0;
++/// Events kept for the report.
++const LOG_KEEP: usize = 64;
++
++/// How long a car must have stood, from the longest red of the map's lights (`None`: the map
++/// has no lights; `Some(0.0)`: it has lights but their timing could not be read).
++pub fn investigate_after(max_red: Option<f32>) -> f32 {
++    match max_red {
++        None => FLOOR,
++        Some(r) if r <= 0.0 => UNKNOWN_LIGHTS,
++        Some(r) => FLOOR.max(FACTOR * r),
++    }
++}
++
++/// Reasons (`AiCar::why`) that are somebody else's right to hold the car, not a blockage.
++fn legitimate(why: &str) -> bool {
++    matches!(why, "light" | "people" | "service" | "player" | "pull_out")
++}
++
++/// What the scan needs to know of one car.
++#[derive(Debug, Clone)]
++pub struct Snap {
++    pub id: u64,
++    pub odometer: f32,
++    pub speed: f32,
++    pub is_bus: bool,
++    /// Held by a stop of its timetable, the light, or doing something with its own rules
++    /// (overtaking, parking).
++    pub held_legit: bool,
++    pub why: &'static str,
++    pub yielding: bool,
++    /// The car (id) it follows or whose body is in its way.
++    pub lead: Option<u64>,
++    /// The player's vehicle (or a LAN player's) is what is in its way.
++    pub player_block: bool,
++    /// Somebody could see it vanish.
++    pub visible: bool,
++    pub x: f64,
++    pub y: f64,
++    pub lane: usize,
++    pub s: f32,
++}
++
++#[derive(Debug, Clone, Copy, Default)]
++struct Track {
++    odometer: f32,
++    /// Seconds with nothing legitimate holding it and no progress.
++    stuck: f32,
++    /// Seconds it has yielded while standing.
++    yield_stuck: f32,
++    /// Scans in a row it was the culprit.
++    flagged: u8,
++    /// After a removal in front of it: only this long is asked of it.
++    verifying: bool,
++}
++
++#[derive(Debug, Clone)]
++struct Verify {
++    culprit: u64,
++    followers: Vec<u64>,
++    at: f32,
++}
++
++/// What a scan decided.
++#[derive(Debug, Clone, PartialEq)]
++pub enum Action {
++    /// Take this car off the road (nobody sees it); the ids are the cars that stand behind it.
++    Remove { id: u64, followers: Vec<u64>, stood: f32, why: String },
++    /// Something found and left alone (for the log).
++    Note(String),
++}
++
++#[derive(Debug, Default)]
++pub struct Unstick {
++    next_scan: f32,
++    last_scan: f32,
++    tracks: HashMap<u64, Track>,
++    verify: Vec<Verify>,
++    /// Cars removed so far.
++    pub removed: u64,
++    /// Tests: on or off whatever the settings say.
++    pub force: Option<bool>,
++    /// The last decisions, for the report.
++    pub events: std::collections::VecDeque<String>,
++}
++
++impl Unstick {
++    fn note(&mut self, line: String) {
++        log::info!("ai-unstick: {line}");
++        if self.events.len() >= LOG_KEEP {
++            self.events.pop_front();
++        }
++        self.events.push_back(line);
++    }
++
++    /// Is it time to scan at `now`?
++    pub fn due(&mut self, now: f32) -> bool {
++        if now < self.next_scan {
++            return false;
++        }
++        self.next_scan = now + SCAN_EVERY;
++        true
++    }
++
++    /// Forget everything (the feature was switched off, or a new map).
++    pub fn reset(&mut self) {
++        self.tracks.clear();
++        self.verify.clear();
++        self.next_scan = 0.0;
++    }
++
++    /// Go through the snapshots taken at `now`: who is to be taken off. `limit` is
++    /// `investigate_after` for this map.
++    pub fn scan(&mut self, now: f32, limit: f32, snaps: &[Snap]) -> Vec<Action> {
++        let dt = (now - self.last_scan).clamp(0.0, 30.0);
++        self.last_scan = now;
++        let mut actions = Vec::new();
++        let by_id: HashMap<u64, usize> = snaps.iter().enumerate().map(|(i, s)| (s.id, i)).collect();
++        self.tracks.retain(|id, _| by_id.contains_key(id));
++        // 1) the clocks: progress resets, a legitimate hold pauses, the rest counts
++        for s in snaps {
++            let t = self.tracks.entry(s.id).or_insert(Track { odometer: s.odometer, ..Track::default() });
++            if (s.odometer - t.odometer).abs() > PROGRESS || s.speed > 0.5 {
++                *t = Track { odometer: s.odometer, ..Track::default() };
++                continue;
++            }
++            if s.held_legit || legitimate(s.why) || s.player_block {
++                t.flagged = 0;
++                continue;
++            }
++            if s.yielding {
++                t.yield_stuck += dt;
++                continue;
++            }
++            t.stuck += dt;
++        }
++        // 2) the cars to be looked at
++        let need = |t: &Track| if t.verifying { VERIFY.min(limit) } else { limit };
++        let standing: Vec<usize> = (0..snaps.len())
++            .filter(|&i| {
++                let t = &self.tracks[&snaps[i].id];
++                t.stuck >= need(t)
++            })
++            .collect();
++        let yield_standing: Vec<usize> = (0..snaps.len()).filter(|&i| self.tracks[&snaps[i].id].yield_stuck >= YIELD_FACTOR * limit).collect();
++        let in_set: std::collections::HashSet<u64> = standing.iter().map(|&i| snaps[i].id).collect();
++        // 3) who holds whom: follow each one's lead to the end
++        let mut culprits: Vec<(u64, Vec<u64>, String)> = Vec::new();
++        let mut done: std::collections::HashSet<u64> = std::collections::HashSet::new();
++        for &i in &standing {
++            let first = snaps[i].id;
++            if done.contains(&first) {
++                continue;
++            }
++            let mut chain = vec![first];
++            let mut cur = i;
++            let mut circle = false;
++            let mut end_ok = true;
++            for _ in 0..64 {
++                match snaps[cur].lead {
++                    None => break,
++                    Some(l) => match by_id.get(&l) {
++                        None => break,
++                        Some(&j) => {
++                            if chain.contains(&l) {
++                                circle = true;
++                                break;
++                            }
++                            if !in_set.contains(&l) {
++                                // it waits for somebody who moves or has the right to stand
++                                end_ok = false;
++                                break;
++                            }
++                            chain.push(l);
++                            cur = j;
++                        }
++                    },
++                }
++            }
++            for c in &chain {
++                done.insert(*c);
++            }
++            if !end_ok {
++                continue;
++            }
++            if circle {
++                let at = chain.iter().position(|c| Some(*c) == snaps[cur].lead).unwrap_or(0);
++                let members: Vec<u64> = chain[at..].to_vec();
++                // the one that holds the most, then the one that has stood longest, then the lowest id
++                let held_by = |m: u64| chain.iter().filter(|&&c| c != m).count();
++                let pick = members
++                    .iter()
++                    .copied()
++                    .filter(|m| !snaps[by_id[m]].is_bus)
++                    .max_by(|a, b| {
++                        let (ta, tb) = (&self.tracks[a], &self.tracks[b]);
++                        held_by(*a).cmp(&held_by(*b)).then(ta.stuck.partial_cmp(&tb.stuck).unwrap_or(std::cmp::Ordering::Equal)).then(b.cmp(a))
++                    });
++                match pick {
++                    Some(m) => culprits.push((m, chain.iter().copied().filter(|&c| c != m).collect(), format!("circle of {} cars that hold each other", members.len()))),
++                    None => actions.push(Action::Note(format!("circle of buses {members:?}: buses are never removed"))),
++                }
++            } else {
++                let head = *chain.last().unwrap();
++                let hs = &snaps[by_id[&head]];
++                if hs.is_bus {
++                    actions.push(Action::Note(format!("bus {head} heads {} standing cars: buses are never removed", chain.len() - 1)));
++                    continue;
++                }
++                let why = if chain.len() == 1 { "stuck on its own".to_string() } else { format!("head of {} standing cars", chain.len()) };
++                culprits.push((head, chain[..chain.len() - 1].to_vec(), why));
++            }
++        }
++        // (one culprit may head chains found from several of its followers: one entry, all of them behind it)
++        let mut merged: Vec<(u64, Vec<u64>, String)> = Vec::new();
++        for (id, followers, why) in culprits {
++            match merged.iter_mut().find(|m| m.0 == id) {
++                Some(m) => {
++                    for f in followers {
++                        if !m.1.contains(&f) {
++                            m.1.push(f);
++                        }
++                    }
++                    if why.starts_with("head of") || why.starts_with("circle") {
++                        m.2 = why;
++                    }
++                }
++                None => merged.push((id, followers, why)),
++            }
++        }
++        let mut culprits = merged;
++        // yielding cars that wait on each other at one junction (no lead to follow)
++        let yielders: Vec<usize> = yield_standing.iter().copied().filter(|&i| !snaps[i].is_bus && !culprits.iter().any(|c| c.0 == snaps[i].id || c.1.contains(&snaps[i].id))).collect();
++        for &i in &yielders {
++            let a = &snaps[i];
++            let near: Vec<u64> = yielders.iter().filter(|&&j| j != i && ((snaps[j].x - a.x).powi(2) + (snaps[j].y - a.y).powi(2)).sqrt() < YIELD_NEAR).map(|&j| snaps[j].id).collect();
++            if near.is_empty() {
++                continue;
++            }
++            // one of the standing yielders goes: the one that has waited longest
++            let longest = std::iter::once(a.id).chain(near.iter().copied()).max_by(|x, y| self.tracks[x].yield_stuck.partial_cmp(&self.tracks[y].yield_stuck).unwrap_or(std::cmp::Ordering::Equal).then(y.cmp(x)));
++            if longest == Some(a.id) {
++                culprits.push((a.id, near, "yielders at one junction that wait on each other".to_string()));
++            }
++        }
++        // 4) confirm, and only then decide; those not found this time start over
++        let found: std::collections::HashSet<u64> = culprits.iter().map(|c| c.0).collect();
++        for (id, t) in self.tracks.iter_mut() {
++            if !found.contains(id) {
++                t.flagged = 0;
++            }
++        }
++        for (id, followers, why) in culprits {
++            let s = &snaps[by_id[&id]];
++            let t = self.tracks.get_mut(&id).unwrap();
++            t.flagged = t.flagged.saturating_add(1);
++            if t.flagged < CONFIRM_SCANS {
++                continue;
++            }
++            if s.visible {
++                if t.flagged == CONFIRM_SCANS {
++                    actions.push(Action::Note(format!("car {id} ({why}) is still in sight: left alone until nobody can see it go")));
++                }
++                continue;
++            }
++            let stood = t.stuck.max(t.yield_stuck);
++            actions.push(Action::Remove { id, followers, stood, why });
++        }
++        // 5) what became of the cars behind earlier removals
++        let mut still = Vec::new();
++        for v in std::mem::take(&mut self.verify) {
++            if now - v.at < VERIFY {
++                still.push(v);
++                continue;
++            }
++            let stuck: Vec<u64> = v.followers.iter().copied().filter(|f| self.tracks.get(f).is_some_and(|t| t.stuck >= VERIFY.min(limit))).collect();
++            let moving = v.followers.iter().filter(|f| by_id.contains_key(*f)).count().saturating_sub(stuck.len());
++            if stuck.is_empty() {
++                self.note(format!("after taking car {} off, the {} cars behind it are moving again", v.culprit, moving));
++            } else {
++                self.note(format!("after taking car {} off, cars {stuck:?} still stand: the next culprit is looked for", v.culprit));
++            }
++        }
++        self.verify = still;
++        actions
++    }
++
++    /// Record a removal that was carried out: the followers get `VERIFY` seconds.
++    pub fn removed_one(&mut self, now: f32, id: u64, followers: Vec<u64>, stood: f32, why: &str) {
++        self.removed += 1;
++        self.tracks.remove(&id);
++        for f in &followers {
++            if let Some(t) = self.tracks.get_mut(f) {
++                *t = Track { odometer: t.odometer, verifying: true, ..Track::default() };
++            }
++        }
++        self.note(format!("took car {id} off ({why}; no progress for {stood:.0} s, {} cars behind it)", followers.len()));
++        self.verify.push(Verify { culprit: id, followers, at: now });
++    }
++}
++
++impl TrafficSim {
++    /// The longest red any light of the map shows (None: there are no lights).
++    pub fn longest_red(&self) -> Option<f32> {
++        if self.lights.is_empty() {
++            return None;
++        }
++        Some(self.lights.iter().map(|c| c.max_red()).fold(0.0f32, f32::max))
++    }
++
++    /// One look at the cars, now and then (called at the end of every traffic step).
++    pub fn unstick_step(&mut self) {
++        if !self.unstick.force.unwrap_or_else(|| omsi_cfg::addon_switch::enabled("ai_unstick")) {
++            if !self.unstick.tracks.is_empty() {
++                self.unstick.reset();
++            }
++            return;
++        }
++        let now = self.time;
++        if !self.unstick.due(now) {
++            return;
++        }
++        let ids: std::collections::HashSet<u64> = self.cars.iter().map(|c| c.id).collect();
++        let snaps: Vec<Snap> = self
++            .cars
++            .iter()
++            .map(|c| {
++                let body = c.geo_block.filter(|g| ids.contains(g));
++                let player_block = c.why.0 == "player" || c.geo_block.is_some_and(|g| !ids.contains(&g));
++                let p = c.vehicle.position;
++                let r = (c.state.front + c.state.rear).abs().max(4.0) as f64 + 2.0;
++                Snap {
++                    id: c.id,
++                    odometer: c.state.odometer,
++                    speed: c.state.speed.abs(),
++                    is_bus: c.is_bus(),
++                    held_legit: c.light_hold || c.at_stop() || c.passing.is_some() || c.park.is_some() || c.fresh > 0.0,
++                    why: c.why.0,
++                    yielding: c.yielding,
++                    lead: c.lead_car.or(body),
++                    player_block,
++                    visible: !self.unseen(p, r, |_| false),
++                    x: p.x,
++                    y: p.y,
++                    lane: c.state.lane,
++                    s: c.state.s,
++                }
++            })
++            .collect();
++        let limit = investigate_after(self.longest_red());
++        let actions = self.unstick.scan(now, limit, &snaps);
++        for a in actions {
++            match a {
++                Action::Note(n) => self.unstick.note(n),
++                Action::Remove { id, followers, stood, why } => {
++                    let place = snaps.iter().find(|s| s.id == id).map(|s| (s.lane, s.s));
++                    if self.take_off_id(id, Removal::Finished).is_some() {
++                        self.retired.push(id);
++                        if let Some((lane, s)) = place {
++                            self.admission.keep_clear(lane, s, now, KEEP_CLEAR);
++                        }
++                        self.unstick.removed_one(now, id, followers, stood, &why);
++                    }
++                }
++            }
++        }
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    fn snap(id: u64, lead: Option<u64>) -> Snap {
++        Snap { id, odometer: 100.0 + id as f32, speed: 0.0, is_bus: false, held_legit: false, why: "lead", yielding: false, lead, player_block: false, visible: false, x: id as f64 * 8.0, y: 0.0, lane: 0, s: 10.0 }
++    }
++
++    /// Scan every 5 s for `secs` seconds; the cars stand where they are. A removal is carried out
++    /// as the world does (the car is gone from the next scan, the ones behind get their time).
++    fn run(u: &mut Unstick, from: f32, secs: f32, limit: f32, snaps: &[Snap]) -> Vec<Action> {
++        let mut all = Vec::new();
++        let mut live: Vec<Snap> = snaps.to_vec();
++        let mut t = from;
++        while t < from + secs {
++            t += SCAN_EVERY;
++            let acts = u.scan(t, limit, &live);
++            for a in &acts {
++                if let Action::Remove { id, followers, stood, why } = a {
++                    u.removed_one(t, *id, followers.clone(), *stood, why);
++                    live.retain(|s| s.id != *id);
++                }
++            }
++            all.extend(acts);
++        }
++        all
++    }
++    fn removals(a: &[Action]) -> Vec<u64> {
++        a.iter().filter_map(|x| if let Action::Remove { id, .. } = x { Some(*id) } else { None }).collect()
++    }
++
++    #[test]
++    fn the_limit_is_the_larger_of_150_s_and_2_5_times_the_longest_red() {
++        assert_eq!(investigate_after(None), 150.0);
++        assert_eq!(investigate_after(Some(60.0)), 150.0);
++        assert_eq!(investigate_after(Some(90.0)), 225.0);
++        assert_eq!(investigate_after(Some(0.0)), UNKNOWN_LIGHTS, "lights with no readable timing: careful");
++    }
++
++    #[test]
++    fn a_car_that_has_not_stood_long_enough_is_left_alone() {
++        let mut u = Unstick::default();
++        let a = run(&mut u, 0.0, 140.0, 150.0, &[snap(1, None)]);
++        assert!(removals(&a).is_empty(), "{a:?}");
++    }
++
++    #[test]
++    fn a_lone_car_stuck_for_good_goes_after_the_limit_and_the_confirmations() {
++        let mut u = Unstick::default();
++        let a = run(&mut u, 0.0, 190.0, 150.0, &[snap(1, None)]);
++        assert_eq!(removals(&a), vec![1], "{a:?}");
++        // not before the limit plus CONFIRM_SCANS - 1 scans
++        let mut u = Unstick::default();
++        let early = run(&mut u, 0.0, 150.0 + SCAN_EVERY * (CONFIRM_SCANS as f32 - 2.0), 150.0, &[snap(1, None)]);
++        assert!(removals(&early).is_empty());
++    }
++
++    #[test]
++    fn time_standing_alone_never_removes_a_car_that_is_legitimately_held() {
++        for why in ["light", "people", "service", "player", "pull_out"] {
++            let mut u = Unstick::default();
++            let mut s = snap(1, None);
++            s.why = why;
++            let a = run(&mut u, 0.0, 5000.0, 150.0, &[s]);
++            assert!(removals(&a).is_empty(), "{why}: {a:?}");
++        }
++        let mut u = Unstick::default();
++        let mut s = snap(1, None);
++        s.held_legit = true; // red light, a bus's stop, overtaking, parking
++        assert!(removals(&run(&mut u, 0.0, 5000.0, 150.0, &[s])).is_empty());
++        let mut u = Unstick::default();
++        let mut s = snap(1, None);
++        s.player_block = true;
++        assert!(removals(&run(&mut u, 0.0, 5000.0, 150.0, &[s])).is_empty(), "the player's bus in the way is nobody's fault");
++    }
++
++    #[test]
++    fn a_queue_that_creeps_forward_is_congestion_not_a_blockage() {
++        let mut u = Unstick::default();
++        let mut t = 0.0;
++        let mut all = Vec::new();
++        for k in 0..100 {
++            t += SCAN_EVERY;
++            // the head advances 3 m every scan; the others stand behind it
++            let mut head = snap(1, None);
++            head.odometer = 100.0 + 3.0 * k as f32;
++            let snaps = [head, snap(2, Some(1)), snap(3, Some(2))];
++            all.extend(u.scan(t, 150.0, &snaps));
++        }
++        assert!(removals(&all).is_empty(), "{all:?}");
++    }
++
++    #[test]
++    fn a_queue_behind_a_car_that_waits_for_a_light_is_left_alone() {
++        let mut u = Unstick::default();
++        let mut head = snap(1, None);
++        head.held_legit = true;
++        let a = run(&mut u, 0.0, 2000.0, 150.0, &[head, snap(2, Some(1)), snap(3, Some(2))]);
++        assert!(removals(&a).is_empty(), "{a:?}");
++    }
++
++    #[test]
++    fn two_cars_that_hold_each_other_lose_one_and_the_other_is_given_time_first() {
++        let mut u = Unstick::default();
++        let snaps = [snap(1, Some(2)), snap(2, Some(1))];
++        let a = run(&mut u, 0.0, 200.0, 150.0, &snaps);
++        let r = removals(&a);
++        assert_eq!(r.len(), 1, "only one of the two: {a:?}");
++        let gone = r[0];
++        // the other is free now and moves: nothing more happens
++        let other = if gone == 1 { 2 } else { 1 };
++        let mut moving = snap(other, None);
++        moving.odometer += 50.0;
++        let b = run(&mut u, 200.0, 120.0, 150.0, &[moving]);
++        assert!(removals(&b).is_empty(), "{b:?}");
++        assert!(u.events.iter().any(|e| e.contains("moving again")), "{:?}", u.events);
++    }
++
++    #[test]
++    fn the_second_car_goes_only_if_it_still_stands_after_the_verification_time() {
++        let mut u = Unstick::default();
++        let a = run(&mut u, 0.0, 175.0, 150.0, &[snap(1, Some(2)), snap(2, Some(1))]);
++        let gone = removals(&a)[0];
++        let other = if gone == 1 { 2 } else { 1 };
++        // right after (it has stood 175 s): it must not be taken off straight away
++        let soon = run(&mut u, 175.0, 40.0, 150.0, &[snap(other, None)]);
++        assert!(removals(&soon).is_empty(), "{soon:?}");
++        // still standing well beyond the verification time: now it is a lone stuck car
++        let later = run(&mut u, 215.0, 80.0, 150.0, &[snap(other, None)]);
++        assert_eq!(removals(&later), vec![other], "{later:?}");
++        assert!(u.events.iter().any(|e| e.contains("still stand")), "{:?}", u.events);
++    }
++
++    #[test]
++    fn of_three_or_more_standing_cars_only_the_head_goes() {
++        let mut u = Unstick::default();
++        let snaps = [snap(1, None), snap(2, Some(1)), snap(3, Some(2)), snap(4, Some(3))];
++        let a = run(&mut u, 0.0, 200.0, 150.0, &snaps);
++        assert_eq!(removals(&a), vec![1], "{a:?}");
++        if let Some(Action::Remove { followers, .. }) = a.iter().find(|x| matches!(x, Action::Remove { .. })) {
++            assert_eq!(followers.len(), 3);
++        }
++    }
++
++    #[test]
++    fn a_car_in_sight_is_not_made_to_vanish() {
++        let mut u = Unstick::default();
++        let mut s = snap(1, None);
++        s.visible = true;
++        let a = run(&mut u, 0.0, 400.0, 150.0, &[s.clone()]);
++        assert!(removals(&a).is_empty(), "{a:?}");
++        assert!(a.iter().any(|x| matches!(x, Action::Note(n) if n.contains("in sight"))));
++        // out of sight: it goes at once (it has stood long enough and been confirmed)
++        s.visible = false;
++        let b = run(&mut u, 400.0, 20.0, 150.0, &[s]);
++        assert_eq!(removals(&b), vec![1]);
++    }
++
++    #[test]
++    fn a_timetable_bus_is_never_taken_off_not_even_when_it_is_the_culprit() {
++        let mut u = Unstick::default();
++        let mut bus = snap(1, None);
++        bus.is_bus = true;
++        let a = run(&mut u, 0.0, 600.0, 150.0, &[bus.clone(), snap(2, Some(1))]);
++        assert!(removals(&a).is_empty(), "{a:?}");
++        assert!(a.iter().any(|x| matches!(x, Action::Note(n) if n.contains("never removed"))));
++        // a circle of a car and a bus: the car goes, the bus stays
++        let mut u = Unstick::default();
++        let mut bus2 = snap(1, Some(2));
++        bus2.is_bus = true;
++        let b = run(&mut u, 0.0, 200.0, 150.0, &[bus2, snap(2, Some(1))]);
++        assert_eq!(removals(&b), vec![2]);
++    }
++
++    #[test]
++    fn standing_that_moves_resets_the_clock() {
++        let mut u = Unstick::default();
++        let mut t = 0.0;
++        let mut all = Vec::new();
++        for k in 0..200 {
++            t += SCAN_EVERY;
++            let mut s = snap(1, None);
++            // it moves 3 m every 100 s: always short of the limit
++            s.odometer = 100.0 + 3.0 * (k / 20) as f32;
++            all.extend(u.scan(t, 150.0, &[s]));
++        }
++        assert!(removals(&all).is_empty(), "{all:?}");
++    }
++
++    #[test]
++    fn yielders_that_wait_on_each_other_for_twice_the_limit_lose_the_longest_waiter() {
++        let mut u = Unstick::default();
++        let mut a = snap(1, None);
++        let mut b = snap(2, None);
++        a.yielding = true;
++        b.yielding = true;
++        a.why = "yield";
++        b.why = "yield";
++        b.x = a.x + 10.0;
++        let early = run(&mut u, 0.0, 290.0, 150.0, &[a.clone(), b.clone()]);
++        assert!(removals(&early).is_empty(), "{early:?}");
++        let late = run(&mut u, 290.0, 40.0, 150.0, &[a.clone(), b.clone()]);
++        assert_eq!(removals(&late).len(), 1, "{late:?}");
++        // a single yielder with nobody near it (a side road waiting for a gap) is never taken
++        let mut u = Unstick::default();
++        let lone = run(&mut u, 0.0, 3000.0, 150.0, &[a]);
++        assert!(removals(&lone).is_empty(), "{lone:?}");
++    }
++
++    #[test]
++    fn nothing_is_decided_for_cars_that_left() {
++        let mut u = Unstick::default();
++        run(&mut u, 0.0, 100.0, 150.0, &[snap(1, None), snap(2, None)]);
++        u.scan(105.0, 150.0, &[snap(2, None)]);
++        assert!(!u.tracks.contains_key(&1), "the track of a car that is gone is dropped");
++    }
++
++    // ---- the whole traffic simulation, headless ----
++
++    use crate::ai_traffic::scenario_tests::{add_car, street, traffic, Fixture};
++
++    /// A 100 m road with a car at 50 m that cannot move (held in place after every step, as a
++    /// body wedged against something would be) and another close behind it.
++    fn wedged() -> (Fixture, TrafficSim, u64, u64) {
++        let f = Fixture::new();
++        let mut net = Network { lanes: vec![street(DVec3::new(0.0, 0.0, 0.0), 0.0, 400.0)], ..Default::default() };
++        net.link(1.5);
++        let mut t = traffic(&f, net);
++        let a = add_car(&mut t, &f, 0, 50.0, 1, Some(0.0));
++        let b = add_car(&mut t, &f, 0, 40.0, 2, Some(0.0));
++        (f, t, a, b)
++    }
++
++    /// Steps of 0.5 s; the car `held` is put back where it was after every one.
++    fn tick_for(t: &mut TrafficSim, held: u64, secs: f32) {
++        let pin = t.cars.iter().find(|c| c.id == held).map(|c| (c.state.s, c.state.odometer));
++        for _ in 0..(secs / 0.5) as usize {
++            t.tick(0.5, None);
++            if let (Some((s, odo)), Some(c)) = (pin, t.cars.iter_mut().find(|c| c.id == held)) {
++                c.state.s = s;
++                c.state.odometer = odo;
++                c.state.speed = 0.0;
++            }
++        }
++    }
++
++    #[test]
++    fn in_the_simulation_the_wedged_car_that_holds_a_queue_goes_only_after_the_limit_and_leaves_its_place_clear() {
++        let (_f, mut t, a, b) = wedged();
++        t.unstick.force = Some(true);
++        tick_for(&mut t, a, 140.0);
++        assert!(t.cars.iter().any(|c| c.id == a) && t.cars.iter().any(|c| c.id == b), "nobody is taken off before the limit: {:?}", t.unstick.events);
++        assert_eq!(t.unstick.removed, 0);
++        let mut waited = 0.0;
++        while t.cars.iter().any(|c| c.id == a) && waited < 60.0 {
++            tick_for(&mut t, a, 5.0);
++            waited += 5.0;
++        }
++        assert!(!t.cars.iter().any(|c| c.id == a), "the wedged car, holding the other, has gone: {:?}", t.unstick.events);
++        assert_eq!(t.unstick.removed, 1, "{:?}", t.unstick.events);
++        assert!(t.admission.backing_off(0, 50.0, t.time), "no new car lands on the same blockage");
++        assert!(t.unstick.events.iter().any(|e| e.contains("took car")), "it is logged: {:?}", t.unstick.events);
++        // the one behind it is not touched, and drives on
++        tick_for(&mut t, 0, 8.0);
++        let cb = t.cars.iter().find(|c| c.id == b).expect("the car behind is still on the road");
++        assert!(cb.state.s > 45.0, "the queue moves: s = {}", cb.state.s);
++        assert_eq!(t.unstick.removed, 1);
++    }
++
++    #[test]
++    fn in_the_simulation_the_switch_off_leaves_every_car_alone() {
++        let (_f, mut t, a, _b) = wedged();
++        t.unstick.force = Some(false);
++        tick_for(&mut t, a, 600.0);
++        assert!(t.cars.iter().any(|c| c.id == a));
++        assert_eq!(t.unstick.removed, 0);
++    }
++
++    #[test]
++    fn in_the_simulation_a_car_in_sight_is_left_alone() {
++        let (_f, mut t, a, _b) = wedged();
++        t.unstick.force = Some(true);
++        // somebody looks at the road from the side, close by
++        t.viewer = Some(crate::ai_traffic::viewer::Viewer::lan_player(DVec3::new(5.0, 40.0, 0.0), 0.0));
++        tick_for(&mut t, a, 400.0);
++        assert!(t.cars.iter().any(|c| c.id == a), "it stays while somebody can see it: {:?}", t.unstick.events);
++    }
++}
+diff --git a/crates/omsi-sim/src/traffic/lights.rs b/crates/omsi-sim/src/traffic/lights.rs
+index ee191031..a1ba6552 100644
+--- a/crates/omsi-sim/src/traffic/lights.rs
++++ b/crates/omsi-sim/src/traffic/lights.rs
+@@ -89,6 +89,36 @@ impl TrafficLightController {
+         c
+     }
+ 
++    /// The longest stretch any light of this program stays red (red or red and yellow), in
++    /// seconds, round the cycle (a stop point that holds the clock can make it longer: not
++    /// counted). 0 for a program with no red.
++    pub fn max_red(&self) -> f32 {
++        let cycle = self.cycle_len();
++        let step = 0.25;
++        let n = (cycle / step).ceil().max(1.0) as usize;
++        let mut best = 0.0f32;
++        for i in 0..self.lights.len() {
++            let red: Vec<bool> = (0..n).map(|k| matches!(Self::aspect(self.state_at(i, k as f64 * step)), Aspect::Red | Aspect::RedYellow)).collect();
++            if red.iter().all(|&r| r) {
++                // red for ever within the cycle: the whole cycle
++                best = best.max(cycle as f32);
++                continue;
++            }
++            // longest run of red going round (start just after a non-red step)
++            let start = red.iter().position(|&r| !r).unwrap_or(0);
++            let mut run = 0usize;
++            for k in 1..=n {
++                if red[(start + k) % n] {
++                    run += 1;
++                    best = best.max(run as f32 * step as f32);
++                } else {
++                    run = 0;
++                }
++            }
++        }
++        best
++    }
++
+     /// Length of the cycle in seconds.
+     pub fn cycle_len(&self) -> f64 {
+         if self.cycle > 0.0 {
+diff --git a/crates/omsi-sim/src/traffic/tests.rs b/crates/omsi-sim/src/traffic/tests.rs
+index 375649ef..dd41c724 100644
+--- a/crates/omsi-sim/src/traffic/tests.rs
++++ b/crates/omsi-sim/src/traffic/tests.rs
+@@ -1488,3 +1488,16 @@ fn a_door_program_without_green_holds_its_stop_in_state_four() {
+     gdr.advance(3.0);
+     assert!(!gdr.held, "green with yellow (state 8) is a go phase: the changeover to it is not held");
+ }
++
++#[test]
++fn the_longest_red_of_a_program_is_read_round_the_cycle() {
++    // light 0: green 30, yellow 4, red 66 (cycle 100); light 1: red 20, green 80
++    let c = TrafficLightController::new(vec![vec![(6, 30.0), (9, 4.0), (0, 66.0)], vec![(0, 20.0), (6, 80.0)]], 100.0);
++    assert!((c.max_red() - 66.0).abs() < 0.3, "{}", c.max_red());
++    // a red that wraps round the end of the cycle counts as one
++    let w = TrafficLightController::new(vec![vec![(0, 10.0), (6, 50.0), (0, 40.0)]], 100.0);
++    assert!((w.max_red() - 50.0).abs() < 0.3, "{}", w.max_red());
++    // never red: nothing
++    let g = TrafficLightController::new(vec![vec![(6, 100.0)]], 100.0);
++    assert_eq!(g.max_red(), 0.0);
++}

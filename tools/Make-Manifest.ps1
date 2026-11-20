@@ -54,7 +54,8 @@ function Src([string[]]$rel) {
 $modules = @(
     [ordered]@{ id = 'hof_auto';  name = 'HOF automatico';      version = '1.0.0'; requires = @();          compatible_openomsi = @($base); source_sha256 = (Src @('crates/omsi-launcher-core/src/hof_auto.rs')) },
     [ordered]@{ id = 'door_cams'; name = 'Cameras das portas';  version = '0.1.0'; requires = @();          compatible_openomsi = @($base); source_sha256 = (Src @('crates/omsi-app/src/door_cams.rs')) },
-    [ordered]@{ id = 'dashcam';   name = 'Dashcam (MP4)';       version = '0.1.0'; requires = @('ffmpeg');  compatible_openomsi = @($base); source_sha256 = (Src @('crates/omsi-app/src/dashcam.rs')) }
+    [ordered]@{ id = 'dashcam';   name = 'Dashcam (MP4)';       version = '0.1.0'; requires = @('ffmpeg');  compatible_openomsi = @($base); source_sha256 = (Src @('crates/omsi-app/src/dashcam.rs')) },
+    [ordered]@{ id = 'ai_unstick'; name = 'IAs travadas'; version = '0.1.0'; requires = @(); compatible_openomsi = @($base); source_sha256 = (Src @('crates/omsi-sim/src/ai_traffic/unstick.rs')) }
 )
 $man = [ordered]@{
     manager = '1.2.0'

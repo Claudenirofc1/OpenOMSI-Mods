@@ -45,7 +45,8 @@ New-Item -ItemType Directory -Force $dadosDir | Out-Null
 $mods = @(
     @{ id = 'hof_auto';  texto = 'HOF automatico (escolhe o HOF do onibus sozinho)' },
     @{ id = 'door_cams'; texto = 'Cameras das portas (popup ao abrir a porta)  [Ctrl+K]' },
-    @{ id = 'dashcam';   texto = 'Dashcam (grava a viagem em MP4, precisa do ffmpeg)  [Ctrl+J]' }
+    @{ id = 'dashcam';   texto = 'Dashcam (grava a viagem em MP4, precisa do ffmpeg)  [Ctrl+J]' },
+    @{ id = 'ai_unstick'; texto = 'Recuperar IAs travadas de vez (so remove fora da vista; nunca onibus)' }
 )
 $arqPerfil = @('hofauto-mods.cfg', 'door_cams.cfg', 'dashcam.cfg', 'mirror_hud.cfg')
 $publicadoNovo = ''
