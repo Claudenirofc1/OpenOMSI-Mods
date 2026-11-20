@@ -11,9 +11,9 @@ param(
 $ErrorActionPreference = 'Stop'
 $exes = @('openomsi.exe', 'openomsi-launcher.exe', 'openomsi-launcher-app.exe', 'omsi-plugin-host32.exe')
 $base = $Tag.TrimStart('v')
-function H([string]$p) { (Get-FileHash -Algorithm SHA256 -LiteralPath $p).Hash.ToLower() }
+function Sha256([string]$p) { (Get-FileHash -Algorithm SHA256 -LiteralPath $p).Hash.ToLower() }
 $files = [ordered]@{}
-foreach ($e in $exes) { $files[$e] = H (Join-Path $ExeDir $e) }
+foreach ($e in $exes) { $files[$e] = Sha256 (Join-Path $ExeDir $e) }
 $known = Get-Content -LiteralPath $KnownHashes -Raw -Encoding UTF8 | ConvertFrom-Json
 $official = [ordered]@{}
 $proven = [ordered]@{}
@@ -41,14 +41,14 @@ foreach ($v in ($known.PSObject.Properties.Name | Where-Object { -not $_.StartsW
 if ($OfficialDir -and (Test-Path -LiteralPath $OfficialDir)) {
     foreach ($e in $exes) {
         $f = Get-ChildItem -LiteralPath $OfficialDir -Recurse -Filter $e -File -ErrorAction SilentlyContinue | Select-Object -First 1
-        if ($f) { $h = H $f.FullName; Add-Hash $proven $base $e $h; Add-Hash $official $base $e $h }
+        if ($f) { $h = Sha256 $f.FullName; Add-Hash $proven $base $e $h; Add-Hash $official $base $e $h }
     }
 }
 foreach ($e in $exes) { Add-Hash $proven $base $e $files[$e] }
 function Src([string[]]$rel) {
     $r = [ordered]@{}
     if (-not $SourceRoot) { return $r }
-    foreach ($x in $rel) { $f = Join-Path $SourceRoot $x; if (Test-Path -LiteralPath $f) { $r[$x] = H $f } }
+    foreach ($x in $rel) { $f = Join-Path $SourceRoot $x; if (Test-Path -LiteralPath $f) { $r[$x] = Sha256 $f } }
     return $r
 }
 $modules = @(

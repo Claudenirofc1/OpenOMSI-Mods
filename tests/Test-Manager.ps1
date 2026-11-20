@@ -10,7 +10,7 @@ function Check([string]$nome, [bool]$cond, [string]$detalhe = '') {
     if ($cond) { $script:ok++; Write-Host "  ok   $nome" }
     else { $script:falha++; Write-Host "  FALHOU  $nome  $detalhe" -ForegroundColor Red }
 }
-function H([string]$p) { (Get-FileHash -Algorithm SHA256 -LiteralPath $p).Hash.ToLower() }
+function Sha256([string]$p) { (Get-FileHash -Algorithm SHA256 -LiteralPath $p).Hash.ToLower() }
 function Novo-Falso([string]$dir, [string]$semente) {
     New-Item -ItemType Directory -Force $dir | Out-Null
     foreach ($e in $exes) { Set-Content -LiteralPath (Join-Path $dir $e) -Value ("$semente-$e-" + ('x' * 200)) -Encoding ASCII }
@@ -38,7 +38,7 @@ $jogoOrig = Join-Path $raiz 'oficial'; Novo-Falso $jogoOrig 'oficial'
 $pkExe = Join-Path $raiz 'pacote-exe'; Novo-Falso $pkExe 'mod'
 $known = Join-Path $raiz 'known.json'
 $kn = [ordered]@{ '0.3.54' = [ordered]@{ official = [ordered]@{} } }
-foreach ($e in $exes) { $kn['0.3.54'].official[$e] = @(H (Join-Path $jogoOrig $e)) }
+foreach ($e in $exes) { $kn['0.3.54'].official[$e] = @(Sha256 (Join-Path $jogoOrig $e)) }
 ConvertTo-Json -InputObject $kn -Depth 6 | Set-Content -LiteralPath $known -Encoding UTF8
 $pacote = Join-Path $raiz 'pacote'
 New-Item -ItemType Directory -Force $pacote | Out-Null
@@ -59,7 +59,7 @@ function Roda([hashtable]$amb, [string[]]$extra) {
     return (Gerenciador (@('-Silencioso', '-RaizTeste', $amb.Raiz, '-PastaJogo', $amb.Jogo) + $extra))
 }
 function Iguais([string]$dirA, [string]$dirB) {
-    foreach ($e in $exes) { if ((H (Join-Path $dirA $e)) -ne (H (Join-Path $dirB $e))) { return $false } }
+    foreach ($e in $exes) { if ((Sha256 (Join-Path $dirA $e)) -ne (Sha256 (Join-Path $dirB $e))) { return $false } }
     return $true
 }
 
@@ -126,10 +126,10 @@ Check 'door_cams.cfg pessoal continua la' (Test-Path (Join-Path $cfgDir 'door_ca
 Write-Host '== compatibilidade'
 $a = Novo-Ambiente 'desc'
 Add-Content -LiteralPath (Join-Path $a.Jogo 'openomsi.exe') -Value 'atualizacao-oficial-nova'
-$antes = H (Join-Path $a.Jogo 'openomsi.exe')
+$antes = Sha256 (Join-Path $a.Jogo 'openomsi.exe')
 $c = Roda $a @('-Modo', 'Instalar')
 Check 'versao nao provada: instalacao bloqueada (sai 1)' ($c -eq 1) $saida
-Check 'nada foi alterado' ((H (Join-Path $a.Jogo 'openomsi.exe')) -eq $antes)
+Check 'nada foi alterado' ((Sha256 (Join-Path $a.Jogo 'openomsi.exe')) -eq $antes)
 Check 'nao cria backup nem pendencia' (-not (Test-Path (Join-Path $a.Raiz 'dados\pendente.txt')))
 $c = Roda $a @('-Modo', 'Reparar')
 Check 'reparar tambem bloqueia' ($c -eq 1)
