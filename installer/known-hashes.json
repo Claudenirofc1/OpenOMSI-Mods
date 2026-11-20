@@ -1,0 +1,17 @@
+{
+  "_comment": "SHA-256 dos 4 executaveis de builds CONHECIDOS por versao do openOMSI. 'official' = pacote oficial; 'local' = build local feito do mesmo codigo-base (commit 500a4143 = v0.3.54). O gerenciador so aplica patch quando TODOS os executaveis presentes batem com esta lista (ou com o manifesto do pacote).",
+  "0.3.54": {
+    "official": {
+      "openomsi.exe": ["874ee88205c896c4259c9b1d68048a976dfc87f8b80dd1a09fde81e5c7b2b2c4"],
+      "openomsi-launcher.exe": ["c509148751510d7526d2de1aff0b603b5ec6e37e273c9f3d9e0c4345f1840bb2"],
+      "openomsi-launcher-app.exe": ["f0d0e67cb09c0eb202bf19c82826fde64d6d96c11838416916c58010bec6935f"],
+      "omsi-plugin-host32.exe": ["36530742540df5e5ad91962098b1c07a792889d5f350c25e0a86e07a79f8aceb"]
+    },
+    "local": {
+      "openomsi.exe": ["55d635faa9554681a4ea650ba686ece25edab941d8599f90939b7d258b29ec43"],
+      "openomsi-launcher.exe": ["b870d8a3003c45901b3b9b20b076ce6dc8e410be53865a07f3876439c110f460"],
+      "openomsi-launcher-app.exe": ["250154e2f109be310d9bd46c2cbe20207f56e224a73f6a06ac3d8764fff13109"],
+      "omsi-plugin-host32.exe": ["cc163c4ede40cfd540179dadb9a31cae75858393c1a239a5f00a01adfc0a9b05"]
+    }
+  }
+}
