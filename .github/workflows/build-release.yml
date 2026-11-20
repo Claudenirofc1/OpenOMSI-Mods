@@ -70,13 +70,16 @@ jobs:
           git apply --3way --ignore-whitespace ../nosso/patches/hof-auto.patch
           git status --short
       - uses: dtolnay/rust-toolchain@stable
-      - name: Testes do HOF automatico
+      - name: Testes dos mods
         shell: cmd
         run: |
           cd src
           cargo test --locked -p omsi-launcher-core --lib hof_auto || exit /b 1
           cargo test --locked -p omsi-launcher-core --test hof_auto_glue || exit /b 1
           cargo test --locked -p omsi-launcher-core --test hof_auto_regression || exit /b 1
+          cargo test --locked -p omsi-cfg --lib addon_switch || exit /b 1
+          cargo test --locked -p omsi-app --lib door_cams || exit /b 1
+          cargo test --locked -p omsi-app --lib dashcam || exit /b 1
       - name: Compilar (script oficial)
         shell: cmd
         run: |
@@ -106,7 +109,7 @@ jobs:
         run: |
           rel="${TAG}-hofauto"
           zip="openOMSI-HOF-Auto-${TAG}.zip"
-          notes="Projeto independente, NAO oficial. Base: openOMSI oficial ${TAG} + HOF automatico. Baixe o ZIP, extraia tudo e de duplo clique em Instalar.cmd. Para voltar ao original: Desinstalar.cmd. Codigo-fonte: ORIGEM-DO-CODIGO.txt dentro do ZIP."
+          notes="Projeto independente, NAO oficial. Base: openOMSI oficial ${TAG} + HOF automatico, cameras das portas e dashcam. Baixe o ZIP, extraia tudo e de duplo clique em Instalar.cmd. Para voltar ao original: Desinstalar.cmd. Codigo-fonte: ORIGEM-DO-CODIGO.txt dentro do ZIP."
           if gh release view "$rel" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$rel" "$zip" --clobber -R "$GITHUB_REPOSITORY"
           else

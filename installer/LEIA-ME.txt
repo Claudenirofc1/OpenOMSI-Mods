@@ -2,8 +2,10 @@ openOMSI HOF Auto (projeto independente, NAO oficial)
 
 1) Extraia este ZIP inteiro.
 2) Feche o jogo e o launcher.
-3) Duplo clique em Instalar.cmd e confirme a pasta do jogo.
+3) Duplo clique em Instalar.cmd, confirme a pasta do jogo e marque os mods que quer.
 Para voltar ao original: Desinstalar.cmd.
+Para trazer de volta suas escolhas/cameras (apos formatar): Restaurar-Perfil.cmd.
 
 Troca somente 4 executaveis, com backup e conferencia. Nao mexe em mapas, onibus, HOFs ou configuracoes.
+Perfil salvo em: Documentos\openOMSI-HOF-Auto\perfil. A dashcam precisa do ffmpeg.exe.
 Detalhes: README.md no repositorio.
