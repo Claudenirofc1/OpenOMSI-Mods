@@ -1,0 +1,1195 @@
+diff --git a/crates/omsi-app/locales/hof_auto.yml b/crates/omsi-app/locales/hof_auto.yml
+new file mode 100644
+index 00000000..04f48f8f
+--- /dev/null
++++ b/crates/omsi-app/locales/hof_auto.yml
+@@ -0,0 +1,70 @@
++# Automatic depot-file (HOF) choice: LOCAL strings (hof-auto prototype). English strings are the keys; pt is Brazilian Portuguese.
++_version: 2
++
++"The tour has no trip with a destination to check; the depot file is not confirmed.":
++  pt: "O tour não tem viagem com destino para conferir; o arquivo de depósito (HOF) não está confirmado."
++  pt-pt: "O tour não tem viagem com destino para verificar; o ficheiro de depósito (HOF) não está confirmado."
++
++"Depot file {hof} (declared by the map for the tour's group) has every destination of the tour.":
++  pt: "O HOF {hof} (declarado pelo mapa para o grupo do tour) tem todos os destinos do tour."
++  pt-pt: "O HOF {hof} (declarado pelo mapa para o grupo do tour) tem todos os destinos do tour."
++
++"The map declares {hof} for this tour but it does not hold every destination ({level}); these do: {list}. Choose the depot file by hand.":
++  pt: "O mapa declara o HOF {hof} para este tour, mas ele não tem todos os destinos ({level}); estes têm: {list}. Escolha o HOF manualmente."
++  pt-pt: "O mapa declara o HOF {hof} para este tour, mas não tem todos os destinos ({level}); estes têm: {list}. Escolha o HOF manualmente."
++
++"Depot file {hof} is the only one with every destination of the tour (the map declares none).":
++  pt: "O HOF {hof} é o único com todos os destinos do tour (o mapa não declara nenhum)."
++  pt-pt: "O HOF {hof} é o único com todos os destinos do tour (o mapa não declara nenhum)."
++
++"Several depot files have every destination ({list}); {hof} is stronger on all of them.":
++  pt: "Vários HOFs têm todos os destinos ({list}); {hof} é o mais forte em todos eles."
++  pt-pt: "Vários HOFs têm todos os destinos ({list}); {hof} é o mais forte em todos eles."
++
++"Several depot files have every destination of the tour with nothing to tell them apart: {list}. Choose the depot file by hand.":
++  pt: "Vários HOFs têm todos os destinos do tour e nada os diferencia: {list}. Escolha o HOF manualmente."
++  pt-pt: "Vários HOFs têm todos os destinos do tour e nada os distingue: {list}. Escolha o HOF manualmente."
++
++"Depot file {hof} is the map's, but it holds the destinations only as {level} matches: not confirmed.":
++  pt: "O HOF {hof} é o do mapa, mas só tem os destinos por correspondência fraca ({level}): NÃO confirmado."
++  pt-pt: "O HOF {hof} é o do mapa, mas só tem os destinos por correspondência fraca ({level}): NÃO confirmado."
++
++"No depot file holds the destinations of this tour; the usual choice is kept but it is NOT confirmed.":
++  pt: "Nenhum HOF tem os destinos deste tour; a escolha habitual foi mantida, mas NÃO está confirmada."
++  pt-pt: "Nenhum HOF tem os destinos deste tour; a escolha habitual foi mantida, mas NÃO está confirmada."
++
++"{n} depot file(s) match the destinations only partially; the usual choice is kept but it is NOT confirmed.":
++  pt: "{n} HOF(s) correspondem aos destinos só em parte; a escolha habitual foi mantida, mas NÃO está confirmada."
++  pt-pt: "{n} HOF(s) correspondem aos destinos só em parte; a escolha habitual foi mantida, mas NÃO está confirmada."
++
++"OPENOMSI_HOF_AUTO is off: the official choice is used.":
++  pt: "OPENOMSI_HOF_AUTO está desligado: usando a escolha oficial."
++  pt-pt: "OPENOMSI_HOF_AUTO está desligado: a usar a escolha oficial."
++
++"Warning: more than one depot file is called {list} with different content; the game picks by name and may use another file than the one checked.":
++  pt: "Aviso: mais de um HOF se chama {list} com conteúdo diferente; o jogo escolhe pelo nome e pode usar outro arquivo que não o conferido."
++  pt-pt: "Aviso: mais de um HOF se chama {list} com conteúdo diferente; o jogo escolhe pelo nome e pode usar outro ficheiro que não o verificado."
++
++"{name} ({n} files)":
++  pt: "{name} ({n} arquivos)"
++  pt-pt: "{name} ({n} ficheiros)"
++
++"no match":
++  pt: "nenhuma"
++  pt-pt: "nenhuma"
++
++"prefix":
++  pt: "prefixo"
++  pt-pt: "prefixo"
++
++"displayed text":
++  pt: "texto exibido"
++  pt-pt: "texto exibido"
++
++"same name":
++  pt: "mesmo nome"
++  pt-pt: "mesmo nome"
++
++"exact":
++  pt: "exata"
++  pt-pt: "exata"
+diff --git a/crates/omsi-launcher-api/src/lib.rs b/crates/omsi-launcher-api/src/lib.rs
+index fff03d73..6a32baf9 100644
+--- a/crates/omsi-launcher-api/src/lib.rs
++++ b/crates/omsi-launcher-api/src/lib.rs
+@@ -204,6 +204,14 @@ fn default_hof(map: Value, bus: Value, date: String, line: Option<String>) -> An
+     Ok(json!(core::default_hof(map.as_ref(), bus.as_ref(), &date, line.as_deref())))
+ }
+ 
++/// LOCAL (hof-auto prototype): the depot file for the chosen tour with how well it is backed,
++/// and whether the launch must wait for the person (see `core::hof_auto`).
++fn hof_auto(map: Value, bus: Value, date: String, line: Option<String>, tour: Option<String>) -> Answer {
++    let map: Option<core::MapInfo> = serde_json::from_value(map).ok();
++    let bus: Option<core::VehicleInfo> = serde_json::from_value(bus).ok();
++    to_json(core::hof_auto::auto_for(map.as_ref(), bus.as_ref(), &date, line.as_deref(), tour.as_deref()))
++}
++
+ fn saved_situations(map: String) -> Answer {
+     to_json(core::saved_situations(&map))
+ }
+@@ -837,6 +845,7 @@ fn answer(cmd: &str, args: &Value, p: &dyn Platform) -> Answer {
+         "lines" => lines(arg::<String>(args, "map")?, arg::<String>(args, "date")?),
+         "ibis" => ibis(arg::<String>(args, "bus")?, arg::<String>(args, "hof")?, arg::<String>(args, "line")?, arg::<Option<String>>(args, "terminus")?, arg::<Option<Vec<String>>>(args, "stops")?),
+         "default_hof" => default_hof(arg::<Value>(args, "map")?, arg::<Value>(args, "bus")?, arg::<String>(args, "date")?, arg::<Option<String>>(args, "line")?),
++        "hof_auto" => hof_auto(arg::<Value>(args, "map")?, arg::<Value>(args, "bus")?, arg::<String>(args, "date")?, arg::<Option<String>>(args, "line")?, arg::<Option<String>>(args, "tour")?), // LOCAL (hof-auto)
+         "saved_situations" => saved_situations(arg::<String>(args, "map")?),
+         "delete_situation" => delete_situation(arg::<String>(args, "map")?, arg::<String>(args, "file")?),
+         "rename_situation" => rename_situation(arg::<String>(args, "map")?, arg::<String>(args, "file")?, arg::<String>(args, "name")?),
+diff --git a/crates/omsi-launcher-core/src/hof_auto.rs b/crates/omsi-launcher-core/src/hof_auto.rs
+new file mode 100644
+index 00000000..71e7c2b2
+--- /dev/null
++++ b/crates/omsi-launcher-core/src/hof_auto.rs
+@@ -0,0 +1,649 @@
++//! LOCAL MODULE (not part of upstream openOMSI): automatic depot-file (HOF) choice for a tour.
++//!
++//! Why: the official `default_hof` is given only the line name. It cannot tell a tour's real
++//! destinations from a line of the same number, so a bus can end up with a depot file that has
++//! no IBIS destination for the trips it drives (see local/MODIFICACOES_LOCAIS.md).
++//!
++//! What it does, for the tour that is chosen:
++//!   0. the AI group of the tour (2nd field of `[newtour]`) names a depot group of the map's
++//!      `ailists.cfg`; that group's HOF is the one the map *declares* for the tour;
++//!   1. every distinct trip of the tour has a destination (the trip's terminus); a HOF *covers*
++//!      the tour only when every one of them is found in it as an identifier (`texture_id`) or
++//!      as its `terminus_stop`, after the same whitespace/Unicode-lowercase normalisation the
++//!      official matcher uses. A match on a displayed string alone is weak (it is line-blind)
++//!      and a prefix match is weaker: neither proves anything;
++//!   2. the declared HOF wins when it covers; when it does not but others do, or when several
++//!      cover with nothing to tell them apart, the answer is AMBIGUOUS and the launch is
++//!      blocked (never a silent pick); when nothing covers, the answer is NO MATCH and the
++//!      official choice is kept but never labelled as proven.
++//! A line number on its own is never proof.
++//!
++//! Switch: environment variable `OPENOMSI_HOF_AUTO=off` (also `0`, `false`, `no`, `official`)
++//! restores the official behaviour; nothing on disk is read or written for it.
++//!
++//! The decision core ([`evaluate`]) is pure (HOF values in, decision out) so that it can be
++//! tested without an OMSI installation. The glue to the launcher is [`auto_for`].
++use omsi_vehicle::hof::{terminus_match_score, trip_terminus};
++use omsi_vehicle::Hof;
++use serde::Serialize;
++use std::path::PathBuf;
++
++/// The environment variable that turns the module off.
++pub const ENV_SWITCH: &str = "OPENOMSI_HOF_AUTO";
++
++/// Whether the module is on (the default in this prototype).
++pub fn enabled() -> bool {
++    !switched_off(std::env::var(ENV_SWITCH).ok().as_deref())
++}
++
++pub(crate) fn switched_off(value: Option<&str>) -> bool {
++    matches!(value.map(|v| v.trim().to_ascii_lowercase()).as_deref(), Some("off" | "0" | "false" | "no" | "official"))
++}
++
++/// What the tour needs from a HOF: one distinct trip.
++#[derive(Clone, Debug, PartialEq, Eq)]
++pub struct Need {
++    pub name: String,
++    pub line: String,
++    pub terminus: String,
++    pub stops: Vec<String>,
++}
++
++/// How well one HOF holds one destination (the higher the stronger).
++#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize)]
++pub enum Level {
++    None = 0,
++    /// Word-boundary prefix only.
++    Prefix = 1,
++    /// Equal to a displayed string only (the strings are line-blind).
++    Displayed = 2,
++    /// Equal to the identifier or the terminus stop after normalisation.
++    Normalized = 3,
++    /// Identifier identical, byte for byte (after trimming the wanted text).
++    Exact = 4,
++}
++
++impl Level {
++    pub fn word(self) -> &'static str {
++        match self {
++            Level::None => "NONE",
++            Level::Prefix => "PREFIX",
++            Level::Displayed => "DISPLAYED_TEXT",
++            Level::Normalized => "NORMALIZED",
++            Level::Exact => "EXACT",
++        }
++    }
++    /// Only these two prove that the HOF has the destination.
++    pub fn proves(self) -> bool {
++        self >= Level::Normalized
++    }
++}
++
++/// A message in the launcher's language (keys are the English texts, `crates/omsi-app/locales/hof_auto.yml`).
++fn m(key: &str, vars: &[(&str, &dyn std::fmt::Display)]) -> String {
++    crate::i18n::trf(key, vars)
++}
++
++impl Level {
++    /// The level in words for the person.
++    pub fn label(self) -> String {
++        match self {
++            Level::None => m("no match", &[]),
++            Level::Prefix => m("prefix", &[]),
++            Level::Displayed => m("displayed text", &[]),
++            Level::Normalized => m("same name", &[]),
++            Level::Exact => m("exact", &[]),
++        }
++    }
++}
++
++fn norm(s: &str) -> String {
++    // the official normalisation of `terminus_match_score`: whitespace collapsed, Unicode
++    // lowercase, no accent folding
++    s.split_whitespace().collect::<Vec<_>>().join(" ").to_lowercase()
++}
++
++/// How `hof` holds destination `wanted`.
++pub fn level(hof: &Hof, wanted: &str) -> Level {
++    let w = wanted.trim();
++    if w.is_empty() {
++        return Level::None;
++    }
++    if hof.termini.iter().any(|t| t.texture_id == w) {
++        return Level::Exact;
++    }
++    let wn = norm(wanted);
++    let mut best = Level::None;
++    for t in &hof.termini {
++        if norm(&t.texture_id) == wn || t.terminus_stop.as_deref().map(norm).as_deref() == Some(wn.as_str()) {
++            best = best.max(Level::Normalized);
++        } else if t.strings.iter().any(|x| norm(x) == wn) {
++            best = best.max(Level::Displayed);
++        } else if terminus_match_score(t, wanted) == 1 {
++            best = best.max(Level::Prefix);
++        }
++    }
++    best
++}
++
++#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
++pub enum Status {
++    /// The declared HOF covers the whole tour.
++    ProvenDeclared,
++    /// No HOF declared; exactly one covers.
++    ProvenUnique,
++    /// No HOF declared; several cover and one is stronger on every trip.
++    ProvenTieBreak,
++    /// The declared HOF has the destinations only as weak matches: kept, not confirmed.
++    FlexibleDeclared,
++    /// Others cover but the declared one does not, or several cover with nothing to choose by.
++    Ambiguous,
++    /// No HOF covers the tour: the official choice is kept, not proven.
++    NoMatch,
++    /// The tour has no trip with a destination to check.
++    NoTrips,
++}
++
++#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
++pub enum Severity {
++    Ok,
++    Warn,
++    Block,
++}
++
++impl Status {
++    pub fn is_proven(self) -> bool {
++        matches!(self, Status::ProvenDeclared | Status::ProvenUnique | Status::ProvenTieBreak)
++    }
++    pub fn severity(self) -> Severity {
++        match self {
++            Status::ProvenDeclared | Status::ProvenUnique | Status::ProvenTieBreak => Severity::Ok,
++            Status::FlexibleDeclared | Status::NoMatch | Status::NoTrips => Severity::Warn,
++            Status::Ambiguous => Severity::Block,
++        }
++    }
++}
++
++#[derive(Clone, Debug, Serialize)]
++pub struct Decision {
++    pub status: Status,
++    /// The HOF the algorithm picked (its `[name]`); None when it picked none.
++    pub hof: Option<String>,
++    /// How the picked HOF holds the weakest destination of the tour.
++    pub level: Level,
++    /// Every HOF that covers the whole tour, with its weakest level.
++    pub proven: Vec<(String, Level)>,
++    /// A sentence for the person (and the log).
++    pub message: String,
++}
++
++/// The HOFs of `hofs` that carry the same `[name]` (the game is given `--hof <name>`, so it
++/// cannot tell them apart) with their files, and whether their bytes are identical.
++#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
++pub struct DuplicateName {
++    pub name: String,
++    pub files: Vec<PathBuf>,
++    /// All the copies hold the same bytes: harmless. Unreadable files count as different.
++    pub identical: bool,
++}
++
++pub fn duplicate_names(hofs: &[&Hof]) -> Vec<DuplicateName> {
++    let mut by_name: std::collections::BTreeMap<String, Vec<&Hof>> = Default::default();
++    for h in hofs {
++        by_name.entry(h.name.trim().to_lowercase()).or_default().push(h);
++    }
++    let mut out = Vec::new();
++    for (name, list) in by_name {
++        let mut paths: Vec<PathBuf> = list.iter().map(|h| h.path.clone()).collect();
++        paths.sort();
++        paths.dedup();
++        if paths.len() < 2 {
++            continue;
++        }
++        let bytes: Vec<Option<Vec<u8>>> = paths.iter().map(|p| std::fs::read(p).ok()).collect();
++        let identical = bytes.iter().all(|b| b.is_some()) && bytes.windows(2).all(|w| w[0] == w[1]);
++        out.push(DuplicateName { name, files: paths, identical });
++    }
++    out
++}
++
++/// The decision core. `declared` is the HOF name the map declares for the tour's AI group.
++pub fn evaluate(declared: Option<&str>, needs: &[Need], hofs: &[&Hof]) -> Decision {
++    let judged: Vec<&Need> = needs.iter().filter(|n| !n.terminus.trim().is_empty()).collect();
++    let name_of = |i: usize| hofs[i].name.trim().to_string();
++    let declared = declared.map(str::trim).filter(|d| !d.is_empty());
++    let decl_idx = declared.and_then(|d| hofs.iter().position(|h| h.name.trim().eq_ignore_ascii_case(d)));
++    if judged.is_empty() {
++        return Decision {
++            status: Status::NoTrips,
++            // (nothing to check it against: the official choice stays, flagged as not confirmed)
++            hof: None,
++            level: Level::None,
++            proven: vec![],
++            message: m("The tour has no trip with a destination to check; the depot file is not confirmed.", &[]),
++        };
++    }
++    // weakest level over the tour, and the number of trips with an IBIS route, per HOF
++    let mut weakest = vec![Level::Exact; hofs.len()];
++    let mut routes = vec![0usize; hofs.len()];
++    for (i, h) in hofs.iter().enumerate() {
++        for n in &judged {
++            let lv = level(h, &n.terminus);
++            weakest[i] = weakest[i].min(lv);
++            if lv.proves() {
++                let stops: Vec<&str> = n.stops.iter().map(|s| s.as_str()).collect();
++                if matches!(trip_terminus(h, &n.line, &n.terminus, &stops), Some((_, Some(_)))) {
++                    routes[i] += 1;
++                }
++            }
++        }
++    }
++    let proven_idx: Vec<usize> = (0..hofs.len()).filter(|&i| weakest[i].proves()).collect();
++    let proven: Vec<(String, Level)> = proven_idx.iter().map(|&i| (name_of(i), weakest[i])).collect();
++    let weak_idx: Vec<usize> = (0..hofs.len()).filter(|&i| weakest[i] >= Level::Prefix).collect();
++    let n = judged.len();
++    let pick = |status: Status, i: usize, message: String| Decision { status, hof: Some(name_of(i)), level: weakest[i], proven: proven.clone(), message };
++    if let Some(d) = decl_idx.filter(|d| proven_idx.contains(d)) {
++        return pick(Status::ProvenDeclared, d, m("Depot file {hof} (declared by the map for the tour's group) has every destination of the tour.", &[("hof", &name_of(d))]));
++    }
++    if !proven_idx.is_empty() {
++        let list = proven.iter().map(|(n, l)| format!("{n} [{}]", l.label())).collect::<Vec<_>>().join(", ");
++        if let Some(d) = decl_idx {
++            return Decision {
++                status: Status::Ambiguous,
++                hof: None,
++                level: Level::None,
++                proven: proven.clone(),
++                message: m("The map declares {hof} for this tour but it does not hold every destination ({level}); these do: {list}. Choose the depot file by hand.", &[("hof", &name_of(d)), ("level", &weakest[d].label()), ("list", &list)]),
++            };
++        }
++        if proven_idx.len() == 1 {
++            let i = proven_idx[0];
++            return pick(Status::ProvenUnique, i, m("Depot file {hof} is the only one with every destination of the tour (the map declares none).", &[("hof", &name_of(i))]));
++        }
++        let best = proven_idx.iter().map(|&i| (weakest[i], routes[i] == n)).max().unwrap_or((Level::None, false));
++        let top: Vec<usize> = proven_idx.iter().copied().filter(|&i| (weakest[i], routes[i] == n) == best).collect();
++        if top.len() == 1 {
++            return pick(Status::ProvenTieBreak, top[0], m("Several depot files have every destination ({list}); {hof} is stronger on all of them.", &[("list", &list), ("hof", &name_of(top[0]))]));
++        }
++        return Decision { status: Status::Ambiguous, hof: None, level: Level::None, proven: proven.clone(), message: m("Several depot files have every destination of the tour with nothing to tell them apart: {list}. Choose the depot file by hand.", &[("list", &list)]) };
++    }
++    if let Some(d) = decl_idx.filter(|d| weak_idx.contains(d)) {
++        return pick(Status::FlexibleDeclared, d, m("Depot file {hof} is the map's, but it holds the destinations only as {level} matches: not confirmed.", &[("hof", &name_of(d)), ("level", &weakest[d].label())]));
++    }
++    let message = if weak_idx.is_empty() {
++        m("No depot file holds the destinations of this tour; the usual choice is kept but it is NOT confirmed.", &[])
++    } else {
++        m("{n} depot file(s) match the destinations only partially; the usual choice is kept but it is NOT confirmed.", &[("n", &weak_idx.len())])
++    };
++    Decision { status: Status::NoMatch, hof: None, level: Level::None, proven: vec![], message }
++}
++
++/// The HOF the map declares for AI group `group` on `day` (YYYYMMDD): the `[aigroup_depot]` of
++/// that name in the map's `ailists.cfg`, as the active chrono scenarios change it.
++pub fn declared_depot(map_dir: &std::path::Path, day: i32, group: &str) -> Option<String> {
++    let group = group.trim();
++    let lists = omsi_map::ailists::ailists_with_chrono(map_dir, &omsi_map::ailists::active_chrono_dirs(map_dir, day));
++    lists.groups.iter().find(|g| g.name.trim().eq_ignore_ascii_case(group) && g.hof.is_some()).and_then(|g| g.hof.clone())
++}
++
++/// The answer of [`auto_for`], in the form the launcher shows.
++#[derive(Clone, Debug, Serialize)]
++pub struct Auto {
++    /// The depot file to use: the algorithm's pick, else the official choice.
++    pub hof: String,
++    /// "hof_auto" or "official" (module off, no tour, no data).
++    pub engine: &'static str,
++    pub status: Option<Status>,
++    pub severity: Severity,
++    /// Launching is blocked until the depot file is chosen by hand.
++    pub block: bool,
++    /// The choice is backed by the tour's own destinations.
++    pub proven: bool,
++    pub message: String,
++    /// Depot files that cover the tour (the person's options when blocked).
++    pub candidates: Vec<String>,
++    /// Depot files sharing a `[name]` with different content among the ones that matter.
++    pub duplicates: Vec<DuplicateName>,
++}
++
++fn official(hof: String, message: &str) -> Auto {
++    Auto { hof, engine: "official", status: None, severity: Severity::Ok, block: false, proven: false, message: message.into(), candidates: vec![], duplicates: vec![] }
++}
++
++/// The depot file for the tour `tour` (its selection id) of line `line`, as the launcher asks.
++/// Never panics and never reads more than the official code reads; any missing piece of data
++/// falls back to the official choice with `engine: "official"`.
++pub fn auto_for(map: Option<&crate::MapInfo>, bus: Option<&crate::VehicleInfo>, date: &str, line: Option<&str>, tour: Option<&str>) -> Auto {
++    if !enabled() {
++        return official(crate::default_hof(map, bus, date, line), &m("OPENOMSI_HOF_AUTO is off: the official choice is used.", &[]));
++    }
++    let found = (|| {
++        let lines = crate::list_lines(&map?.file, date).ok()?;
++        lines.into_iter().find(|l| Some(l.name.as_str()) == line)?.tour(tour?).cloned()
++    })();
++    auto_for_tour(map, bus, date, line, found.as_ref())
++}
++
++/// [`auto_for`] when the caller already holds the tour (the native launcher has its lines).
++pub fn auto_for_tour(map: Option<&crate::MapInfo>, bus: Option<&crate::VehicleInfo>, date: &str, line: Option<&str>, tour: Option<&crate::TourInfo>) -> Auto {
++    let legacy = crate::default_hof(map, bus, date, line);
++    if !enabled() {
++        return official(legacy, &m("OPENOMSI_HOF_AUTO is off: the official choice is used.", &[]));
++    }
++    let (Some(map), Some(bus), Some(tour)) = (map, bus, tour) else { return official(legacy, "") };
++    let dir_of = |rel: &str| crate::resolve_content(rel).ok().and_then(|f| f.parent().map(|p| p.to_path_buf()));
++    let (Some(map_dir), Some(bus_dir)) = (dir_of(&map.file), dir_of(&bus.file)) else { return official(legacy, "") };
++    auto_for_paths(&map_dir, &bus_dir, date, tour, legacy)
++}
++
++/// The glue below the path lookups: everything that reads the map's `ailists.cfg` and the depot
++/// files the bus sees (its folder, then the shared `HOFs`). `legacy` is the official choice.
++pub fn auto_for_paths(dir: &std::path::Path, bus_dir: &std::path::Path, date: &str, tour: &crate::TourInfo, legacy: String) -> Auto {
++    let Some(day) = omsi_map::ailists::date_code(date) else { return official(legacy, "") };
++    let declared = declared_depot(dir, day, &tour.ai_group);
++    let mut seen = std::collections::HashSet::new();
++    let needs: Vec<Need> = tour
++        .trips
++        .iter()
++        .filter(|t| seen.insert(t.name.to_lowercase()))
++        .map(|t| Need { name: t.name.clone(), line: t.line.trim().to_string(), terminus: t.terminus.trim().to_string(), stops: t.stops.iter().map(|s| s.name.trim().to_string()).collect() })
++        .collect();
++    let files = omsi_vehicle::hof::depot_files(bus_dir);
++    let loaded: Vec<Hof> = files.iter().filter_map(|p| cached_load(p)).collect();
++    // the names the bus offers (its own, then the shared ones), each name once, as the game resolves it
++    let refs = unique_by_name(&loaded);
++    if refs.is_empty() {
++        return official(legacy, "");
++    }
++    let d = evaluate(declared.as_deref(), &needs, &refs);
++    let dups: Vec<DuplicateName> = duplicate_names(&loaded.iter().collect::<Vec<_>>())
++        .into_iter()
++        .filter(|x| !x.identical && (d.proven.iter().any(|(n, _)| n.eq_ignore_ascii_case(&x.name)) || d.hof.as_deref().is_some_and(|h| h.eq_ignore_ascii_case(&x.name)) || declared.as_deref().is_some_and(|h| h.trim().eq_ignore_ascii_case(&x.name))))
++        .collect();
++    let mut message = d.message.clone();
++    let mut severity = d.status.severity();
++    if !dups.is_empty() {
++        let list = dups.iter().map(|x| m("{name} ({n} files)", &[("name", &x.name), ("n", &x.files.len())])).collect::<Vec<_>>().join(", ");
++        message.push(' ');
++        message.push_str(&m("Warning: more than one depot file is called {list} with different content; the game picks by name and may use another file than the one checked.", &[("list", &list)]));
++        severity = severity.max_with(Severity::Warn);
++    }
++    let block = severity == Severity::Block;
++    let hof = d.hof.clone().unwrap_or(legacy);
++    Auto { hof, engine: "hof_auto", status: Some(d.status), severity, block, proven: d.status.is_proven() && dups.is_empty(), message, candidates: d.proven.iter().map(|(n, _)| n.clone()).collect(), duplicates: dups }
++}
++
++impl Severity {
++    fn max_with(self, o: Severity) -> Severity {
++        fn rank(s: Severity) -> u8 {
++            match s {
++                Severity::Ok => 0,
++                Severity::Warn => 1,
++                Severity::Block => 2,
++            }
++        }
++        if rank(o) > rank(self) {
++            o
++        } else {
++            self
++        }
++    }
++}
++
++/// Each `[name]` once, the first file (the bus's own before the shared ones) winning, as the game resolves a name.
++pub fn unique_by_name(hofs: &[Hof]) -> Vec<&Hof> {
++    let mut names = std::collections::HashSet::new();
++    hofs.iter().filter(|h| names.insert(h.name.trim().to_lowercase())).collect()
++}
++
++/// `Hof::load` once per file and content generation (the launcher asks on every change).
++fn cached_load(p: &std::path::Path) -> Option<Hof> {
++    type Cache = std::collections::HashMap<PathBuf, Option<Hof>>;
++    static CACHE: std::sync::OnceLock<std::sync::Mutex<(u64, Cache)>> = std::sync::OnceLock::new();
++    let cache = CACHE.get_or_init(Default::default);
++    let generation = omsi_cfg::content_generation();
++    let mut c = cache.lock().unwrap_or_else(|e| e.into_inner());
++    if c.0 != generation {
++        *c = (generation, Cache::new());
++    }
++    c.1.entry(p.to_path_buf()).or_insert_with(|| Hof::load(p).ok()).clone()
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++    use omsi_vehicle::hof::{InfoTrip, Terminus};
++
++    fn term(id: &str, stop: Option<&str>, shown: &[&str]) -> Terminus {
++        Terminus { code: 100, texture_id: id.into(), terminus_stop: stop.map(Into::into), all_exit: false, strings: shown.iter().map(|s| s.to_string()).collect() }
++    }
++    fn hof(name: &str, termini: Vec<Terminus>) -> Hof {
++        Hof { name: name.into(), termini, ..Default::default() }
++    }
++    fn need(name: &str, terminus: &str) -> Need {
++        Need { name: name.into(), line: "1".into(), terminus: terminus.into(), stops: vec![] }
++    }
++
++    #[test]
++    fn switch_words() {
++        for w in ["off", "OFF", " 0 ", "false", "no", "official"] {
++            assert!(switched_off(Some(w)), "{w}");
++        }
++        for w in ["on", "1", "", "auto"] {
++            assert!(!switched_off(Some(w)), "{w}");
++        }
++        assert!(!switched_off(None));
++    }
++
++    #[test]
++    fn levels() {
++        let h = hof("A", vec![term("101 Divisa", Some("101 Divisa"), &["TERMINAL", "DIVISA"])]);
++        assert_eq!(level(&h, "101 Divisa"), Level::Exact);
++        assert_eq!(level(&h, "  101   divisa "), Level::Normalized);
++        assert_eq!(level(&h, "101 Divisá"), Level::None, "no accent folding, as the official matcher");
++        assert_eq!(level(&h, "DIVISA"), Level::Displayed, "a displayed string alone is weak");
++        assert_eq!(level(&h, "101"), Level::Prefix);
++        assert_eq!(level(&h, ""), Level::None);
++        assert!(!Level::Displayed.proves() && !Level::Prefix.proves());
++    }
++
++    #[test]
++    fn declared_hof_that_covers_wins() {
++        let a = hof("A", vec![term("X", None, &["X"]), term("Y", None, &["Y"])]);
++        let b = hof("B", vec![term("X", None, &["X"]), term("Y", None, &["Y"])]);
++        let d = evaluate(Some("b"), &[need("t1", "X"), need("t2", "Y")], &[&a, &b]);
++        assert_eq!(d.status, Status::ProvenDeclared);
++        assert_eq!(d.hof.as_deref(), Some("B"));
++        assert_eq!(d.proven.len(), 2);
++    }
++
++    #[test]
++    fn declared_that_does_not_cover_while_another_does_is_ambiguous_and_blocks() {
++        let a = hof("A", vec![term("X", None, &["X"])]);
++        let b = hof("B", vec![term("X", None, &["X"]), term("Y", None, &["Y"])]);
++        let d = evaluate(Some("A"), &[need("t1", "X"), need("t2", "Y")], &[&a, &b]);
++        assert_eq!(d.status, Status::Ambiguous);
++        assert!(d.hof.is_none());
++        assert_eq!(d.status.severity(), Severity::Block);
++    }
++
++    #[test]
++    fn one_hof_missing_a_trip_does_not_cover_the_tour() {
++        let a = hof("A", vec![term("X", None, &["X"])]);
++        let d = evaluate(Some("A"), &[need("t1", "X"), need("t2", "Y")], &[&a]);
++        assert_eq!(d.status, Status::NoMatch, "partial coverage is never proof");
++        assert!(!d.status.is_proven());
++    }
++
++    #[test]
++    fn no_declared_one_cover_is_unique() {
++        let a = hof("A", vec![term("X", None, &["X"])]);
++        let b = hof("B", vec![term("Z", None, &["Z"])]);
++        let d = evaluate(None, &[need("t1", "X")], &[&a, &b]);
++        assert_eq!((d.status, d.hof.as_deref()), (Status::ProvenUnique, Some("A")));
++    }
++
++    #[test]
++    fn several_covers_with_equal_strength_are_ambiguous() {
++        let a = hof("A", vec![term("X", None, &["X"])]);
++        let b = hof("B", vec![term("X", None, &["X"])]);
++        let d = evaluate(None, &[need("t1", "X")], &[&a, &b]);
++        assert_eq!(d.status, Status::Ambiguous);
++    }
++
++    #[test]
++    fn exact_beats_normalized_on_a_tie_break() {
++        let a = hof("A", vec![term("X Y", None, &["X Y"])]);
++        let b = hof("B", vec![term("x  y", None, &["x y"])]);
++        let d = evaluate(None, &[need("t1", "X Y")], &[&a, &b]);
++        assert_eq!((d.status, d.hof.as_deref()), (Status::ProvenTieBreak, Some("A")));
++    }
++
++    #[test]
++    fn displayed_text_alone_never_proves() {
++        // "Barreiros" appears only as a displayed string of another destination: line-blind
++        let a = hof("A", vec![term("1 Centro", None, &["CENTRO", "Barreiros"])]);
++        let d = evaluate(Some("A"), &[need("t1", "Barreiros")], &[&a]);
++        assert_eq!(d.status, Status::FlexibleDeclared);
++        assert!(!d.status.is_proven());
++        assert_eq!(d.status.severity(), Severity::Warn);
++    }
++
++    #[test]
++    fn nothing_matches_keeps_the_usual_choice_unproven() {
++        let a = hof("A", vec![term("X", None, &["X"])]);
++        let d = evaluate(Some("A"), &[need("t1", "Nowhere")], &[&a]);
++        assert_eq!(d.status, Status::NoMatch);
++        assert!(d.hof.is_none(), "the module picks nothing; the caller keeps the official pick");
++    }
++
++    #[test]
++    fn a_tour_without_destinations_is_flagged() {
++        let a = hof("A", vec![]);
++        let d = evaluate(Some("A"), &[need("depot run", "")], &[&a]);
++        assert_eq!(d.status, Status::NoTrips);
++        assert!(d.hof.is_none(), "no evidence: the official choice is kept, not the declared one");
++        let d = evaluate(None, &[], &[&a]);
++        assert_eq!(d.status, Status::NoTrips);
++    }
++
++    #[test]
++    fn a_line_number_alone_is_not_evidence() {
++        // both HOFs carry an IBIS trip for line "1"; only B has the destination
++        let mut a = hof("A", vec![term("Else", None, &["Else"])]);
++        a.info_trips = vec![InfoTrip { code: "1".into(), name: "t".into(), route: "r".into(), line: "1".into(), ..Default::default() }];
++        let b = hof("B", vec![term("X", None, &["X"])]);
++        let d = evaluate(Some("A"), &[need("t1", "X")], &[&a, &b]);
++        assert_eq!(d.status, Status::Ambiguous, "A is declared and has the line number, but not the destination");
++        assert_eq!(d.proven, vec![("B".to_string(), Level::Exact)]);
++    }
++
++    #[test]
++    fn duplicate_names_with_different_content_are_found() {
++        let dir = std::env::temp_dir().join(format!("hofauto-dups-{}", std::process::id()));
++        std::fs::create_dir_all(&dir).unwrap();
++        let (p1, p2, p3) = (dir.join("a.hof"), dir.join("b.hof"), dir.join("c.hof"));
++        std::fs::write(&p1, b"one").unwrap();
++        std::fs::write(&p2, b"two").unwrap();
++        std::fs::write(&p3, b"one").unwrap();
++        let mk = |n: &str, p: &PathBuf| Hof { name: n.into(), path: p.clone(), ..Default::default() };
++        let (h1, h2, h3, h4) = (mk("Same", &p1), mk("same ", &p2), mk("Twin", &p1), mk("twin", &p3));
++        let d = duplicate_names(&[&h1, &h2, &h3, &h4]);
++        std::fs::remove_dir_all(&dir).ok();
++        assert_eq!(d.len(), 2);
++        let same = d.iter().find(|x| x.name == "same").unwrap();
++        let twin = d.iter().find(|x| x.name == "twin").unwrap();
++        assert!(!same.identical, "different content = risk");
++        assert!(twin.identical, "same bytes = harmless");
++    }
++
++    #[test]
++    fn declared_depot_follows_the_chrono_scenario_and_the_group() {
++        let dir = std::env::temp_dir().join(format!("hofauto-chrono-{}", std::process::id()));
++        let era = dir.join("Chrono").join("Era2");
++        std::fs::create_dir_all(&era).unwrap();
++        std::fs::write(dir.join("ailists.cfg"), "[aigroup_depot]\nGroupA\nDepotOld\n\n[aigroup_depot]\nGroupB\nDepotB\n").unwrap();
++        std::fs::write(era.join("Chrono.cfg"), "[startdate]\n19950101\n").unwrap();
++        std::fs::write(era.join("ailists.cfg"), "[aigroup_depot]\nGroupA\nDepotNew\n").unwrap();
++        let before = declared_depot(&dir, 19900101, "GroupA");
++        let during = declared_depot(&dir, 20000101, " groupa ");
++        let other = declared_depot(&dir, 19900101, "GroupB");
++        // (a scenario's full ailists.cfg replaces the map's: the official reader's rule)
++        let replaced = declared_depot(&dir, 20000101, "GroupB");
++        let none = declared_depot(&dir, 20000101, "NoSuchGroup");
++        std::fs::remove_dir_all(&dir).ok();
++        assert_eq!(before.as_deref(), Some("DepotOld"));
++        assert_eq!(during.as_deref(), Some("DepotNew"), "an active chrono scenario moves the depot");
++        assert_eq!(other.as_deref(), Some("DepotB"));
++        assert_eq!(replaced, None, "the scenario's own ailists.cfg replaces the map's");
++        assert_eq!(none, None, "a missing group declares nothing");
++    }
++
++    #[test]
++    fn outbound_and_return_trips_must_both_be_covered() {
++        // ida/volta: the outbound destination is in A, the return one only in B
++        let a = hof("A", vec![term("1 Centro", None, &["Centro"])]);
++        let b = hof("B", vec![term("1 Centro", None, &["Centro"]), term("1 Bairro", None, &["Bairro"])]);
++        let trips = [need("ida", "1 Bairro"), need("volta", "1 Centro")];
++        let d = evaluate(Some("A"), &trips, &[&a, &b]);
++        assert_eq!(d.status, Status::Ambiguous, "the declared A lacks the outbound destination while B has both");
++        let d = evaluate(Some("B"), &trips, &[&a, &b]);
++        assert_eq!((d.status, d.hof.as_deref()), (Status::ProvenDeclared, Some("B")));
++    }
++
++    #[test]
++    fn a_bus_own_depot_file_hides_a_shared_one_of_the_same_name() {
++        let own = Hof { name: "Depot".into(), path: "own/depot.hof".into(), termini: vec![term("X", None, &["X"])], ..Default::default() };
++        let shared = Hof { name: "depot ".into(), path: "HOFs/depot.hof".into(), termini: vec![term("Y", None, &["Y"])], ..Default::default() };
++        let other = hof("Other", vec![]);
++        let all = [own, shared, other];
++        let u = unique_by_name(&all);
++        assert_eq!(u.len(), 2);
++        assert_eq!(u[0].path, PathBuf::from("own/depot.hof"), "the file nearest the bus is the one the name resolves to");
++    }
++
++    #[test]
++    fn the_switch_gives_the_official_choice_and_missing_data_falls_back() {
++        static ENV: std::sync::Mutex<()> = std::sync::Mutex::new(());
++        let _g = ENV.lock().unwrap_or_else(|e| e.into_inner());
++        let old = std::env::var(ENV_SWITCH).ok();
++        // SAFETY: serialised by the mutex above; no other test reads this variable
++        unsafe { std::env::set_var(ENV_SWITCH, "off") };
++        let off = auto_for(None, None, "1989-05-30", Some("1"), Some("1"));
++        unsafe { std::env::remove_var(ENV_SWITCH) };
++        let on_without_data = auto_for(None, None, "1989-05-30", Some("1"), Some("1"));
++        let free_drive = auto_for(None, None, "1989-05-30", None, None);
++        match old {
++            Some(v) => unsafe { std::env::set_var(ENV_SWITCH, v) },
++            None => {}
++        }
++        assert_eq!(off.engine, "official");
++        assert!(!off.block && !off.proven && off.status.is_none());
++        assert_eq!(on_without_data.engine, "official", "no map/bus/tour: the official choice, never a guess");
++        assert!(!on_without_data.block && !on_without_data.proven);
++        assert_eq!(free_drive.engine, "official");
++    }
++
++    #[test]
++    fn messages_exist_in_brazilian_portuguese() {
++        let pt = crate::i18n::table(crate::i18n::TABLES, "pt");
++        for key in [
++            "The tour has no trip with a destination to check; the depot file is not confirmed.",
++            "The map declares {hof} for this tour but it does not hold every destination ({level}); these do: {list}. Choose the depot file by hand.",
++            "Several depot files have every destination of the tour with nothing to tell them apart: {list}. Choose the depot file by hand.",
++            "No depot file holds the destinations of this tour; the usual choice is kept but it is NOT confirmed.",
++            "Warning: more than one depot file is called {list} with different content; the game picks by name and may use another file than the one checked.",
++            "OPENOMSI_HOF_AUTO is off: the official choice is used.",
++            "exact",
++            "displayed text",
++        ] {
++            let v = pt.get(key).unwrap_or_else(|| panic!("missing pt: {key}"));
++            assert!(!v.trim().is_empty() && v != key, "{key}");
++            // the placeholders survive the translation
++            for ph in ["{hof}", "{level}", "{list}", "{n}", "{name}"] {
++                assert_eq!(key.contains(ph), v.contains(ph), "{ph} in {key}");
++            }
++        }
++    }
++}
+diff --git a/crates/omsi-launcher-core/src/i18n.rs b/crates/omsi-launcher-core/src/i18n.rs
+index 74ac2370..8b35dd45 100644
+--- a/crates/omsi-launcher-core/src/i18n.rs
++++ b/crates/omsi-launcher-core/src/i18n.rs
+@@ -7,7 +7,8 @@ pub static TABLES: &str = concat!(
+     include_str!("../../omsi-app/locales/app.yml"), "\n",
+     include_str!("../../omsi-app/locales/storage.yml"), "\n",
+     include_str!("../../omsi-app/locales/graphics.yml"), "\n",
+-    include_str!("../../omsi-app/locales/server_fleet.yml"),
++    include_str!("../../omsi-app/locales/server_fleet.yml"), "\n",
++    include_str!("../../omsi-app/locales/hof_auto.yml"), // LOCAL (hof-auto)
+ );
+ static PINNED: OnceLock<&'static str> = OnceLock::new();
+ 
+diff --git a/crates/omsi-launcher-core/src/lib.rs b/crates/omsi-launcher-core/src/lib.rs
+index 6a520746..b16ce411 100644
+--- a/crates/omsi-launcher-core/src/lib.rs
++++ b/crates/omsi-launcher-core/src/lib.rs
+@@ -10,6 +10,7 @@
+ pub mod ai_lists;
+ pub mod crash;
+ pub mod depot;
++pub mod hof_auto; // LOCAL (hof-auto prototype), see local/MODIFICACOES_LOCAIS.md
+ pub mod index;
+ pub mod install;
+ pub mod instances;
+diff --git a/crates/omsi-launcher-core/tests/hof_auto_glue.rs b/crates/omsi-launcher-core/tests/hof_auto_glue.rs
+new file mode 100644
+index 00000000..3a9ef803
+--- /dev/null
++++ b/crates/omsi-launcher-core/tests/hof_auto_glue.rs
+@@ -0,0 +1,112 @@
++//! LOCAL (hof-auto prototype): the glue of the automatic depot-file choice (`auto_for_paths`)
++//! over a SYNTHETIC installation written to a temporary folder (invented names; no third-party
++//! content): declared depot from `ailists.cfg`, the depot files a bus sees, ambiguity, no match,
++//! duplicate `[name]`, and a manual-choice-free fallback.
++use omsi_launcher_lib::hof_auto::{auto_for_paths, Severity, Status};
++use omsi_launcher_lib::{StopInfo, TourInfo, TripInfo};
++use std::path::{Path, PathBuf};
++
++fn hof_text(name: &str, dests: &[&str]) -> String {
++    let mut t = format!("[name]\n{name}\n\nstringcount_terminus\n2\n");
++    for (i, d) in dests.iter().enumerate() {
++        t.push_str(&format!("[addterminus]\n{}\n{d}\n{d}\n{d}\n", 100 + i));
++    }
++    t
++}
++
++fn trip(name: &str, to: &str) -> TripInfo {
++    TripInfo { name: name.into(), index: 1, line: "9".into(), from: "Start".into(), terminus: to.into(), departure: 0.0, arrival: 0.0, stops: vec![StopInfo { name: "Start".into(), arr: 0.0, dep: 0.0 }, StopInfo { name: to.into(), arr: 0.0, dep: 0.0 }], km: 1.0 }
++}
++
++fn tour(group: &str, dests: &[&str]) -> TourInfo {
++    TourInfo { id: "1".into(), number: "1".into(), ai_group: group.into(), first: 0.0, last: 0.0, days: "daily".into(), runs: true, next_run: None, trips: dests.iter().enumerate().map(|(i, d)| trip(&format!("trip{i}"), d)).collect() }
++}
++
++struct Scene {
++    root: PathBuf,
++}
++impl Scene {
++    fn new(tag: &str, declares: &str) -> Scene {
++        let root = std::env::temp_dir().join(format!("hofauto-glue-{tag}-{}", std::process::id()));
++        std::fs::create_dir_all(root.join("maps/M")).unwrap();
++        std::fs::create_dir_all(root.join("Vehicles/B")).unwrap();
++        std::fs::write(root.join("maps/M/ailists.cfg"), format!("[aigroup_depot]\nGroupX\n{declares}\n")).unwrap();
++        Scene { root }
++    }
++    fn hof(&self, file: &str, name: &str, dests: &[&str]) {
++        std::fs::write(self.root.join("Vehicles/B").join(file), hof_text(name, dests)).unwrap();
++    }
++    fn run(&self, t: &TourInfo) -> omsi_launcher_lib::hof_auto::Auto {
++        auto_for_paths(&self.root.join("maps/M"), &self.root.join("Vehicles/B"), "1989-05-30", t, "LEGACY".into())
++    }
++}
++impl Drop for Scene {
++    fn drop(&mut self) {
++        let _: &Path = &self.root;
++        std::fs::remove_dir_all(&self.root).ok();
++    }
++}
++
++#[test]
++fn the_declared_depot_that_covers_the_tour_is_proven_and_not_blocked() {
++    let s = Scene::new("ok", "Depot A");
++    s.hof("a.hof", "Depot A", &["1 Centro", "1 Bairro"]);
++    s.hof("b.hof", "Depot B", &["1 Centro"]);
++    let a = s.run(&tour("GroupX", &["1 Centro", "1 Bairro"]));
++    assert_eq!(a.engine, "hof_auto");
++    assert_eq!((a.status, a.hof.as_str()), (Some(Status::ProvenDeclared), "Depot A"));
++    assert!(a.proven && !a.block && a.severity == Severity::Ok, "{a:?}");
++}
++
++#[test]
++fn a_declared_depot_that_lacks_a_destination_while_another_has_it_blocks() {
++    let s = Scene::new("amb", "Depot A");
++    s.hof("a.hof", "Depot A", &["1 Centro"]);
++    s.hof("c.hof", "Depot C", &["1 Centro", "1 Bairro"]);
++    let a = s.run(&tour("GroupX", &["1 Centro", "1 Bairro"]));
++    assert_eq!(a.status, Some(Status::Ambiguous));
++    assert!(a.block && !a.proven, "{a:?}");
++    assert_eq!(a.hof, "LEGACY", "nothing is picked: the caller shows the block and the official choice stays untouched");
++    assert_eq!(a.candidates, vec!["Depot C".to_string()]);
++}
++
++#[test]
++fn no_depot_has_the_destinations_keeps_the_legacy_choice_unproven() {
++    let s = Scene::new("none", "Depot A");
++    s.hof("a.hof", "Depot A", &["1 Centro"]);
++    let a = s.run(&tour("GroupX", &["9 Nowhere"]));
++    assert_eq!(a.status, Some(Status::NoMatch));
++    assert_eq!(a.severity, Severity::Warn);
++    assert!(!a.proven && !a.block);
++    assert_eq!(a.hof, "LEGACY");
++}
++
++#[test]
++fn two_files_with_one_internal_name_and_different_content_are_flagged_and_not_proven() {
++    let s = Scene::new("dup", "Depot A");
++    s.hof("a.hof", "Depot A", &["1 Centro"]);
++    s.hof("a-edit.hof", "Depot A", &["1 Centro", "1 Extra"]);
++    let a = s.run(&tour("GroupX", &["1 Centro"]));
++    assert_eq!(a.status, Some(Status::ProvenDeclared));
++    assert_eq!(a.duplicates.len(), 1, "{a:?}");
++    assert!(!a.proven, "a name two different files share cannot be proven: the game picks by name");
++    assert_eq!(a.severity, Severity::Warn);
++}
++
++#[test]
++fn a_group_the_map_does_not_declare_still_finds_the_one_depot_that_covers() {
++    let s = Scene::new("undeclared", "Depot A");
++    s.hof("a.hof", "Depot A", &["1 Centro"]);
++    s.hof("d.hof", "Depot D", &["2 Praca"]);
++    let a = s.run(&tour("OtherGroup", &["2 Praca"]));
++    assert_eq!((a.status, a.hof.as_str()), (Some(Status::ProvenUnique), "Depot D"));
++}
++
++#[test]
++fn a_bad_date_or_no_depot_files_falls_back_to_the_official_choice() {
++    let s = Scene::new("bad", "Depot A");
++    let a = auto_for_paths(&s.root.join("maps/M"), &s.root.join("Vehicles/B"), "not-a-date", &tour("GroupX", &["x"]), "LEGACY".into());
++    assert_eq!((a.engine, a.hof.as_str(), a.block), ("official", "LEGACY", false));
++    let a = s.run(&tour("GroupX", &["x"]));
++    assert_eq!((a.engine, a.hof.as_str(), a.block), ("official", "LEGACY", false), "no depot file at all: nothing to judge");
++}
+diff --git a/crates/omsi-launcher-core/tests/hof_auto_regression.rs b/crates/omsi-launcher-core/tests/hof_auto_regression.rs
+new file mode 100644
+index 00000000..68b7777f
+--- /dev/null
++++ b/crates/omsi-launcher-core/tests/hof_auto_regression.rs
+@@ -0,0 +1,159 @@
++//! LOCAL (hof-auto prototype): regression of the automatic depot-file choice against the
++//! approved matrix, over disposable COPIES of third-party maps and depot files.
++//!
++//! Third-party content is never part of the repository. The test needs two environment
++//! variables and is reported as NOT EXECUTED (not as passed) when they are missing:
++//!
++//!   HOF_AUTO_FIXTURES  folder with `HOFs/*.hof` and `maps/<map>/{TTData,ailists.cfg,...}`
++//!   HOF_AUTO_MATRIX    the approved matrix (TSV, columns MAPA LINHA TOUR GRUPO N_VIAGENS
++//!                      DECLARADO NOVO_STATUS NOVO_HOF ...)
++//!   HOF_AUTO_REPORT    (optional) file to write the verdict line to
++//!
++//! Run through `local/scripts/run-tests.sh`, which turns a missing-data run into the words
++//! "NAO EXECUTADO" and a non-zero exit code of its own.
++use omsi_launcher_lib::hof_auto::{declared_depot, duplicate_names, evaluate, unique_by_name, Need, Status};
++use omsi_vehicle::Hof;
++use std::collections::BTreeSet;
++use std::path::PathBuf;
++
++fn word(s: Status) -> &'static str {
++    match s {
++        Status::ProvenDeclared => "PROVADO_DECLARADO",
++        Status::ProvenUnique => "PROVADO_UNICO",
++        Status::ProvenTieBreak => "PROVADO_DESEMPATE",
++        Status::FlexibleDeclared => "FLEXIVEL_DECLARADO",
++        Status::Ambiguous => "AMBIGUO",
++        Status::NoMatch => "SEM_CORRESPONDENCIA",
++        Status::NoTrips => "SEM_VIAGENS",
++    }
++}
++
++/// The class compared with the matrix: the three PROVADO_* statuses are one class (same proof,
++/// same file); how the proof was reached (declared / unique / tie-break) is only counted.
++fn class(status: &str) -> &str {
++    if status.starts_with("PROVADO") {
++        "PROVADO"
++    } else {
++        status
++    }
++}
++
++fn verdict(line: &str) {
++    println!("HOF_AUTO_REGRESSION: {line}");
++    if let Ok(p) = std::env::var("HOF_AUTO_REPORT") {
++        let _ = std::fs::write(p, format!("{line}\n"));
++    }
++}
++
++#[test]
++fn matches_the_approved_matrix() {
++    let (Ok(fx), Ok(matrix)) = (std::env::var("HOF_AUTO_FIXTURES"), std::env::var("HOF_AUTO_MATRIX")) else {
++        verdict("NAO EXECUTADO (HOF_AUTO_FIXTURES / HOF_AUTO_MATRIX not set)");
++        return;
++    };
++    let fx = PathBuf::from(fx);
++    let mut files: Vec<PathBuf> = std::fs::read_dir(fx.join("HOFs"))
++        .expect("HOFs folder")
++        .filter_map(|e| e.ok())
++        .map(|e| e.path())
++        .filter(|p| p.extension().is_some_and(|e| e.eq_ignore_ascii_case("hof")))
++        .collect();
++    files.sort_by_key(|f| f.file_name().unwrap().to_string_lossy().to_ascii_lowercase());
++    let hofs: Vec<Hof> = files.iter().filter_map(|f| Hof::load(f).ok()).collect();
++    // as the product does: each [name] once, the first file (own folder, then shared, by file name) winning
++    let refs: Vec<&Hof> = unique_by_name(&hofs);
++    assert!(!refs.is_empty(), "no depot file could be read");
++
++    let dups = duplicate_names(&hofs.iter().collect::<Vec<_>>());
++    let risky = dups.iter().filter(|d| !d.identical).count();
++    println!("duplicate [name] among the depot files: {} names, {} with different content (INFO; the risk the module warns about)", dups.len(), risky);
++    for d in dups.iter().filter(|d| !d.identical) {
++        println!("  DUP {} x{}", d.name, d.files.len());
++    }
++
++    let mut maps: Vec<PathBuf> = std::fs::read_dir(fx.join("maps")).expect("maps folder").filter_map(|e| e.ok()).map(|e| e.path()).collect();
++    maps.sort();
++    let mut got: BTreeSet<String> = BTreeSet::new();
++    let mut got_status: std::collections::BTreeMap<String, &'static str> = Default::default();
++    let mut got_n = 0usize;
++    let mut ambiguous = 0usize;
++    let (mut eval_total, mut eval_max) = (std::time::Duration::ZERO, std::time::Duration::ZERO);
++    for md in maps {
++        let mname = md.file_name().unwrap().to_string_lossy().to_string();
++        let data = omsi_timetable::TimetableData::load(&md);
++        for l in &data.lines {
++            for t in &l.tours {
++                let mut seen = BTreeSet::new();
++                let mut needs: Vec<Need> = Vec::new();
++                for tt in &t.trips {
++                    let Some(trip) = data.trips.iter().find(|x| x.is_named(&tt.trip)) else { continue };
++                    if !seen.insert(trip.name.to_lowercase()) {
++                        continue;
++                    }
++                    needs.push(Need {
++                        name: trip.name.clone(),
++                        line: trip.line.trim().to_string(),
++                        terminus: trip.terminus.trim().to_string(),
++                        stops: trip.stations_legacy.iter().filter_map(|r| r.get(2).map(|n| n.trim().to_string())).collect(),
++                    });
++                }
++                let group = t.ai_group.trim().to_string();
++                // the default date of the game and the launcher (day 150 of 1989), no scenario
++                let declared = declared_depot(&md, 19890530, &group);
++                let t0 = std::time::Instant::now();
++                let d = evaluate(declared.as_deref(), &needs.iter().filter(|n| !n.terminus.is_empty()).cloned().collect::<Vec<_>>(), &refs);
++                let spent = t0.elapsed();
++                eval_total += spent;
++                eval_max = eval_max.max(spent);
++                if d.status == Status::Ambiguous {
++                    ambiguous += 1;
++                }
++                let key = format!("{mname}|{}|{}|{group}", l.name, t.number);
++                got_status.insert(key.clone(), word(d.status));
++                got.insert(format!("{key}|{}|{}", class(word(d.status)), d.hof.unwrap_or_default().trim()));
++                got_n += 1;
++            }
++        }
++    }
++
++    let text = std::fs::read_to_string(&matrix).expect("matrix file");
++    let mut want: BTreeSet<String> = BTreeSet::new();
++    let mut want_n = 0usize;
++    let mut refined = 0usize;
++    let mut pairs: std::collections::BTreeMap<String, usize> = Default::default();
++    for row in text.lines().skip(1) {
++        let c: Vec<&str> = row.split('\t').collect();
++        if c.len() < 8 {
++            continue;
++        }
++        want.insert(format!("{}|{}|{}|{}|{}|{}", c[0], c[1], c[2], c[3], class(c[6]), c[7].trim()));
++        let key = format!("{}|{}|{}|{}", c[0], c[1], c[2], c[3]);
++        if got_status.get(&key).is_some_and(|g| *g != c[6] && class(g) == class(c[6])) {
++            refined += 1;
++            *pairs.entry(format!("{} -> {}", c[6], got_status[&key])).or_default() += 1;
++        }
++        want_n += 1;
++    }
++    let only_got: Vec<&String> = got.difference(&want).collect();
++    let only_want: Vec<&String> = want.difference(&got).collect();
++    println!("tours evaluated: {got_n}, matrix rows: {want_n}, ambiguous: {ambiguous}, same file with a different proof path (INFO): {refined}");
++    println!("PERF (INFO): evaluate() over {} depot files: mean {:.2} ms, worst {:.1} ms per tour ({} tours)", refs.len(), eval_total.as_secs_f64() * 1000.0 / got_n.max(1) as f64, eval_max.as_secs_f64() * 1000.0, got_n);
++    for (k, v) in &pairs {
++        println!("  INFO proof path changed (same file): {k} x{v}");
++    }
++    for d in only_got.iter().take(40) {
++        println!("  NEW   {d}");
++    }
++    for d in only_want.iter().take(40) {
++        println!("  MATRIX {d}");
++    }
++    // HOF_AUTO_INFO_ONLY=1: a stress universe (e.g. every depot file ever copied, with the same [name] in
++    // several files) that has no approved matrix: report the differences, assert nothing
++    if std::env::var("HOF_AUTO_INFO_ONLY").is_ok_and(|v| v == "1") {
++        verdict(&format!("INFORMATIVO (tours {got_n}, differences from the reference {}, ambiguous {ambiguous})", only_got.len() + only_want.len()));
++        return;
++    }
++    verdict(&format!("{} (tours {got_n}, matrix {want_n}, divergences {})", if only_got.is_empty() && only_want.is_empty() && got_n == want_n { "APROVADO" } else { "REPROVADO" }, only_got.len() + only_want.len()));
++    assert!(only_got.is_empty() && only_want.is_empty(), "{} divergences from the approved matrix", only_got.len() + only_want.len());
++    assert_eq!(got_n, want_n);
++}
+diff --git a/crates/omsi-launcher-model/src/state.rs b/crates/omsi-launcher-model/src/state.rs
+index 901b2955..6e309b76 100644
+--- a/crates/omsi-launcher-model/src/state.rs
++++ b/crates/omsi-launcher-model/src/state.rs
+@@ -670,8 +670,19 @@ impl State {
+             self.set_status("A session needs the original OMSI 2: choose its folder under Setup first.", true);
+             return;
+         }
++        // LOCAL (hof-auto): an ambiguous or provably wrong depot file is never taken silently
++        // (a depot file chosen by hand is never blocked)
++        let auto = if self.choice.hof_manual { None } else { self.hof_auto() };
++        if let Some(a) = auto.as_ref().filter(|a| a.block) {
++            log::warn!("hof-auto: launch blocked: {}", a.message);
++            self.set_status(&a.message, true);
++            return;
++        }
+         let d = self.duty();
+-        self.set_status("Starting the game...", false);
++        match auto.filter(|a| a.engine == "hof_auto" && !a.message.is_empty() && !a.proven) {
++            Some(a) => self.set_status(&format!("Starting the game... {}", a.message), false),
++            None => self.set_status("Starting the game...", false),
++        }
+         self.queued_launch = Some(d);
+     }
+ 
+diff --git a/crates/omsi-launcher-model/src/state/vehicle.rs b/crates/omsi-launcher-model/src/state/vehicle.rs
+index acb5e6af..ac5d2ad2 100644
+--- a/crates/omsi-launcher-model/src/state/vehicle.rs
++++ b/crates/omsi-launcher-model/src/state/vehicle.rs
+@@ -13,9 +13,22 @@ impl State {
+         } else {
+             self.choice.line.as_deref()
+         };
++        // LOCAL (hof-auto): with a tour chosen, the depot file backed by the tour's destinations
++        if let (Some(l), Some(_)) = (line, self.tour()) {
++            return self.hof_auto().map(|a| a.hof).unwrap_or_else(|| core::default_hof(self.map(), self.bus(), &self.choice.date, Some(l)));
++        }
+         core::default_hof(self.map(), self.bus(), &self.choice.date, line)
+     }
+ 
++    /// LOCAL (hof-auto): the module's answer for the chosen tour (None: free drive, no tour).
++    pub fn hof_auto(&self) -> Option<core::hof_auto::Auto> {
++        if self.choice.free {
++            return None;
++        }
++        let (line, tour) = (self.choice.line.as_deref()?, self.tour()?);
++        Some(core::hof_auto::auto_for_tour(self.map(), self.bus(), &self.choice.date, Some(line), Some(tour)))
++    }
++
+     /// Pick once when the bus changes; both launcher layouts use this stored choice.
+     pub(super) fn random_bus_number(&self) -> String {
+         self.bus()
+diff --git a/launcher/ui/js/data.js b/launcher/ui/js/data.js
+index 4ac06fe6..fdfc36be 100644
+--- a/launcher/ui/js/data.js
++++ b/launcher/ui/js/data.js
+@@ -370,7 +370,7 @@ export function choose(patch) {
+     loadLines();
+   }
+   if (c.map !== before.map) loadSituations();
+-  if (c.map !== before.map || c.bus !== before.bus || c.date !== before.date || c.line !== before.line || c.free !== before.free) updateHof();
++  if (c.map !== before.map || c.bus !== before.bus || c.date !== before.date || c.line !== before.line || c.tour !== before.tour || c.free !== before.free) updateHof(); // LOCAL (hof-auto): the tour is part of the choice
+   else if (c.hof !== before.hof || c.hof_manual !== before.hof_manual) loadIbis();
+ }
+ 
+@@ -395,11 +395,24 @@ export async function loadLines() {
+ 
+ export async function updateHof() {
+   const c = S.choice;
+-  const hof = await call('default_hof', { map: curMap() || null, bus: curBus() || null, date: c.date, line: c.free ? null : c.line }).catch(() => '');
+-  set({ hof });
++  // LOCAL (hof-auto): the depot file backed by the tour's own destinations; the official
++  // answer (`default_hof`) when the backend has no `hof_auto` or it fails
++  const ask = { map: curMap() || null, bus: curBus() || null, date: c.date, line: c.free ? null : c.line };
++  const auto = await call('hof_auto', { ...ask, tour: c.free ? null : c.tour || null }).catch(() => null);
++  const hof = auto ? auto.hof : await call('default_hof', ask).catch(() => '');
++  set({ hof, hofAuto: auto });
+   loadIbis();
+ }
+ 
++/** LOCAL (hof-auto): the reason the launch must wait for the depot file to be chosen by hand,
++ * or '' (a depot file chosen by hand is never blocked). */
++export async function hofGuard() {
++  const c = S.choice;
++  if (c.hof_manual || c.free || !c.line || !c.tour) return '';
++  const auto = await call('hof_auto', { map: curMap() || null, bus: curBus() || null, date: c.date, line: c.line, tour: c.tour }).catch(() => null);
++  return auto?.block ? auto.message : '';
++}
++
+ export const dutyHof = () => (S.choice.hof_manual ? S.choice.hof : S.hof) || '';
+ 
+ let ibisAsked = '';
+@@ -584,6 +597,11 @@ export async function start(extra) {
+     const approved = extra?.__fleetApproved === true;
+     // UI-only consent: do not serialize this ephemeral flag into the launch duty.
+     const { __fleetApproved: _consent, ...dutyExtra } = extra || {};
++    const blocked = await hofGuard();
++    if (blocked) {
++      toast(blocked, 'error', 12000);
++      return null;
++    }
+     const d = await duty(dutyExtra);
+     if (serverBuses() && S.choice?.lan_server?.fleet_version === 1 && !serverFleetSelection()) {
+       // Only the new authoritative catalogue requires a verified LISTBUS offer.
+diff --git a/launcher/ui/js/pages/bus-list.js b/launcher/ui/js/pages/bus-list.js
+index 372085c6..53a9fdf8 100644
+--- a/launcher/ui/js/pages/bus-list.js
++++ b/launcher/ui/js/pages/bus-list.js
+@@ -194,6 +194,7 @@ export function BusOptions() {
+       <${Field} label="Depot file">
+         <${Select} raw value=${c.hof_manual ? c.hof : ''} options=${hofs} onChange=${(h) => choose({ hof: h, hof_manual: !!h })} />
+       </${Field}>
++      ${!c.hof_manual && s.hofAuto?.message && s.hofAuto.severity !== 'Ok' && html`<${Notice} kind=${s.hofAuto.block ? 'danger' : 'warn'}>${s.hofAuto.message}${s.hofAuto.candidates?.length ? ` (${s.hofAuto.candidates.join(', ')})` : ''}</${Notice}>`}
+       ${v.description && html`<p class="dim selectable bus-about">${v.description}</p>`}
+       <div class="muted small selectable ellipsis" title=${v.file}>${v.file}</div>
+     </div>`}
+diff --git a/launcher/ui/js/store.js b/launcher/ui/js/store.js
+index 88062e3d..74928733 100644
+--- a/launcher/ui/js/store.js
++++ b/launcher/ui/js/store.js
+@@ -21,6 +21,7 @@ export const S = {
+   depotGroups: [],
+   depotGroup: remembered('depot-group', ''),
+   hof: '',
++  hofAuto: null, // LOCAL (hof-auto): the last `hof_auto` answer
+   ibis: null,
+   situations: [],
+   profiles: null,

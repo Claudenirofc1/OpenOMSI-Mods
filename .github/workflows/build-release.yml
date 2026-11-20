@@ -1,0 +1,108 @@
+name: Build e publicar release
+
+# Projeto INDEPENDENTE (nao oficial). Pega o openOMSI oficial (openOMSI-org/openOMSI) numa tag,
+# aplica por cima o nosso patch (patches/hof-auto.patch), roda os nossos testes, compila no Windows
+# e publica o instalador em Releases. Se o patch nao aplicar ou um teste falhar, NADA e publicado.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag oficial (ex.: v0.3.54). Vazio = a mais nova.'
+        required: false
+        default: ''
+  schedule:
+    - cron: '17 6 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  resolver:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.r.outputs.tag }}
+      build: ${{ steps.r.outputs.build }}
+    steps:
+      - id: r
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ENTRADA: ${{ inputs.tag }}
+          EVENTO: ${{ github.event_name }}
+        run: |
+          tag="$ENTRADA"
+          if [ -z "$tag" ]; then
+            tag=$(gh api repos/openOMSI-org/openOMSI/tags --paginate --jq '.[].name' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          fi
+          if [ -z "$tag" ]; then echo "nao achei tag oficial"; exit 1; fi
+          build=true
+          if [ "$EVENTO" = "schedule" ] && gh release view "${tag}-hofauto" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then build=false; fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "build=$build" >> "$GITHUB_OUTPUT"
+          echo "tag oficial: $tag (build: $build)"
+
+  windows:
+    needs: resolver
+    if: needs.resolver.outputs.build == 'true'
+    runs-on: windows-latest
+    timeout-minutes: 120
+    env:
+      TAG: ${{ needs.resolver.outputs.tag }}
+    steps:
+      - name: Este repositorio
+        uses: actions/checkout@v4
+        with:
+          path: nosso
+      - name: openOMSI oficial na tag
+        uses: actions/checkout@v4
+        with:
+          repository: openOMSI-org/openOMSI
+          ref: ${{ needs.resolver.outputs.tag }}
+          path: src
+      - name: Aplicar o patch
+        shell: bash
+        run: |
+          cd src
+          git apply --3way ../nosso/patches/hof-auto.patch
+          git status --short
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Testes do HOF automatico
+        shell: cmd
+        run: |
+          cd src
+          cargo test --locked -p omsi-launcher-core --lib hof_auto || exit /b 1
+          cargo test --locked -p omsi-launcher-core --test hof_auto_glue || exit /b 1
+          cargo test --locked -p omsi-launcher-core --test hof_auto_regression || exit /b 1
+      - name: Compilar (script oficial)
+        shell: cmd
+        run: |
+          cd src
+          scripts\build-windows.cmd
+      - name: Montar o pacote
+        shell: pwsh
+        run: |
+          $pk = "pacote"
+          New-Item -ItemType Directory -Force "$pk/exe" | Out-Null
+          foreach ($e in 'openomsi.exe','openomsi-launcher.exe','openomsi-launcher-app.exe','omsi-plugin-host32.exe') {
+            Copy-Item "src/dist/windows/$e" "$pk/exe/$e"
+          }
+          Copy-Item nosso/installer/* $pk/
+          Copy-Item nosso/LICENSE $pk/
+          Copy-Item nosso/patches/hof-auto.patch $pk/hof-auto.patch
+          $sha = (git -C nosso rev-parse --short HEAD)
+          Set-Content "$pk/VERSAO.txt" "openOMSI $env:TAG + HOF Auto (nao oficial), build de nosso@$sha" -Encoding UTF8
+          Set-Content "$pk/ORIGEM-DO-CODIGO.txt" "Codigo-fonte correspondente (AGPL-3.0): openOMSI oficial na tag $env:TAG (https://github.com/openOMSI-org/openOMSI) + hof-auto.patch (este pacote) / https://github.com/$env:GITHUB_REPOSITORY" -Encoding UTF8
+          Get-ChildItem -Recurse $pk | Select-Object FullName, Length
+          Compress-Archive -Path "$pk/*" -DestinationPath "openOMSI-HOF-Auto-$env:TAG.zip"
+      - name: Publicar release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          rel="${TAG}-hofauto"
+          zip="openOMSI-HOF-Auto-${TAG}.zip"
+          notes="Projeto independente, NAO oficial. Base: openOMSI oficial ${TAG} + HOF automatico. Baixe o ZIP, extraia tudo e de duplo clique em Instalar.cmd. Para voltar ao original: Desinstalar.cmd. Codigo-fonte: ORIGEM-DO-CODIGO.txt dentro do ZIP."
+          if gh release view "$rel" >/dev/null 2>&1; then
+            gh release upload "$rel" "$zip" --clobber
+          else
+            gh release create "$rel" "$zip" --title "HOF Auto para openOMSI ${TAG}" --notes "$notes"
+          fi

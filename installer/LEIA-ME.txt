@@ -1,0 +1,9 @@
+openOMSI HOF Auto (projeto independente, NAO oficial)
+
+1) Extraia este ZIP inteiro.
+2) Feche o jogo e o launcher.
+3) Duplo clique em Instalar.cmd e confirme a pasta do jogo.
+Para voltar ao original: Desinstalar.cmd.
+
+Troca somente 4 executaveis, com backup e conferencia. Nao mexe em mapas, onibus, HOFs ou configuracoes.
+Detalhes: README.md no repositorio.
