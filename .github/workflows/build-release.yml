@@ -141,6 +141,7 @@ jobs:
           notes="Projeto independente, NAO oficial. Base: openOMSI oficial ${TAG} + HOF automatico, cameras das portas e dashcam. Baixe o ZIP, extraia tudo e de duplo clique em Instalar.cmd. Para voltar ao original: Desinstalar.cmd. Codigo-fonte: ORIGEM-DO-CODIGO.txt dentro do ZIP."
           if gh release view "$rel" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$rel" "$zip" --clobber -R "$GITHUB_REPOSITORY"
+            gh release edit "$rel" --prerelease -R "$GITHUB_REPOSITORY" || true
           else
             gh release create "$rel" "$zip" -R "$GITHUB_REPOSITORY" --prerelease --title "HOF Auto para openOMSI ${TAG}" --notes "$notes"
           fi
