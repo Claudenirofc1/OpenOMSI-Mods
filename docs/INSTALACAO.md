@@ -10,7 +10,7 @@
 1. Baixe o ZIP da release: https://github.com/Claudenirofc1/openOMSI-HOF-Auto/releases (arquivo `openOMSI-HOF-Auto-...zip`).
 2. Extraia **a pasta inteira** (não rode de dentro do ZIP).
 3. **Feche o jogo e o launcher.**
-4. Duplo clique em **`Gerenciador.cmd`** (ou `Instalar.cmd`). Ele:
+4. Duplo clique em **`Instalar OpenOMSI HOF-Auto.exe`** (abre uma janela, sem tela preta; o `Gerenciador.cmd` faz o mesmo). Se o Windows avisar "Windows protegeu o computador" (o programa não tem assinatura digital paga), clique em **Mais informações → Executar assim mesmo**. Ele:
    - confirma que o seu jogo é a versão **provada** (pelos hashes dos executáveis) — se não for, **não altera nada**;
    - mostra o diagnóstico e pede a sua autorização;
    - faz **backup** dos 4 executáveis e das suas configurações em `%LOCALAPPDATA%\openOMSI-HOF-Auto\backup\<data-hora>`;
