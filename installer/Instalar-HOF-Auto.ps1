@@ -181,12 +181,16 @@ function Escolher-Pasta {
         }
     }
     if ($Silencioso) { return $null }
+    Msg "Na proxima janela, escolha o arquivo openomsi.exe do SEU jogo (ele fica na pasta onde o openOMSI esta instalado).`n`nO instalador usa a pasta desse arquivo e so troca os 4 programas do jogo, com backup. Seus onibus, mapas, HOFs e saves nao sao tocados." 'openOMSI Mod Manager' 'OK' 'Information' | Out-Null
     while ($true) {
-        $d = New-Object System.Windows.Forms.FolderBrowserDialog
-        $d.Description = 'Escolha a PASTA DO JOGO openOMSI (a que contem o openomsi.exe).'
+        $d = New-Object System.Windows.Forms.OpenFileDialog
+        $d.Title = 'Escolha o openomsi.exe do seu jogo'
+        $d.Filter = 'openOMSI (openomsi.exe)|openomsi.exe|Programas (*.exe)|*.exe'
+        $d.CheckFileExists = $true
         if ($d.ShowDialog() -ne 'OK') { return $null }
-        if (Test-Path -LiteralPath (Join-Path $d.SelectedPath 'openomsi.exe')) { return $d.SelectedPath }
-        Msg 'Nessa pasta nao existe o openomsi.exe. Escolha a pasta do jogo.' 'openOMSI Mod Manager' 'OK' 'Warning' | Out-Null
+        $pasta = Split-Path -Parent $d.FileName
+        if ((Split-Path -Leaf $d.FileName) -ieq 'openomsi.exe' -and (Test-Path -LiteralPath (Join-Path $pasta 'openomsi.exe'))) { return $pasta }
+        Msg 'Esse arquivo nao e o openomsi.exe. Escolha o openomsi.exe da pasta do jogo.' 'openOMSI Mod Manager' 'OK' 'Warning' | Out-Null
     }
 }
 function Lista-De([object]$obj, [string]$exe) {
