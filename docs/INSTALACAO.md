@@ -1,0 +1,42 @@
+# Como instalar no jogo (openOMSI v0.3.54)
+
+> Este pacote é **não oficial** e a versão atual é um **pré-release**: os testes automáticos passaram, mas ele **ainda não foi validado dentro do jogo**. Teste primeiro e reporte o que não funcionar.
+
+## O que você precisa
+- openOMSI **v0.3.54** já instalado (ex.: `D:\Games\OpenOMSI`).
+- Windows 10/11. Para a dashcam: `ffmpeg.exe` ao lado do jogo ou em `%USERPROFILE%\.openomsi\bin` (ou a variável `OPENOMSI_FFMPEG`).
+
+## Instalar
+1. Baixe o ZIP da release: https://github.com/Claudenirofc1/openOMSI-HOF-Auto/releases (arquivo `openOMSI-HOF-Auto-...zip`).
+2. Extraia **a pasta inteira** (não rode de dentro do ZIP).
+3. **Feche o jogo e o launcher.**
+4. Duplo clique em **`Gerenciador.cmd`** (ou `Instalar.cmd`). Ele:
+   - confirma que o seu jogo é a versão **provada** (pelos hashes dos executáveis) — se não for, **não altera nada**;
+   - mostra o diagnóstico e pede a sua autorização;
+   - faz **backup** dos 4 executáveis e das suas configurações em `%LOCALAPPDATA%\openOMSI-HOF-Auto\backup\<data-hora>`;
+   - deixa você marcar quais mods quer (HOF automático, câmeras das portas, dashcam, IAs travadas).
+5. Abra o jogo normalmente.
+
+Seus ônibus, mapas, HOFs e saves **não são tocados**.
+
+## Usar
+- **Câmeras das portas:** no jogo, `Alt` → página 3 → **Câmeras das portas**. Olhe para onde quer a câmera e aperte **Adicionar uma câmera aqui**; marque as **portas** que a abrem. Ao abrir uma porta, o popup mostra **só as câmeras dessa porta**.
+- **Dashcam:** `Alt` → página 3 → **Dashcam** → **Posicionar a câmera aqui** (fica fixa no ônibus; o painel diz para onde ela olha) → **Iniciar gravação** / **Parar gravação**. Enquanto grava aparece `● REC mm:ss` na tela. Vídeos: `Vídeos\openOMSI-dashcam`.
+- **Botões do volante/teclado:** em **Controles**, dê a qualquer botão as ações "Câmeras das portas: …" e "Dashcam: …".
+- **Launcher:** Ajustes → **Mods** (liga/desliga cada mod; ajusta portas, campo de visão, espelho e remoção das câmeras; campo de visão, estilo e nome da dashcam).
+- Atalhos antigos continuam: `Ctrl+K…` (portas) e `Ctrl+J…` (dashcam).
+
+## Atualizar / reparar / voltar ao original
+- Rode `Gerenciador.cmd` de novo: **Atualizar**, **Reparar**, **Restaurar um backup** (você escolhe a versão), **Desinstalar** (volta aos executáveis oficiais) e **Exportar/Importar perfil** (para outro disco ou depois de formatar).
+- Se o jogo for atualizado pelo oficial, o gerenciador **não** reverte nada: ele só diz que a versão não foi provada e **bloqueia** o patch até existir uma release compatível.
+- Instalação interrompida (queda de energia etc.): na próxima execução ele se recupera sozinho do backup.
+
+## Checklist do que só você pode validar
+1. Gerenciador: instalar, desinstalar, restaurar backup (o jogo abre depois de cada um?).
+2. Portas: adicionar 2–3 câmeras, ligar cada uma a uma porta diferente; abrir a porta 2 mostra só as câmeras da 2?
+3. Dashcam: posicionar, gravar 1 min, parar, abrir o `.mp4`; o FPS do jogo caiu muito?
+4. Botões: dar uma ação a um botão do volante e usar.
+5. Launcher › Mods: mudar uma opção e ver no jogo.
+6. IAs travadas: procure `ai-unstick:` no log do jogo; desligue com `ai_unstick=0` se estranhar.
+
+Relate problemas junto com o arquivo de log do jogo.

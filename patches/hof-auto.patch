@@ -1,9 +1,9 @@
 diff --git a/crates/omsi-app/locales/hof_auto.yml b/crates/omsi-app/locales/hof_auto.yml
 new file mode 100644
-index 00000000..8221d47f
+index 00000000..11ce1b51
 --- /dev/null
 +++ b/crates/omsi-app/locales/hof_auto.yml
-@@ -0,0 +1,187 @@
+@@ -0,0 +1,303 @@
 +# Automatic depot-file (HOF) choice: LOCAL strings (hof-auto prototype). English strings are the keys; pt is Brazilian Portuguese.
 +_version: 2
 +
@@ -91,9 +91,9 @@ index 00000000..8221d47f
 +  pt: "Câmeras das portas ligadas"
 +  pt-pt: "Câmeras das portas ligadas"
 +
-+"Any door shows them":
-+  pt: "Qualquer porta mostra"
-+  pt-pt: "Qualquer porta mostra"
++"Any door shows every camera":
++  pt: "Qualquer porta mostra todas as câmeras"
++  pt-pt: "Qualquer porta mostra todas as câmeras"
 +
 +"No camera yet: look where you want it (the free camera too) and press Add.":
 +  pt: "Nenhuma câmera ainda: olhe para onde a quer (a câmera livre também) e aperte Adicionar."
@@ -191,6 +191,122 @@ index 00000000..8221d47f
 +"Remove this camera":
 +  pt: "Remover esta câmera"
 +  pt-pt: "Remover esta câmera"
++
++"Get into a bus first: the camera belongs to the bus.":
++  pt: "Entre em um ônibus primeiro: a câmera pertence ao ônibus."
++  pt-pt: "Entre em um ônibus primeiro: a câmera pertence ao ônibus."
++
++"The dashcam is switched off (Mods in the launcher).":
++  pt: "A dashcam está desligada (aba Mods do launcher)."
++  pt-pt: "A dashcam está desligada (aba Mods do launcher)."
++
++"Look where you want the camera (the free camera too) and press Place. It stays fixed to the bus.":
++  pt: "Olhe para onde quer a câmera (a câmera livre também) e aperte Posicionar. Ela fica fixa no ônibus."
++  pt-pt: "Olhe para onde quer a câmera (a câmera livre também) e aperte Posicionar. Ela fica fixa no ônibus."
++
++"Looks at":
++  pt: "Foco"
++  pt-pt: "Foco"
++
++"Place the camera here":
++  pt: "Posicionar a câmera aqui"
++  pt-pt: "Posicionar a câmera aqui"
++
++"Back to the driver's view":
++  pt: "Voltar à visão do motorista"
++  pt-pt: "Voltar à visão do motorista"
++
++"Security camera look (name and clock on the picture)":
++  pt: "Estilo câmera de segurança (nome e relógio na imagem)"
++  pt-pt: "Estilo câmera de segurança (nome e relógio na imagem)"
++
++"Name on the picture":
++  pt: "Nome na imagem"
++  pt-pt: "Nome na imagem"
++
++"Starting...":
++  pt: "Iniciando..."
++  pt-pt: "Iniciando..."
++
++"ffmpeg was not found: put ffmpeg.exe beside the game or in .openomsi\\bin.":
++  pt: "ffmpeg não encontrado: coloque o ffmpeg.exe ao lado do jogo ou em .openomsi\\bin."
++  pt-pt: "ffmpeg não encontrado: coloque o ffmpeg.exe ao lado do jogo ou em .openomsi\\bin."
++
++"Stop recording":
++  pt: "Parar gravação"
++  pt-pt: "Parar gravação"
++
++"Start recording":
++  pt: "Iniciar gravação"
++  pt-pt: "Iniciar gravação"
++
++"Videos go to":
++  pt: "Os vídeos vão para"
++  pt-pt: "Os vídeos vão para"
++
++"No camera to place the dashcam":
++  pt: "Nenhuma câmera para posicionar a dashcam"
++  pt-pt: "Nenhuma câmera para posicionar a dashcam"
++
++"The dashcam records the driver's own view again.":
++  pt: "A dashcam volta a gravar a visão do motorista."
++  pt-pt: "A dashcam volta a gravar a visão do motorista."
++
++"Driver's own view (not placed yet)":
++  pt: "Visão do motorista (ainda não posicionada)"
++  pt-pt: "Visão do motorista (ainda não posicionada)"
++
++"Forward":
++  pt: "Frente"
++  pt-pt: "Frente"
++
++"Forward-right":
++  pt: "Frente-direita"
++  pt-pt: "Frente-direita"
++
++"Rear-right":
++  pt: "Trás-direita"
++  pt-pt: "Trás-direita"
++
++"Rear":
++  pt: "Trás"
++  pt-pt: "Trás"
++
++"Rear-left":
++  pt: "Trás-esquerda"
++  pt-pt: "Trás-esquerda"
++
++"Forward-left":
++  pt: "Frente-esquerda"
++  pt-pt: "Frente-esquerda"
++
++"Dashcam: open the settings":
++  pt: "Dashcam: abrir os ajustes"
++  pt-pt: "Dashcam: abrir os ajustes"
++
++"Dashcam: start / stop recording":
++  pt: "Dashcam: iniciar / parar gravação"
++  pt-pt: "Dashcam: iniciar / parar gravação"
++
++"Dashcam: place the camera where the view is":
++  pt: "Dashcam: posicionar a câmera onde está a visão"
++  pt-pt: "Dashcam: posicionar a câmera onde está a visão"
++
++"Dashcam by bus":
++  pt: "Dashcam por ônibus"
++  pt-pt: "Dashcam por ônibus"
++
++"No dashcam placed yet. In the game press Alt, choose \"Dashcam\", look where you want the camera and press \"Place the camera here\".":
++  pt: "Nenhuma dashcam posicionada. No jogo aperte Alt, escolha \"Dashcam\", olhe para onde quer a câmera e aperte \"Posicionar a câmera aqui\"."
++  pt-pt: "Nenhuma dashcam posicionada. No jogo aperte Alt, escolha \"Dashcam\", olhe para onde quer a câmera e aperte \"Posicionar a câmera aqui\"."
++
++"Recording starts and stops in the game (Alt, Dashcam, or a button of your controls).":
++  pt: "A gravação inicia e para no jogo (Alt, Dashcam, ou um botão dos seus controles)."
++  pt-pt: "A gravação inicia e para no jogo (Alt, Dashcam, ou um botão dos seus controles)."
++
++"The door cameras are switched off (Mods in the launcher).":
++  pt: "As câmeras das portas estão desligadas (aba Mods do launcher)."
++  pt-pt: "As câmeras das portas estão desligadas (aba Mods do launcher)."
 diff --git a/crates/omsi-app/src/app/groups.rs b/crates/omsi-app/src/app/groups.rs
 index 5489e375..20ba1583 100644
 --- a/crates/omsi-app/src/app/groups.rs
@@ -226,10 +342,10 @@ index ae29957f..406e4e6d 100644
          if clean {
              if let Some(scene) = self.scene.as_mut() {
 diff --git a/crates/omsi-app/src/app_events/frame/present.rs b/crates/omsi-app/src/app_events/frame/present.rs
-index 85b52022..50b5cee6 100644
+index 85b52022..2200deee 100644
 --- a/crates/omsi-app/src/app_events/frame/present.rs
 +++ b/crates/omsi-app/src/app_events/frame/present.rs
-@@ -445,7 +445,32 @@ impl App {
+@@ -445,7 +445,38 @@ impl App {
          } else {
              panel_cams.clear();
          }
@@ -259,15 +375,21 @@ index 85b52022..50b5cee6 100644
 +            if let Some(msg) = self.gfx.dashcam.frame(r, scene, p, lighting) {
 +                self.service_msg = Some((msg, 6.0));
 +            }
++            // the recording stays on the screen as a line, unless another message is up
++            if let Some(line) = self.gfx.dashcam.rec_line() {
++                if self.service_msg.as_ref().is_none_or(|m| m.0.starts_with('●')) {
++                    self.service_msg = Some((line, 1.5));
++                }
++            }
 +        }
          let (skip, on_screen): (&[usize], &[usize]) = if every_frame { (&panel_cams, &[]) } else { (&[], &panel_cams) };
          if every_frame && !panel_cams.is_empty() {
              if let (Some(w), Some(p)) = (self.world.as_ref(), self.player.as_ref()) {
 diff --git a/crates/omsi-app/src/app_impl/actions.rs b/crates/omsi-app/src/app_impl/actions.rs
-index 72fd720b..250e0539 100644
+index 72fd720b..e7e506bd 100644
 --- a/crates/omsi-app/src/app_impl/actions.rs
 +++ b/crates/omsi-app/src/app_impl/actions.rs
-@@ -328,6 +328,26 @@ impl App {
+@@ -328,6 +328,45 @@ impl App {
                  let msg = self.sound.radio.toggle_power(self.player.as_ref().map(|p| &p.vehicle));
                  self.service_msg = Some((msg, 3.0));
              }
@@ -287,6 +409,25 @@ index 72fd720b..250e0539 100644
 +                                None => "No camera to register".into(),
 +                            };
 +                            self.service_msg = Some((msg, 5.0));
++                        }
++                    }
++                }
++            }
++            "dashcam_panel" | "dashcam_record" | "dashcam_place" if omsi_cfg::addon_switch::enabled("dashcam") => {
++                let eye = self.camera.as_ref().map(|c| (c.position, c.forward(), c.fov_deg));
++                if let Some(p) = self.player.as_ref() {
++                    match name {
++                        "dashcam_panel" => crate::game_panels::dashcam_panel::open(self),
++                        "dashcam_record" => {
++                            let msg = self.gfx.dashcam.toggle(p);
++                            self.service_msg = Some((msg, 6.0));
++                        }
++                        _ => {
++                            let msg = match eye {
++                                Some((pos, fwd, fov)) => self.gfx.dashcam.register(p, pos, fwd, fov),
++                                None => "No camera to place the dashcam".into(),
++                            };
++                            self.service_msg = Some((msg, 6.0));
 +                        }
 +                    }
 +                }
@@ -313,10 +454,10 @@ index f67fc0ba..c14cfdd5 100644
      }
 diff --git a/crates/omsi-app/src/dashcam.rs b/crates/omsi-app/src/dashcam.rs
 new file mode 100644
-index 00000000..8a084530
+index 00000000..bbf86a3b
 --- /dev/null
 +++ b/crates/omsi-app/src/dashcam.rs
-@@ -0,0 +1,434 @@
+@@ -0,0 +1,540 @@
 +//! Dashcam (openOMSI HOF-Auto add-on): a camera on the bus - the windscreen's, or wherever the
 +//! player put it - recorded to an `.mp4` from the moment he starts it until he stops it, while
 +//! he plays and records the screen with whatever he likes. A second view of the trip: the
@@ -363,6 +504,30 @@ index 00000000..8a084530
 +    fn default() -> Self {
 +        DashCfg { pos: [0.0; 3], yaw: 0.0, pitch: 0.0, fov: 70.0, cctv: false, name: "CAM 1".into() }
 +    }
++}
++
++/// What the Alt menu's panel shows of the dashcam.
++pub(crate) struct DashSnap {
++    pub placed: bool,
++    pub cfg: DashCfg,
++    pub focus: String,
++    pub recording: bool,
++    pub waiting: bool,
++    pub secs: u64,
++    pub file: Option<String>,
++    pub ffmpeg: bool,
++    pub folder: String,
++}
++
++/// Where the camera looks, in words: the way of the bus it faces and where it sits (x right, y
++/// forward, z up, metres from the bus's origin); the driver's own view while it is not placed.
++pub(crate) fn focus_text(cfg: Option<&DashCfg>) -> String {
++    let Some(c) = cfg else { return omsi_ui::tr("Driver's own view (not placed yet)").into_owned() };
++    let yaw = c.yaw.rem_euclid(360.0);
++    let sector = ((yaw + 22.5) / 45.0).floor() as usize % 8;
++    let dir = ["Forward", "Forward-right", "Right", "Rear-right", "Rear", "Rear-left", "Left", "Forward-left"][sector];
++    let tilt = if c.pitch > 15.0 { " ↑" } else if c.pitch < -15.0 { " ↓" } else { "" };
++    format!("{}{} · {:.1} / {:.1} / {:.1} m", omsi_ui::tr(dir), tilt, c.pos[0], c.pos[1], c.pos[2])
 +}
 +
 +struct Recording {
@@ -514,7 +679,7 @@ index 00000000..8a084530
 +            return format!("Dashcam: the folder {} could not be made: {e}", dir.display());
 +        }
 +        let out = next_file(&dir, |p| p.exists());
-+        let msg = format!("Dashcam recording to {} (Ctrl+J stops it)", out.display());
++        let msg = format!("Dashcam recording to {} - looking: {} (stop it with the same button)", out.display(), focus_text(self.cfg.as_ref()));
 +        self.last = None;
 +        self.pending = Some(Pending { ffmpeg, out, cfg: self.cfg.clone().unwrap_or_default() });
 +        msg
@@ -531,7 +696,7 @@ index 00000000..8a084530
 +        c.fov = if fov > 10.0 { fov.clamp(30.0, 110.0) } else { 70.0 };
 +        self.cfg = Some(c);
 +        self.save();
-+        format!("Dashcam placed at {:.1}, {:.1}, {:.1} m of the bus (Ctrl+J records)", pos[0], pos[1], pos[2])
++        format!("Dashcam placed - looking: {} (Ctrl+J records)", focus_text(self.cfg.as_ref()))
 +    }
 +
 +    /// Ctrl+Alt+J: the security-camera look.
@@ -543,6 +708,68 @@ index 00000000..8a084530
 +        self.cfg = Some(c);
 +        self.save();
 +        msg.into()
++    }
++
++    // --- the Alt menu's panel (`game_panels::dashcam_panel`): the same state the Ctrl+J keys change ---
++
++    /// What the panel shows for the bus.
++    pub fn snapshot(&mut self, p: &Player) -> DashSnap {
++        self.sync(p);
++        DashSnap {
++            placed: self.cfg.is_some(),
++            cfg: self.cfg.clone().unwrap_or_default(),
++            focus: focus_text(self.cfg.as_ref()),
++            recording: self.rec.is_some(),
++            waiting: self.pending.is_some() && self.rec.is_none(),
++            secs: self.rec.as_ref().map(|r| r.started.elapsed().as_secs()).unwrap_or(0),
++            file: self.rec.as_ref().map(|r| r.path.display().to_string()).or_else(|| self.pending.as_ref().map(|d| d.out.display().to_string())),
++            ffmpeg: find_ffmpeg(&ffmpeg_candidates(), |c| c.is_file()).is_some(),
++            folder: output_dir().display().to_string(),
++        }
++    }
++
++    pub fn set_name(&mut self, p: &Player, name: &str) {
++        self.sync(p);
++        let mut c = self.cfg.clone().unwrap_or_default();
++        let n: String = name.chars().filter(|ch| !matches!(ch, '|' | '=' | '\n' | '\r' | ';' | ':' | '\'' | '%' | '\\')).take(24).collect();
++        c.name = n; // may be empty while the player types: the picture then says CAM 1
++        self.cfg = Some(c);
++        self.save();
++    }
++
++    pub fn set_fov(&mut self, p: &Player, fov: f32) {
++        self.sync(p);
++        let mut c = self.cfg.clone().unwrap_or_default();
++        c.fov = fov.clamp(30.0, 110.0);
++        self.cfg = Some(c);
++        self.save();
++    }
++
++    pub fn set_look(&mut self, p: &Player, cctv: bool) {
++        self.sync(p);
++        let mut c = self.cfg.clone().unwrap_or_default();
++        c.cctv = cctv;
++        self.cfg = Some(c);
++        self.save();
++    }
++
++    /// Back to the driver's own view (the file's lines of this bus go).
++    pub fn unplace(&mut self, p: &Player) {
++        self.sync(p);
++        self.cfg = None;
++        if let Some(f) = file() {
++            if let Ok(text) = std::fs::read_to_string(&f) {
++                let keep: Vec<&str> = text.lines().filter(|l| l.split_once('=').and_then(|(k, _)| k.rsplit_once('|')).is_none_or(|(p, _)| p.trim().to_ascii_lowercase() != self.key)).collect();
++                let _ = std::fs::write(&f, keep.join("\n") + "\n");
++            }
++        }
++    }
++
++    /// While recording: the line the game keeps on the screen.
++    pub fn rec_line(&self) -> Option<String> {
++        let r = self.rec.as_ref()?;
++        let s = r.started.elapsed().as_secs();
++        Some(format!("● REC {}:{:02} · {}", s / 60, s % 60, focus_text(self.cfg.as_ref())))
 +    }
 +
 +    fn save(&self) {
@@ -619,7 +846,8 @@ index 00000000..8a084530
 +}
 +
 +fn start(ffmpeg: &Path, out: &Path, cfg: &DashCfg, bgra: bool) -> std::io::Result<Recording> {
-+    let look = cfg.cctv.then_some((cfg.name.as_str(), system_font()));
++    let name = if cfg.name.trim().is_empty() { "CAM 1" } else { cfg.name.as_str() };
++    let look = cfg.cctv.then_some((name, system_font()));
 +    let args = ffmpeg_args(WIDTH, HEIGHT, FPS, bgra, look, out);
 +    let mut cmd = Command::new(ffmpeg);
 +    cmd.args(&args).stdin(Stdio::piped()).stdout(Stdio::null()).stderr(Stdio::null());
@@ -683,6 +911,25 @@ index 00000000..8a084530
 +
 +#[cfg(test)]
 +mod tests {
++    #[test]
++    fn what_the_launcher_writes_the_game_reads() {
++        let text = "bus/x.bus|cam=0.500,5.000,1.800;180.00;-5.00;70.0\nbus/x.bus|look=clean\nbus/x.bus|name=REAR\n";
++        let out = omsi_cfg::dashcam_file::edit(text, "bus/x.bus", Some(90.0), Some(true), Some("Porta"));
++        let c = parse(&out, "bus/x.bus").expect("the camera is still placed");
++        assert_eq!((c.fov, c.cctv, c.name.as_str(), c.yaw, c.pos), (90.0, true, "Porta", 180.0, [0.5, 5.0, 1.8]));
++    }
++
++    #[test]
++    fn the_focus_is_said_in_words() {
++        let at = |yaw: f32, pitch: f32| DashCfg { yaw, pitch, pos: [0.5, 5.0, 1.8], ..DashCfg::default() };
++        assert!(focus_text(Some(&at(0.0, 0.0))).starts_with("Forward · 0.5 / 5.0 / 1.8 m"));
++        assert!(focus_text(Some(&at(180.0, 0.0))).starts_with("Rear"));
++        assert!(focus_text(Some(&at(-90.0, 0.0))).starts_with("Left"));
++        assert!(focus_text(Some(&at(350.0, 0.0))).starts_with("Forward"), "-10 degrees is still ahead");
++        assert!(focus_text(Some(&at(90.0, -30.0))).contains("Right ↓"));
++        assert!(focus_text(None).contains("Driver"));
++    }
++
 +    use super::*;
 +
 +    #[test]
@@ -753,10 +1000,10 @@ index 00000000..8a084530
 +}
 diff --git a/crates/omsi-app/src/door_cams.rs b/crates/omsi-app/src/door_cams.rs
 new file mode 100644
-index 00000000..e9500e09
+index 00000000..e85f77c7
 --- /dev/null
 +++ b/crates/omsi-app/src/door_cams.rs
-@@ -0,0 +1,477 @@
+@@ -0,0 +1,494 @@
 +//! Door cameras (openOMSI HOF-Auto add-on): cameras the player puts on a bus, shown in a popup
 +//! while the doors they watch are open - the rear door's view for the driver who is watching
 +//! the mirror, say.
@@ -818,6 +1065,8 @@ index 00000000..e9500e09
 +    last_poll: Option<Instant>,
 +    /// The popup is on the screen.
 +    visible: bool,
++    /// The cameras (by place in the list) the popup shows now: those of the doors that are open.
++    shown: Vec<usize>,
 +}
 +
 +/// What the renderer reads: the cameras of the bus being shown now, only while the popup is up.
@@ -834,15 +1083,18 @@ index 00000000..e9500e09
 +    if g.0.eq_ignore_ascii_case(path) { g.1.clone() } else { Vec::new() }
 +}
 +
++/// The cameras the popup shows: those with an open door; with `all_doors`, any open door shows every camera.
++pub(crate) fn shown_cameras(cams: &[DoorCam], open: &[bool], all_doors: bool) -> Vec<usize> {
++    if all_doors && open.iter().any(|o| *o) {
++        return (0..cams.len()).collect();
++    }
++    let is_open = |d: &usize| *d >= 1 && open.get(*d - 1).copied().unwrap_or(false);
++    cams.iter().enumerate().filter(|(_, c)| c.doors.iter().any(is_open)).map(|(i, _)| i).collect()
++}
++
 +/// The popup is to be shown: any camera has an open door (or any door is, with `all_doors`).
 +pub(crate) fn popup_visible(cams: &[DoorCam], open: &[bool], all_doors: bool) -> bool {
-+    if cams.is_empty() {
-+        return false;
-+    }
-+    if all_doors {
-+        return open.iter().any(|o| *o);
-+    }
-+    cams.iter().any(|c| c.doors.iter().any(|d| *d >= 1 && open.get(*d - 1).copied().unwrap_or(false)))
++    !shown_cameras(cams, open, all_doors).is_empty()
 +}
 +
 +/// Where the pictures go in a window of `w` x `h`: side by side in order, centred at the
@@ -919,15 +1171,16 @@ index 00000000..e9500e09
 +        if due && self.enabled && !self.cams.is_empty() {
 +            self.last_poll = Some(Instant::now());
 +            self.open = doors_open(p);
-+            self.visible = popup_visible(&self.cams, &self.open, self.all_doors);
++            self.shown = shown_cameras(&self.cams, &self.open, self.all_doors);
++            self.visible = !self.shown.is_empty();
 +        }
 +        let on = show && self.enabled && self.visible && !self.cams.is_empty();
 +        let mut g = extra().lock().unwrap_or_else(|e| e.into_inner());
 +        if on {
 +            g.0 = path_of(p);
-+            g.1 = self.cams.iter().map(bus_camera).collect();
++            g.1 = self.shown.iter().filter_map(|i| self.cams.get(*i)).map(bus_camera).collect();
 +            let base = first_index(p);
-+            idx.extend(base..base + self.cams.len());
++            idx.extend(base..base + g.1.len());
 +        } else {
 +            g.0.clear();
 +            g.1.clear();
@@ -941,9 +1194,9 @@ index 00000000..e9500e09
 +        }
 +        let start = scene.overlays.len();
 +        let textures = world.mirror_textures.lock();
-+        for (i, r) in layout(self.cams.len(), viewport[2], viewport[3]).into_iter().enumerate() {
-+            let Some(tex) = textures.get(first + i).copied().flatten() else { continue };
-+            let c = &self.cams[i];
++        for (k, r) in layout(self.shown.len(), viewport[2], viewport[3]).into_iter().enumerate() {
++            let Some(tex) = textures.get(first + k).copied().flatten() else { continue };
++            let Some(c) = self.shown.get(k).and_then(|i| self.cams.get(*i)) else { continue };
 +            let (x0, x1) = if c.flip_x { (r[2], r[0]) } else { (r[0], r[2]) };
 +            let (y0, y1) = if c.flip_y { (r[3], r[1]) } else { (r[1], r[3]) };
 +            scene.transposed.remove(&tex);
@@ -1157,6 +1410,17 @@ index 00000000..e9500e09
 +    }
 +
 +    #[test]
++    fn only_the_cameras_of_the_open_doors_are_shown() {
++        let cams = [cam(&[1]), cam(&[2]), cam(&[3]), cam(&[2, 3])];
++        assert_eq!(shown_cameras(&cams, &[false, true, false], false), vec![1, 3], "door 2: its two cameras only");
++        assert_eq!(shown_cameras(&cams, &[false, false, true], false), vec![2, 3]);
++        assert_eq!(shown_cameras(&cams, &[true, false, true], false), vec![0, 2, 3], "doors 1 and 3 together");
++        assert!(shown_cameras(&cams, &[false, false, false], false).is_empty(), "all closed: none");
++        assert_eq!(shown_cameras(&cams, &[false, true, false], true), vec![0, 1, 2, 3], "'any door' shows every camera");
++        assert!(shown_cameras(&cams, &[false, false, false], true).is_empty());
++    }
++
++    #[test]
 +    fn the_popup_follows_the_doors_that_have_a_camera() {
 +        let cams = [cam(&[3]), cam(&[2])];
 +        assert!(!popup_visible(&cams, &[true, false, false, false], false), "door 1 has no camera");
@@ -1235,7 +1499,7 @@ index 00000000..e9500e09
 +    }
 +}
 diff --git a/crates/omsi-app/src/game_controller_menu.rs b/crates/omsi-app/src/game_controller_menu.rs
-index 30aa24ef..2de6256f 100644
+index 30aa24ef..037eca08 100644
 --- a/crates/omsi-app/src/game_controller_menu.rs
 +++ b/crates/omsi-app/src/game_controller_menu.rs
 @@ -26,7 +26,7 @@ fn event_names(app: &App, device: &DeviceCfg) -> Vec<(String, String)> {
@@ -1243,11 +1507,11 @@ index 30aa24ef..2de6256f 100644
          .chain(app.player.as_ref().into_iter().flat_map(|p| p.vehicle.ty.program.trigger_names()))
          .chain(["kw_s_R_fest", "kw_s_1_fest", "kw_s_2_fest", "kw_s_3_fest", "kw_s_4_fest", "kw_s_5_fest", "kw_s_6_fest", "kw_s_7_fest", "kw_s_8_fest", "kw_s_9_fest", "kw_s_10_fest",
 -                "gear_up", "gear_down", "view_look_left", "view_look_right", "view_look_up", "view_look_down", "view_toggle_viewpoint", "view_driver", "view_outside", "view_passenger", "voice_nearby", "voice_radio", "open_menu", "radio_power", "get_up"].into_iter().map(str::to_string)) {
-+                "gear_up", "gear_down", "view_look_left", "view_look_right", "view_look_up", "view_look_down", "view_toggle_viewpoint", "view_driver", "view_outside", "view_passenger", "voice_nearby", "voice_radio", "open_menu", "radio_power", "get_up", "doorcams_panel", "doorcams_toggle", "doorcams_add"].into_iter().map(str::to_string)) {
++                "gear_up", "gear_down", "view_look_left", "view_look_right", "view_look_up", "view_look_down", "view_toggle_viewpoint", "view_driver", "view_outside", "view_passenger", "voice_nearby", "voice_radio", "open_menu", "radio_power", "get_up", "doorcams_panel", "doorcams_toggle", "doorcams_add", "dashcam_panel", "dashcam_record", "dashcam_place"].into_iter().map(str::to_string)) {
          if !action.is_empty() && !events.iter().any(|(a, _)| a.eq_ignore_ascii_case(&action)) {
              let label = if action.eq_ignore_ascii_case("voice_radio") {
                  "Multiplayer voice: radio, whole session (hold)".into()
-@@ -36,6 +36,12 @@ fn event_names(app: &App, device: &DeviceCfg) -> Vec<(String, String)> {
+@@ -36,6 +36,18 @@ fn event_names(app: &App, device: &DeviceCfg) -> Vec<(String, String)> {
                  "Open / close the main menu".into()
              } else if action.eq_ignore_ascii_case("radio_power") {
                  "Radio: on / off".into()
@@ -1255,17 +1519,132 @@ index 30aa24ef..2de6256f 100644
 +                "Door cameras: open the settings".into()
 +            } else if action.eq_ignore_ascii_case("doorcams_toggle") {
 +                "Door cameras: on / off".into()
++            } else if action.eq_ignore_ascii_case("dashcam_panel") {
++                "Dashcam: open the settings".into()
++            } else if action.eq_ignore_ascii_case("dashcam_record") {
++                "Dashcam: start / stop recording".into()
++            } else if action.eq_ignore_ascii_case("dashcam_place") {
++                "Dashcam: place the camera where the view is".into()
 +            } else if action.eq_ignore_ascii_case("doorcams_add") {
 +                "Door cameras: add a camera where the view is".into()
              } else {
                  names.control(&action)
              };
+diff --git a/crates/omsi-app/src/game_panels/dashcam_panel.rs b/crates/omsi-app/src/game_panels/dashcam_panel.rs
+new file mode 100644
+index 00000000..10a03d4b
+--- /dev/null
++++ b/crates/omsi-app/src/game_panels/dashcam_panel.rs
+@@ -0,0 +1,103 @@
++//! The dashcam's panel (Alt, the "Dashcam" tile; buttons of the controls too): put the camera
++//! where the view is now (it is then fixed to the bus like an installed camera), see where it
++//! looks, its field of view, the security-camera look and its name, and start or stop the
++//! recording. It changes the same state the Ctrl+J keys do (`dashcam`), kept in `dashcam.cfg`.
++
++use super::{button, card, divider, el, grow_row, input, note, slider_row, text, title};
++use omsi_plugin::api::Value;
++use omsi_plugin::ui::{Anchor, Element, Kind, Panel, Weight};
++use omsi_ui::theme::Palette;
++use omsi_ui::tr;
++
++const FOV: (f32, f32) = (30.0, 110.0);
++
++#[derive(Default)]
++pub(crate) struct DashcamPanel {
++    said: Option<String>,
++}
++
++fn check(id: &str, label: &str, on: bool) -> Element {
++    el(Some(id), Kind::Checkbox { text: label.to_string(), checked: on })
++}
++
++impl DashcamPanel {
++    pub(crate) fn panel(&self, app: &mut crate::App, pal: Palette) -> Panel {
++        let snap = app.player.as_ref().map(|p| app.gfx.dashcam.snapshot(p));
++        let mut c = vec![title(&tr("Dashcam"))];
++        let Some(s) = snap else {
++            c.push(note(&tr("Get into a bus first: the camera belongs to the bus."), pal));
++            c.push(button("close", &tr("Close"), Some("close")));
++            return card(Anchor::Center, 0.0, 0.0, 460.0, 235, pal, c);
++        };
++        if !omsi_cfg::addon_switch::enabled("dashcam") {
++            c.push(note(&tr("The dashcam is switched off (Mods in the launcher)."), pal));
++        }
++        c.push(note(&tr("Look where you want the camera (the free camera too) and press Place. It stays fixed to the bus."), pal));
++        c.push(el(None, Kind::Text { text: format!("{}: {}", tr("Looks at"), s.focus), size: 14.0, weight: Weight::Bold, align: omsi_plugin::ui::Align::Left, wrap: true }));
++        c.push(grow_row(vec![
++            button("place", &tr("Place the camera here"), Some("my_location")),
++            button("unplace", &tr("Back to the driver's view"), Some("undo")),
++        ]));
++        c.push(slider_row("fov", &tr("Field of view"), &format!("{:.0}°", s.cfg.fov), s.cfg.fov, FOV, 1.0));
++        c.push(check("cctv", &tr("Security camera look (name and clock on the picture)"), s.cfg.cctv));
++        c.push(grow_row(vec![text(&tr("Name on the picture"), 13.0, Weight::Regular), input("name", &s.cfg.name, "CAM 1", 24)]));
++        c.push(divider());
++        if s.recording {
++            c.push(el(None, Kind::Text { text: format!("● REC {}:{:02}", s.secs / 60, s.secs % 60), size: 16.0, weight: Weight::Bold, align: omsi_plugin::ui::Align::Left, wrap: false }));
++        } else if s.waiting {
++            c.push(note(&tr("Starting..."), pal));
++        }
++        if let Some(f) = &s.file {
++            c.push(note(f, pal));
++        }
++        if !s.ffmpeg {
++            c.push(note(&tr("ffmpeg was not found: put ffmpeg.exe beside the game or in .openomsi\\bin."), pal));
++        }
++        let rec = if s.recording || s.waiting { tr("Stop recording") } else { tr("Start recording") };
++        c.push(grow_row(vec![button("record", &rec, Some(if s.recording || s.waiting { "stop" } else { "videocam" })), button("close", &tr("Close"), Some("close"))]));
++        c.push(note(&format!("{}: {}", tr("Videos go to"), s.folder), pal));
++        if let Some(said) = &self.said {
++            c.push(note(said, pal));
++        }
++        card(Anchor::Center, 0.0, 0.0, 460.0, 235, pal, c)
++    }
++}
++
++pub(crate) fn open(app: &mut crate::App) {
++    app.menus.game_panels.dashcam = Some(DashcamPanel::default());
++}
++
++pub(crate) fn click(app: &mut crate::App, id: &str) {
++    if id == "close" {
++        app.menus.game_panels.dashcam = None;
++        return;
++    }
++    let eye = app.camera.as_ref().map(|c| (c.position, c.forward(), c.fov_deg));
++    let Some(p) = app.player.as_ref() else { return };
++    let said = match id {
++        "place" => Some(match eye {
++            Some((pos, fwd, fov)) => app.gfx.dashcam.register(p, pos, fwd, fov),
++            None => tr("No camera to place the dashcam").into_owned(),
++        }),
++        "unplace" => {
++            app.gfx.dashcam.unplace(p);
++            Some(tr("The dashcam records the driver's own view again.").into_owned())
++        }
++        "record" if omsi_cfg::addon_switch::enabled("dashcam") => Some(app.gfx.dashcam.toggle(p)),
++        "record" => Some(tr("The dashcam is switched off (Mods in the launcher).").into_owned()),
++        _ => return,
++    };
++    if let Some(d) = app.menus.game_panels.dashcam.as_mut() {
++        d.said = said;
++    }
++}
++
++pub(crate) fn change(app: &mut crate::App, id: &str, value: &Value) {
++    let Some(p) = app.player.as_ref() else { return };
++    match (id, value) {
++        ("fov", Value::Num(v)) => app.gfx.dashcam.set_fov(p, *v as f32),
++        ("cctv", Value::Bool(b)) => app.gfx.dashcam.set_look(p, *b),
++        ("name", Value::Str(s)) => app.gfx.dashcam.set_name(p, s),
++        _ => {}
++    }
++}
 diff --git a/crates/omsi-app/src/game_panels/door_cams_panel.rs b/crates/omsi-app/src/game_panels/door_cams_panel.rs
 new file mode 100644
-index 00000000..a8a10ada
+index 00000000..d4af990f
 --- /dev/null
 +++ b/crates/omsi-app/src/game_panels/door_cams_panel.rs
-@@ -0,0 +1,153 @@
+@@ -0,0 +1,156 @@
 +//! The door cameras' panel (Alt, the "Door cameras" tile; a button of the controls too): the
 +//! switch, the "any door" trigger and each camera of the bus - which doors open it, its field of
 +//! view, the picture turned over, where it looks (put where the view is now) - and a button to
@@ -1301,10 +1680,13 @@ index 00000000..a8a10ada
 +            c.push(button("close", &tr("Close"), Some("close")));
 +            return card(Anchor::Center, 0.0, 0.0, 460.0, 235, pal, c);
 +        };
++        if !omsi_cfg::addon_switch::enabled("door_cams") {
++            c.push(note(&tr("The door cameras are switched off (Mods in the launcher)."), pal));
++        }
 +        c.push(note(&tr("A camera's picture pops up while one of its doors is open. Cameras are kept for this bus."), pal));
 +        c.push(grow_row(vec![
 +            check("on", &tr("Door cameras on"), s.enabled),
-+            check("all", &tr("Any door shows them"), s.all_doors),
++            check("all", &tr("Any door shows every camera"), s.all_doors),
 +        ]));
 +        c.push(divider());
 +        if s.cams.is_empty() {
@@ -1420,35 +1802,37 @@ index 00000000..a8a10ada
 +    }
 +}
 diff --git a/crates/omsi-app/src/game_panels/mod.rs b/crates/omsi-app/src/game_panels/mod.rs
-index bf5949f1..a8be7f9c 100644
+index bf5949f1..cdda16bb 100644
 --- a/crates/omsi-app/src/game_panels/mod.rs
 +++ b/crates/omsi-app/src/game_panels/mod.rs
-@@ -15,6 +15,7 @@ use omsi_ui::theme::Palette;
+@@ -15,6 +15,8 @@ use omsi_ui::theme::Palette;
  mod dest_form;
  mod multiplayer;
  mod move_here;
++pub(crate) mod dashcam_panel;
 +pub(crate) mod door_cams_panel;
  pub(crate) mod radio_panel;
  pub(crate) use dest_form::open as open_dest_form;
  pub(crate) use move_here::ask as ask_move;
-@@ -45,6 +46,7 @@ pub(crate) struct GamePanels {
+@@ -45,6 +47,8 @@ pub(crate) struct GamePanels {
      pub(crate) multiplayer: Option<multiplayer::Multiplayer>,
      pub(crate) view: Option<view_editor::ViewEditor>,
      pub(crate) radio: Option<radio_panel::RadioPanel>,
 +    pub(crate) door_cams: Option<door_cams_panel::DoorCamsPanel>,
++    pub(crate) dashcam: Option<dashcam_panel::DashcamPanel>,
      pub(crate) remote: Option<remote_panel::RemotePanel>,
      /// Where the map camera's click asks to move the bus to.
      pub(crate) move_to: Option<glam::DVec3>,
-@@ -53,7 +55,7 @@ pub(crate) struct GamePanels {
+@@ -53,7 +57,7 @@ pub(crate) struct GamePanels {
  impl GamePanels {
      /// Whether any panel is open.
      pub(crate) fn any(&self) -> bool {
 -        self.multiplayer.is_some() || self.quick.is_some() || self.trip.is_some() || self.dest.is_some() || self.view.is_some() || self.radio.is_some() || self.move_to.is_some() || self.remote.is_some()
-+        self.multiplayer.is_some() || self.quick.is_some() || self.trip.is_some() || self.dest.is_some() || self.view.is_some() || self.radio.is_some() || self.door_cams.is_some() || self.move_to.is_some() || self.remote.is_some()
++        self.multiplayer.is_some() || self.quick.is_some() || self.trip.is_some() || self.dest.is_some() || self.view.is_some() || self.radio.is_some() || self.door_cams.is_some() || self.dashcam.is_some() || self.move_to.is_some() || self.remote.is_some()
      }
  
      /// Whether the panels have the mouse.
-@@ -128,6 +130,14 @@ pub(super) fn card(anchor: omsi_plugin::ui::Anchor, x: f32, y: f32, width: f32,
+@@ -128,6 +132,21 @@ pub(super) fn card(anchor: omsi_plugin::ui::Anchor, x: f32, y: f32, width: f32,
  // --- the frame -----------------------------------------------------------------------------
  
  impl crate::App {
@@ -1460,44 +1844,54 @@ index bf5949f1..a8be7f9c 100644
 +        Some(panel)
 +    }
 +
++    fn take_dashcam_panel(&mut self, pal: Palette) -> Option<Panel> {
++        let d = self.menus.game_panels.dashcam.take()?;
++        let panel = d.panel(self, pal);
++        self.menus.game_panels.dashcam = Some(d);
++        Some(panel)
++    }
++
      /// Work off what was clicked and changed, set the open panels and draw them.
      pub(crate) fn frame_game_panels(&mut self, dt: f32, hud: [f32; 4], vr_active: bool) {
          let changes = self.menus.game_panels.ui.take_changes(GAME);
-@@ -146,6 +156,7 @@ impl crate::App {
+@@ -146,6 +165,8 @@ impl crate::App {
                  "view" => view_editor::click(self, el),
                  "move" => move_here::click(self, el),
                  "radio" => radio_panel::click(self, el),
 +                "doorcams" => door_cams_panel::click(self, el),
++                "dashcam" => dashcam_panel::click(self, el),
                  "remote" => remote_panel::click(self, el),
                  _ => {}
              }
-@@ -153,6 +164,7 @@ impl crate::App {
+@@ -153,6 +174,8 @@ impl crate::App {
          for c in changes {
              match c.panel.as_str() {
                  "view" => view_editor::change(self, &c.element, &c.value),
 +                "doorcams" => door_cams_panel::change(self, &c.element, &c.value),
++                "dashcam" => dashcam_panel::change(self, &c.element, &c.value),
                  "dest" => dest_form::change(self, &c.element, &c.value),
                  "multiplayer" => {},
                  _ => {}
-@@ -191,6 +203,7 @@ impl crate::App {
+@@ -191,6 +214,8 @@ impl crate::App {
              ("quick", self.menus.game_panels.quick.as_ref().map(|q| q.panel(self))),
              ("move", self.menus.game_panels.move_to.map(|at| move_here::panel(at, pal))),
              ("radio", self.menus.game_panels.radio.as_ref().map(|r| r.panel(self, pal))),
 +            ("doorcams", self.take_door_cams_panel(pal)),
++            ("dashcam", self.take_dashcam_panel(pal)),
              ("remote", self.menus.game_panels.remote.as_ref().map(|r| r.panel(self, pal))),
          ];
          let gp = &mut self.menus.game_panels;
-@@ -328,7 +341,7 @@ impl crate::App {
+@@ -328,7 +353,7 @@ impl crate::App {
              return true;
          }
          let gp = &mut self.menus.game_panels;
 -        if gp.quick.take().is_some() || gp.move_to.take().is_some() || gp.dest.take().is_some() || gp.trip.take().is_some() || gp.radio.take().is_some() || gp.remote.take().is_some() {
-+        if gp.quick.take().is_some() || gp.move_to.take().is_some() || gp.dest.take().is_some() || gp.trip.take().is_some() || gp.radio.take().is_some() || gp.door_cams.take().is_some() || gp.remote.take().is_some() {
++        if gp.quick.take().is_some() || gp.move_to.take().is_some() || gp.dest.take().is_some() || gp.trip.take().is_some() || gp.radio.take().is_some() || gp.door_cams.take().is_some() || gp.dashcam.take().is_some() || gp.remote.take().is_some() {
              return true;
          }
          if gp.view.is_some() {
 diff --git a/crates/omsi-app/src/game_panels/quick_menu.rs b/crates/omsi-app/src/game_panels/quick_menu.rs
-index 54cd8618..72977fe2 100644
+index 54cd8618..cc6b9ce2 100644
 --- a/crates/omsi-app/src/game_panels/quick_menu.rs
 +++ b/crates/omsi-app/src/game_panels/quick_menu.rs
 @@ -26,7 +26,7 @@ pub(crate) const PER_PAGE: usize = 15;
@@ -1505,28 +1899,30 @@ index 54cd8618..72977fe2 100644
  
  /// The tiles: id, label, icon - in OMSI's order, five to a row, fifteen to a page.
 -pub(crate) const TILES: [(&str, &str, &str); 30] = [
-+pub(crate) const TILES: [(&str, &str, &str); 31] = [
++pub(crate) const TILES: [(&str, &str, &str); 32] = [
      ("place", "Place a vehicle", "add"),
      ("switch", "Change vehicle", "sync_alt"),
      ("remove", "Remove vehicle", "delete"),
-@@ -58,6 +58,8 @@ pub(crate) const TILES: [(&str, &str, &str); 30] = [
+@@ -58,6 +58,9 @@ pub(crate) const TILES: [(&str, &str, &str); 30] = [
      ("players", "Player list", "group"),
      ("admin", "Administration", "dns"),
      ("radio", "Radio", "radio"),
 +    // openOMSI HOF-Auto add-on
 +    ("doorcams", "Door cameras", "door_front"),
++    ("dashcam", "Dashcam", "videocam"),
  ];
  
  /// The tiles that are the game menu's lines, offered only when it offers them now.
-@@ -262,6 +264,7 @@ fn start(app: &mut crate::App, id: &str, mouse: bool) {
+@@ -262,6 +265,8 @@ fn start(app: &mut crate::App, id: &str, mouse: bool) {
      match id {
          "dest" => super::dest_form::open(app),
          "radio" => super::radio_panel::open(app),
 +        "doorcams" => super::door_cams_panel::open(app),
++        "dashcam" => super::dashcam_panel::open(app),
          "arrows" => {
              crate::game_lists::option_do(
                  app,
-@@ -314,7 +317,7 @@ mod tests {
+@@ -314,7 +319,7 @@ mod tests {
          }
          let ids: std::collections::HashSet<_> = TILES.iter().map(|t| t.0).collect();
          assert_eq!(ids.len(), TILES.len());
@@ -1535,7 +1931,7 @@ index 54cd8618..72977fe2 100644
          assert_eq!(page_tiles(0).len(), 15);
          assert!(omsi_ui::icons::svg("chevron_right").is_some());
      }
-@@ -354,13 +357,14 @@ mod tests {
+@@ -354,13 +359,14 @@ mod tests {
          assert_eq!(q.focus, 11, "no row under the last");
          q.focus = 14;
          q.step(1, 0);
@@ -1552,7 +1948,7 @@ index 54cd8618..72977fe2 100644
          q.turn(1);
          assert_eq!(q.page, 0);
      }
-@@ -460,6 +464,7 @@ mod tests {
+@@ -460,6 +466,7 @@ mod tests {
          click(&mut app, "next");
          assert_eq!(app.menus.game_panels.quick.as_ref().map(|q| q.page), Some(1));
          click(&mut app, "next");
@@ -1817,6 +2213,147 @@ index 00000000..fb8ecc76
 +        assert_eq!(from_env("x", None), None);
 +    }
 +}
+diff --git a/crates/omsi-cfg/src/dashcam_file.rs b/crates/omsi-cfg/src/dashcam_file.rs
+new file mode 100644
+index 00000000..d7739013
+--- /dev/null
++++ b/crates/omsi-cfg/src/dashcam_file.rs
+@@ -0,0 +1,135 @@
++//! The dashcam's file (HOF-Auto add-on): `dashcam.cfg` next to the settings, per bus
++//! `<bus path>|cam=x,y,z;yaw;pitch;fov`, `<bus path>|look=clean|cctv` and `<bus path>|name=...`.
++//! The game places the camera; the launcher changes the field of view, the look and the name
++//! through here, and every other line stays as it was.
++
++/// What the launcher shows of one bus's dashcam.
++#[derive(Clone, Debug, PartialEq)]
++pub struct DashEntry {
++    pub bus: String,
++    pub fov: f32,
++    pub cctv: bool,
++    pub name: String,
++}
++
++fn split(line: &str) -> Option<(&str, &str, &str)> {
++    let (head, value) = line.split_once('=')?;
++    let (path, what) = head.rsplit_once('|')?;
++    Some((path.trim(), what.trim(), value))
++}
++
++/// The same cleaning of a name the game does: no separators, 24 characters at most.
++pub fn clean_name(name: &str) -> String {
++    let n: String = name.chars().filter(|ch| !matches!(ch, '|' | '=' | '\n' | '\r' | ';' | ':' | '\'' | '%' | '\\')).take(24).collect();
++    if n.trim().is_empty() { "CAM 1".into() } else { n }
++}
++
++/// The buses that have a camera placed.
++pub fn list(text: &str) -> Vec<DashEntry> {
++    let mut out: Vec<DashEntry> = Vec::new();
++    for line in text.lines() {
++        let Some((bus, what, value)) = split(line) else { continue };
++        if what != "cam" || out.iter().any(|e| e.bus.eq_ignore_ascii_case(bus)) {
++            continue;
++        }
++        let fov = value.split(';').nth(3).and_then(|s| s.trim().parse::<f32>().ok()).filter(|f| f.is_finite());
++        let Some(fov) = fov else { continue };
++        let mut e = DashEntry { bus: bus.to_string(), fov: fov.clamp(20.0, 120.0), cctv: false, name: "CAM 1".into() };
++        for l in text.lines() {
++            let Some((b, w, v)) = split(l) else { continue };
++            if !b.eq_ignore_ascii_case(bus) {
++                continue;
++            }
++            match w {
++                "look" => e.cctv = v.trim().eq_ignore_ascii_case("cctv"),
++                "name" => e.name = v.trim().to_string(),
++                _ => {}
++            }
++        }
++        out.push(e);
++    }
++    out
++}
++
++/// `text` with the field of view, the look and/or the name of `bus` changed; the bus's other
++/// lines and every other bus stay. A bus with no camera placed is left alone.
++pub fn edit(text: &str, bus: &str, fov: Option<f32>, cctv: Option<bool>, name: Option<&str>) -> String {
++    if !list(text).iter().any(|e| e.bus.eq_ignore_ascii_case(bus)) {
++        return text.to_string();
++    }
++    let mut seen = (false, false);
++    let mut lines: Vec<String> = text
++        .lines()
++        .map(|l| {
++            let Some((b, what, value)) = split(l) else { return l.to_string() };
++            if !b.eq_ignore_ascii_case(bus) {
++                return l.to_string();
++            }
++            match (what, fov, cctv, name) {
++                ("cam", Some(f), _, _) if f.is_finite() => {
++                    let mut parts: Vec<String> = value.split(';').map(|s| s.to_string()).collect();
++                    if parts.len() >= 4 {
++                        parts[3] = format!("{:.1}", f.clamp(30.0, 110.0));
++                        return format!("{b}|cam={}", parts.join(";"));
++                    }
++                    l.to_string()
++                }
++                ("look", _, Some(c), _) => {
++                    seen.0 = true;
++                    format!("{b}|look={}", if c { "cctv" } else { "clean" })
++                }
++                ("name", _, _, Some(n)) => {
++                    seen.1 = true;
++                    format!("{b}|name={}", clean_name(n))
++                }
++                _ => l.to_string(),
++            }
++        })
++        .collect();
++    if let (false, Some(c)) = (seen.0, cctv) {
++        lines.push(format!("{bus}|look={}", if c { "cctv" } else { "clean" }));
++    }
++    if let (false, Some(n)) = (seen.1, name) {
++        lines.push(format!("{bus}|name={}", clean_name(n)));
++    }
++    lines.join("\n") + "\n"
++}
++
++/// `~/.openomsi/dashcam.cfg`.
++pub fn file() -> Option<std::path::PathBuf> {
++    let home = std::env::var_os("HOME").or_else(|| std::env::var_os("USERPROFILE"))?;
++    Some(std::path::PathBuf::from(home).join(".openomsi").join("dashcam.cfg"))
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    const TEXT: &str = "a.bus|cam=0.500,5.000,1.800;180.00;-5.00;70.0\na.bus|look=clean\na.bus|name=REAR\nb.bus|cam=0,0,2;0;0;60\n";
++
++    #[test]
++    fn the_buses_with_a_camera_are_listed() {
++        let l = list(TEXT);
++        assert_eq!(l.len(), 2);
++        assert_eq!((l[0].fov, l[0].cctv, l[0].name.as_str()), (70.0, false, "REAR"));
++        assert_eq!((l[1].fov, l[1].name.as_str()), (60.0, "CAM 1"));
++    }
++
++    #[test]
++    fn an_edit_changes_only_what_it_names() {
++        let out = edit(TEXT, "A.bus", Some(95.0), Some(true), Some("Front | door"));
++        let l = list(&out);
++        assert_eq!((l[0].fov, l[0].cctv, l[0].name.as_str()), (95.0, true, "Front  door"));
++        assert!(out.contains("a.bus|cam=0.500,5.000,1.800;180.00;-5.00;95.0"), "the place stays: {out}");
++        assert_eq!(l[1], list(TEXT)[1], "the other bus stays");
++        assert_eq!(edit(&out, "a.bus", Some(95.0), Some(true), Some("Front | door")), out, "twice the same");
++        assert_eq!(edit(TEXT, "none.bus", Some(95.0), None, None), TEXT, "no camera: nothing to change");
++    }
++
++    #[test]
++    fn a_look_and_a_name_are_added_when_the_file_has_none() {
++        let t = "c.bus|cam=0,0,2;0;0;60\n";
++        let out = edit(t, "c.bus", None, Some(true), Some("X"));
++        assert!(out.contains("c.bus|look=cctv") && out.contains("c.bus|name=X"));
++    }
++}
 diff --git a/crates/omsi-cfg/src/door_cams_file.rs b/crates/omsi-cfg/src/door_cams_file.rs
 new file mode 100644
 index 00000000..5259e0ef
@@ -2070,20 +2607,21 @@ index 00000000..5259e0ef
 +    }
 +}
 diff --git a/crates/omsi-cfg/src/lib.rs b/crates/omsi-cfg/src/lib.rs
-index 96947984..d944090a 100644
+index 96947984..b66fe192 100644
 --- a/crates/omsi-cfg/src/lib.rs
 +++ b/crates/omsi-cfg/src/lib.rs
-@@ -23,6 +23,8 @@
+@@ -23,6 +23,9 @@
  
  use std::path::{Path, PathBuf};
  
 +pub mod addon_switch;
++pub mod dashcam_file;
 +pub mod door_cams_file;
  pub mod cache_budget;
  pub mod cache_activity;
  pub mod codepage;
 diff --git a/crates/omsi-launcher-api/src/lib.rs b/crates/omsi-launcher-api/src/lib.rs
-index fff03d73..a7eb869f 100644
+index fff03d73..7a1f2478 100644
 --- a/crates/omsi-launcher-api/src/lib.rs
 +++ b/crates/omsi-launcher-api/src/lib.rs
 @@ -204,6 +204,14 @@ fn default_hof(map: Value, bus: Value, date: String, line: Option<String>) -> An
@@ -2101,7 +2639,7 @@ index fff03d73..a7eb869f 100644
  fn saved_situations(map: String) -> Answer {
      to_json(core::saved_situations(&map))
  }
-@@ -363,6 +371,72 @@ fn radio_stations_save(list: Vec<Value>) -> Answer {
+@@ -363,6 +371,90 @@ fn radio_stations_save(list: Vec<Value>) -> Answer {
  
  static RADIO_WRITE: std::sync::Mutex<()> = std::sync::Mutex::new(());
  
@@ -2123,7 +2661,9 @@ index fff03d73..a7eb869f 100644
 +            json!({ "bus": bus, "on": b.on, "all_doors": b.all_doors, "cams": cams })
 +        })
 +        .collect();
-+    Ok(json!({ "mods": mods, "buses": buses }))
++    let dtext = omsi_cfg::dashcam_file::file().and_then(|f| std::fs::read_to_string(f).ok()).unwrap_or_default();
++    let dashcams: Vec<Value> = omsi_cfg::dashcam_file::list(&dtext).into_iter().map(|d| json!({ "bus": d.bus, "fov": d.fov, "cctv": d.cctv, "name": d.name })).collect();
++    Ok(json!({ "mods": mods, "buses": buses, "dashcams": dashcams }))
 +}
 +
 +fn hofauto_mod_set(name: String, on: bool) -> Answer {
@@ -2133,6 +2673,22 @@ index fff03d73..a7eb869f 100644
 +    {
 +        let _one = HOFAUTO_WRITE.lock().unwrap_or_else(|e| e.into_inner());
 +        omsi_cfg::addon_switch::set(&name, on).map_err(err)?;
++    }
++    hofauto_state()
++}
++
++/// One bus's dashcam: the field of view, the look and the name (where it is placed is set in the game).
++fn hofauto_dash_set(bus: String, fov: Option<f64>, cctv: Option<bool>, name: Option<String>) -> Answer {
++    use omsi_cfg::dashcam_file as f;
++    {
++        let _one = HOFAUTO_WRITE.lock().unwrap_or_else(|e| e.into_inner());
++        let path = f::file().ok_or("no home folder")?;
++        let text = std::fs::read_to_string(&path).unwrap_or_default();
++        if !f::list(&text).iter().any(|e| e.bus.eq_ignore_ascii_case(&bus)) {
++            return Err(format!("no dashcam placed for {bus}"));
++        }
++        let out = f::edit(&text, &bus, fov.map(|v| v as f32), cctv, name.as_deref());
++        std::fs::write(&path, out).map_err(err)?;
 +    }
 +    hofauto_state()
 +}
@@ -2174,7 +2730,7 @@ index fff03d73..a7eb869f 100644
  // --- mods ------------------------------------------------------------------------------
  
  fn mods_status() -> Answer {
-@@ -837,6 +911,7 @@ fn answer(cmd: &str, args: &Value, p: &dyn Platform) -> Answer {
+@@ -837,6 +929,7 @@ fn answer(cmd: &str, args: &Value, p: &dyn Platform) -> Answer {
          "lines" => lines(arg::<String>(args, "map")?, arg::<String>(args, "date")?),
          "ibis" => ibis(arg::<String>(args, "bus")?, arg::<String>(args, "hof")?, arg::<String>(args, "line")?, arg::<Option<String>>(args, "terminus")?, arg::<Option<Vec<String>>>(args, "stops")?),
          "default_hof" => default_hof(arg::<Value>(args, "map")?, arg::<Value>(args, "bus")?, arg::<String>(args, "date")?, arg::<Option<String>>(args, "line")?),
@@ -2182,12 +2738,13 @@ index fff03d73..a7eb869f 100644
          "saved_situations" => saved_situations(arg::<String>(args, "map")?),
          "delete_situation" => delete_situation(arg::<String>(args, "map")?, arg::<String>(args, "file")?),
          "rename_situation" => rename_situation(arg::<String>(args, "map")?, arg::<String>(args, "file")?, arg::<String>(args, "name")?),
-@@ -882,6 +957,9 @@ fn answer(cmd: &str, args: &Value, p: &dyn Platform) -> Answer {
+@@ -882,6 +975,10 @@ fn answer(cmd: &str, args: &Value, p: &dyn Platform) -> Answer {
          "keybindings_get" => keybindings_get(),
          "keybindings_save" => keybindings_save(arg::<Value>(args, "bindings")?),
          "radio_stations" => radio_stations(),
 +        "hofauto_state" => hofauto_state(), // LOCAL (hof-auto)
 +        "hofauto_mod_set" => hofauto_mod_set(arg::<String>(args, "name")?, arg::<bool>(args, "on")?), // LOCAL (hof-auto)
++        "hofauto_dash_set" => hofauto_dash_set(arg::<String>(args, "bus")?, arg::<Option<f64>>(args, "fov")?, arg::<Option<bool>>(args, "cctv")?, arg::<Option<String>>(args, "name")?), // LOCAL (hof-auto)
 +        "hofauto_door_set" => hofauto_door_set(arg::<String>(args, "bus")?, arg::<Option<bool>>(args, "on")?, arg::<Option<bool>>(args, "all_doors")?, arg::<Option<Vec<Value>>>(args, "cams")?.unwrap_or_default()), // LOCAL (hof-auto)
          "radio_stations_save" => radio_stations_save(arg::<Vec<Value>>(args, "list")?),
          "mods_status" => mods_status(),
@@ -4135,10 +4692,10 @@ index 372085c6..53a9fdf8 100644
      </div>`}
 diff --git a/launcher/ui/js/pages/hof-auto.js b/launcher/ui/js/pages/hof-auto.js
 new file mode 100644
-index 00000000..f329062e
+index 00000000..0358614e
 --- /dev/null
 +++ b/launcher/ui/js/pages/hof-auto.js
-@@ -0,0 +1,71 @@
+@@ -0,0 +1,83 @@
 +// LOCAL (hof-auto): the add-ons' switches and the door cameras, set from the launcher.
 +// The game reads both files again within seconds, so a change shows in a running game too.
 +// Cameras are registered in the game (Alt, "Door cameras", or the controls' buttons): where a
@@ -4179,6 +4736,7 @@ index 00000000..f329062e
 +  }, []);
 +  if (!state) return null;
 +  const on = (id) => state.mods.find((m) => m.id === id)?.on !== false;
++  const dash = (bus, patch) => run('hofauto_dash_set', { bus, ...patch });
 +  const edit = (bus, index, patch) => {
 +    const cams = state.buses.find((b) => b.bus === bus).cams.map(() => ({}));
 +    cams[index] = patch;
@@ -4208,6 +4766,17 @@ index 00000000..f329062e
 +            <${Toggle} checked=${c.flip_x} label="Mirror image (left / right)" onChange=${(v) => edit(b.bus, i, { flip_x: v })} />
 +          </div>`)}
 +        </div>`)}
++    <h3>${t('Dashcam by bus')}</h3>
++    ${!(state.dashcams || []).length
++      ? html`<${Notice}>${t('No dashcam placed yet. In the game press Alt, choose "Dashcam", look where you want the camera and press "Place the camera here".')}<//>`
++      : state.dashcams.map((d) => html`<div class="card" key=${d.bus} style="margin:8px 0;padding:10px">
++          <b title=${d.bus}>${busName(d.bus)}</b>
++          <${Slider} label="Field of view" value=${d.fov} min=${30} max=${110} step=${1} format=${(v) => `${v.toFixed(0)}°`} onChange=${(v) => dash(d.bus, { fov: v })} />
++          <${Toggle} checked=${d.cctv} label="Security camera look (name and clock on the picture)" onChange=${(v) => dash(d.bus, { cctv: v })} />
++          <label class="row" style="gap:8px;margin-top:6px">${t('Name on the picture')}
++            <input type="text" maxlength="24" value=${d.name} onChange=${(e) => dash(d.bus, { name: e.target.value })} /></label>
++        </div>`)}
++    <p class="muted small">${t('Recording starts and stops in the game (Alt, Dashcam, or a button of your controls).')}</p>
 +  </div>`;
 +}
 diff --git a/launcher/ui/js/pages/settings-schema.js b/launcher/ui/js/pages/settings-schema.js
