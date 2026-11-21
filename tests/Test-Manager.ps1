@@ -79,6 +79,7 @@ $cfgDir = Join-Path $a.Raiz 'home\.openomsi'
 New-Item -ItemType Directory -Force $cfgDir | Out-Null
 Set-Content -LiteralPath (Join-Path $cfgDir 'door_cams.cfg') -Value 'meu|cam=minha' -Encoding ASCII
 Set-Content -LiteralPath (Join-Path $cfgDir 'hofauto-mods.cfg') -Value 'dashcam=1' -Encoding ASCII
+Set-Content -LiteralPath (Join-Path $cfgDir 'door_cams.cfg.bak') -Value 'meu|cam=copia-anterior' -Encoding ASCII
 $c = Roda $a @('-Modo', 'Instalar', '-ModsEscolhidos', 'hof_auto=1,door_cams=1,dashcam=0')
 Check 'instalar sai 0' ($c -eq 0) $saida
 Check 'executaveis iguais ao pacote' (Iguais $a.Jogo $pkExe)
@@ -92,6 +93,8 @@ Check 'backup marcado como oficial' ([bool]$meta.oficial)
 Check 'config antiga guardada no backup' ((Get-Content -LiteralPath (Join-Path $bks[0].FullName 'config\hofauto-mods.cfg') -Raw).Trim() -eq 'dashcam=1')
 Check 'estado.json gravado' (Test-Path (Join-Path $a.Raiz 'dados\estado.json'))
 Check 'perfil salvo em Documentos' (Test-Path (Join-Path $a.Raiz 'docs\perfil\hofauto-mods.cfg'))
+Check 'perfil guarda as cameras das portas e a copia .bak' (((Get-Content -LiteralPath (Join-Path $a.Raiz 'docs\perfil\door_cams.cfg') -Raw).Trim() -eq 'meu|cam=minha') -and ((Get-Content -LiteralPath (Join-Path $a.Raiz 'docs\perfil\door_cams.cfg.bak') -Raw).Trim() -eq 'meu|cam=copia-anterior'))
+Check 'a copia .bak das cameras continua no PC apos instalar' (Test-Path (Join-Path $cfgDir 'door_cams.cfg.bak'))
 Check 'pendente removido' (-not (Test-Path (Join-Path $a.Raiz 'dados\pendente.txt')))
 
 # 5) segunda instalacao/reparo e diagnostico depois de instalado

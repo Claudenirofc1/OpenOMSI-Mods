@@ -51,6 +51,10 @@ Sem o ffmpeg, só a dashcam fica indisponível; o resto funciona.
 2. Olhe (câmera livre) para onde quer a câmera e aperte **Adicionar uma câmera aqui**.
 3. Marque as **portas** que abrem essa câmera. Dá para ajustar campo de visão, espelhar e remover.
 4. Repita para outras câmeras/portas. Ao abrir a porta, o popup mostra só as câmeras dela.
+5. **Ajuste fino** (no mesmo painel): escolha o **passo fino** (1× / 0,25× / 0,10× / 0,05×) — ele reduz a velocidade da câmera livre e o tamanho de cada toque nos botões **X± Y± Z±** (posição no ônibus) e **Giro/Inclinação/Rolagem ±**. **Nivelar o horizonte** mantém o horizonte reto mesmo com o ônibus inclinado em rampa (a câmera mantém a direção configurada).
+6. **Popups**: botão **Mover / redimensionar os popups** (ou `Ctrl+Alt+P`): arraste com o mouse e use a roda para o tamanho; tudo fica salvo por ônibus e **não altera o enquadramento da câmera**.
+
+**Onde ficam salvas (e a limitação honesta):** as câmeras ficam salvas **por modelo de ônibus** (não dependem de mapa, linha, escala nem de reiniciar o jogo/PC) em `%USERPROFILE%\.openomsi\door_cams.cfg`, com cópia de segurança `door_cams.cfg.bak`. O jogo **não tem identidade permanente por veículo**: o único identificador é o **número de frota** escolhido ao iniciar. Por isso, a opção **“Só este veículo”** (aparece se o veículo tem número de frota) guarda um perfil por *modelo + número*; sem número de frota, o perfil é do modelo (todos os ônibus daquele modelo compartilham). Câmeras criadas por versões anteriores são migradas automaticamente, sem apagar nada.
 
 **Dashcam**
 1. **`Alt` → página 3 → Dashcam → Posicionar a câmera aqui.** Ela fica fixa no ônibus, como uma câmera instalada; o painel diz para onde ela foca.
@@ -61,7 +65,7 @@ Sem o ffmpeg, só a dashcam fica indisponível; o resto funciona.
 
 **Launcher:** Ajustes → **Mods** (liga/desliga cada mod e edita as câmeras por ônibus).
 
-**Atalhos de teclado (opcionais):** `Ctrl+K` liga/desliga as câmeras das portas · `Ctrl+Shift+K` cadastra uma câmera na visão atual · `Ctrl+Shift+1..9` liga/desliga a porta N da última câmera · `Ctrl+Alt+K` remove a última · `Ctrl+Alt+Shift+K` gatilho "qualquer porta" · `Ctrl+J` inicia/para a dashcam · `Ctrl+Shift+J` posiciona · `Ctrl+Alt+J` troca o visual.
+**Atalhos de teclado (opcionais):** `Ctrl+K` liga/desliga as câmeras das portas · `Ctrl+Shift+K` cadastra uma câmera na visão atual · `Ctrl+Shift+1..9` liga/desliga a porta N da última câmera · `Ctrl+Alt+K` remove a última · `Ctrl+Alt+Shift+K` gatilho "qualquer porta" · `Ctrl+Alt+P` editor dos popups · `Ctrl+J` inicia/para a dashcam · `Ctrl+Shift+J` posiciona · `Ctrl+Alt+J` troca o visual.
 
 ## O que o instalador faz (e não faz)
 

@@ -48,7 +48,7 @@ $mods = @(
     @{ id = 'dashcam';   texto = 'Dashcam (grava a viagem em MP4, precisa do ffmpeg)  [Ctrl+J]' },
     @{ id = 'ai_unstick'; texto = 'Recuperar IAs travadas de vez (so remove fora da vista; nunca onibus)' }
 )
-$arqPerfil = @('hofauto-mods.cfg', 'door_cams.cfg', 'dashcam.cfg', 'mirror_hud.cfg')
+$arqPerfil = @('hofauto-mods.cfg', 'door_cams.cfg', 'door_cams.cfg.bak', 'dashcam.cfg', 'mirror_hud.cfg')
 $publicadoNovo = ''
 
 function Log([string]$s) { try { Add-Content -Encoding UTF8 -Path $logf -Value ("{0} {1}" -f (Get-Date -Format s), $s) } catch { } }
