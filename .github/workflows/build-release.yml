@@ -124,7 +124,7 @@ jobs:
           Copy-Item nosso/installer/* $pk/
           # o programa de clique (sem janela preta): so inicia o gerenciador
           $csc = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
-          & $csc /nologo /target:winexe /optimize+ /out:"$pk/Instalar OpenOMSI HOF-Auto.exe" /r:System.Windows.Forms.dll nosso/tools/Instalar.cs
+          & $csc /nologo /target:winexe /optimize+ "/out:$((Resolve-Path $pk).Path)\Instalar OpenOMSI HOF-Auto.exe" /r:System.Windows.Forms.dll (Resolve-Path nosso/tools/Instalar.cs).Path
           if ($LASTEXITCODE -ne 0 -or -not (Test-Path "$pk/Instalar OpenOMSI HOF-Auto.exe")) { throw "o programa de clique nao compilou" }
           $off = "oficial"
           New-Item -ItemType Directory -Force $off | Out-Null
