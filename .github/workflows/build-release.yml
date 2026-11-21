@@ -87,7 +87,11 @@ jobs:
         shell: bash
         run: |
           cd src
-          git apply --3way --ignore-whitespace ../nosso/patches/hof-auto.patch
+          v="${TAG#v}"
+          patch="../nosso/patches/hof-auto-${v}.patch"
+          if [ ! -f "$patch" ]; then patch="../nosso/patches/hof-auto.patch"; fi
+          echo "patch: $patch"
+          git apply --ignore-whitespace "$patch"
           git status --short
       - uses: dtolnay/rust-toolchain@stable
       - name: Testes dos mods
@@ -132,7 +136,7 @@ jobs:
           try { gh release download $env:TAG -R openOMSI-org/openOMSI -p "*windows-x64.zip" -D $off; Get-ChildItem $off -Filter *.zip | ForEach-Object { Expand-Archive $_.FullName -DestinationPath "$off/x" -Force } } catch { Write-Host "pacote oficial indisponivel: $_" }
           & nosso/tools/Make-Manifest.ps1 -Tag $env:TAG -ExeDir "$pk/exe" -KnownHashes nosso/installer/known-hashes.json -Out "$pk/manifest.json" -Build (git -C nosso rev-parse --short HEAD) -OfficialDir "$off/x" -SourceRoot src
           Copy-Item nosso/LICENSE $pk/
-          Copy-Item nosso/patches/hof-auto.patch $pk/hof-auto.patch
+          $pp = "nosso/patches/hof-auto-$($env:TAG.TrimStart('v')).patch"; if (-not (Test-Path $pp)) { $pp = 'nosso/patches/hof-auto.patch' }; Copy-Item $pp $pk/hof-auto.patch
           $sha = (git -C nosso rev-parse --short HEAD)
           Set-Content "$pk/VERSAO.txt" "openOMSI $env:TAG + HOF Auto (nao oficial), build de nosso@$sha" -Encoding UTF8
           Set-Content "$pk/ORIGEM-DO-CODIGO.txt" "Codigo-fonte correspondente (AGPL-3.0): openOMSI oficial na tag $env:TAG (https://github.com/openOMSI-org/openOMSI) + hof-auto.patch (este pacote) / https://github.com/$env:GITHUB_REPOSITORY" -Encoding UTF8
