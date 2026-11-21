@@ -145,7 +145,7 @@ jobs:
         run: |
           rel="${TAG}-hofauto"
           zip="openOMSI-HOF-Auto-${TAG}.zip"
-          notes="Projeto independente, NAO oficial. Base: openOMSI oficial ${TAG} + HOF automatico, cameras das portas e dashcam. Baixe o ZIP, extraia tudo e de duplo clique em Instalar.cmd. Para voltar ao original: Desinstalar.cmd. Codigo-fonte: ORIGEM-DO-CODIGO.txt dentro do ZIP."
+          notes="Projeto independente, NAO oficial (PRE-RELEASE: testes automaticos ok, ainda nao validado no jogo em varios PCs). Base: openOMSI oficial ${TAG} + HOF automatico, cameras das portas e dashcam. COMO INSTALAR (qualquer PC): 1) baixe este ZIP; 2) extraia tudo (botao direito > Extrair tudo); 3) feche o jogo e o launcher; 4) duplo clique em 'Instalar OpenOMSI HOF-Auto.exe' (se o Windows avisar: Mais informacoes > Executar assim mesmo); 5) aponte o openomsi.exe do SEU jogo e marque os mods; 6) abra o jogo. Jogo em Arquivos de Programas: botao direito > Executar como administrador. Dashcam precisa do ffmpeg.exe (ao lado do jogo ou no PATH). Voltar ao original: Desinstalar.cmd. Tutorial completo: README do repositorio. Codigo-fonte: ORIGEM-DO-CODIGO.txt dentro do ZIP."
           if gh release view "$rel" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$rel" "$zip" --clobber -R "$GITHUB_REPOSITORY"
             gh release edit "$rel" --prerelease -R "$GITHUB_REPOSITORY" || true

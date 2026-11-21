@@ -3,14 +3,15 @@
 > Este pacote é **não oficial** e a versão atual é um **pré-release**: os testes automáticos passaram, mas ele **ainda não foi validado dentro do jogo**. Teste primeiro e reporte o que não funcionar.
 
 ## O que você precisa
-- openOMSI **v0.3.54** já instalado (ex.: `D:\Games\OpenOMSI`).
-- Windows 10/11. Para a dashcam: `ffmpeg.exe` ao lado do jogo ou em `%USERPROFILE%\.openomsi\bin` (ou a variável `OPENOMSI_FFMPEG`).
+- openOMSI **v0.3.54** já instalado, em **qualquer pasta ou disco** (o instalador pede o `openomsi.exe` do seu jogo).
+- Windows 10/11 (o PowerShell usado já vem no Windows). Para a dashcam: `ffmpeg.exe` ao lado do jogo, em `%USERPROFILE%\.openomsi\bin`, no `PATH` ou na variável `OPENOMSI_FFMPEG`.
 
 ## Instalar
-1. Baixe o ZIP da release: https://github.com/Claudenirofc1/openOMSI-HOF-Auto/releases (arquivo `openOMSI-HOF-Auto-...zip`).
+1. Baixe o ZIP da release: https://github.com/Claudenirofc1/OpenOMSI-Mods/releases/download/v0.3.54-hofauto/openOMSI-HOF-Auto-v0.3.54.zip (ou pela [página da release](https://github.com/Claudenirofc1/OpenOMSI-Mods/releases)).
 2. Extraia **a pasta inteira** (não rode de dentro do ZIP).
 3. **Feche o jogo e o launcher.**
 4. Duplo clique em **`Instalar OpenOMSI HOF-Auto.exe`** (abre uma janela, sem tela preta; o `Gerenciador.cmd` faz o mesmo). Se o Windows avisar "Windows protegeu o computador" (o programa não tem assinatura digital paga), clique em **Mais informações → Executar assim mesmo**. Ele:
+   - pede o `openomsi.exe` do seu jogo (tenta achar sozinho e pergunta) e confirma que a pasta aceita gravação (se estiver em `Arquivos de Programas`, abra com botão direito → *Executar como administrador*);
    - confirma que o seu jogo é a versão **provada** (pelos hashes dos executáveis) — se não for, **não altera nada**;
    - mostra o diagnóstico e pede a sua autorização;
    - faz **backup** dos 4 executáveis e das suas configurações em `%LOCALAPPDATA%\openOMSI-HOF-Auto\backup\<data-hora>`;

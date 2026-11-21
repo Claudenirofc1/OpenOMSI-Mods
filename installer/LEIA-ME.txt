@@ -1,11 +1,13 @@
-openOMSI HOF Auto (projeto independente, NAO oficial)
+OpenOMSI Mods - HOF Auto, cameras das portas e dashcam (projeto independente, NAO oficial)
 
-1) Extraia este ZIP inteiro.
+1) Extraia este ZIP inteiro (botao direito > Extrair tudo).
 2) Feche o jogo e o launcher.
-3) Duplo clique em Instalar.cmd, confirme a pasta do jogo e marque os mods que quer.
-Para voltar ao original: Desinstalar.cmd.
+3) Duplo clique em "Instalar OpenOMSI HOF-Auto.exe" (se o Windows avisar, Mais informacoes > Executar assim mesmo).
+4) Aponte o openomsi.exe do SEU jogo, marque os mods que quer e confirme.
+Se o jogo estiver em Arquivos de Programas: botao direito > Executar como administrador.
+Para voltar ao original: Desinstalar.cmd. Menu completo: Gerenciador.cmd.
 Para trazer de volta suas escolhas/cameras (apos formatar): Restaurar-Perfil.cmd.
 
-Troca somente 4 executaveis, com backup e conferencia. Nao mexe em mapas, onibus, HOFs ou configuracoes.
-Perfil salvo em: Documentos\openOMSI-HOF-Auto\perfil. A dashcam precisa do ffmpeg.exe.
-Detalhes: README.md no repositorio.
+Troca somente 4 executaveis do jogo, com backup e conferencia. Nao mexe em mapas, onibus, HOFs, saves ou configuracoes.
+Perfil salvo em: Documentos\openOMSI-HOF-Auto\perfil. A dashcam precisa do ffmpeg.exe (ao lado do jogo, em %USERPROFILE%\.openomsi\bin ou no PATH).
+Detalhes e tutorial: https://github.com/Claudenirofc1/OpenOMSI-Mods

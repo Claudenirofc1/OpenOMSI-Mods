@@ -1,77 +1,108 @@
-# openOMSI HOF Auto (projeto independente, NÃO oficial)
+# OpenOMSI Mods — HOF automático, câmeras das portas e dashcam (projeto independente, NÃO oficial)
 
-Pacote de **mods opcionais** para o [openOMSI](https://github.com/openOMSI-org/openOMSI), com instalador de caixas de seleção: você marca quais quer.
+Pacote de **mods opcionais** para o [openOMSI](https://github.com/openOMSI-org/openOMSI) com um instalador de janelas e caixas de seleção: você marca só o que quer. Sem linha de comando, sem mexer em arquivos à mão.
+
+> **Aviso:** este projeto não tem relação com a organização openOMSI nem com o autor do jogo. O nome openOMSI é usado só para dizer a que jogo isto se aplica. A versão atual é um **pré-release**: passou nos testes automáticos, mas ainda **não foi validada dentro do jogo em vários PCs**. Veja [Estado de validação](#estado-de-validação-honesto).
+
+## Baixar
+
+**[⬇ Baixar o ZIP (v0.3.54)](https://github.com/Claudenirofc1/OpenOMSI-Mods/releases/download/v0.3.54-hofauto/openOMSI-HOF-Auto-v0.3.54.zip)** · [página da release](https://github.com/Claudenirofc1/OpenOMSI-Mods/releases/tag/v0.3.54-hofauto)
+
+Funciona com o **openOMSI v0.3.54** (a versão é conferida pelo instalador; se for outra, ele **não altera nada**).
+
+## Instalar em 6 passos (vale para qualquer PC)
+
+**O que você precisa:** Windows 10 ou 11 e o openOMSI v0.3.54 já instalado, em **qualquer pasta ou disco**. Não precisa instalar nada além disso (o PowerShell que o instalador usa já vem no Windows).
+
+1. **Baixe** o ZIP pelo botão acima.
+2. **Extraia o ZIP inteiro** para uma pasta qualquer (botão direito → *Extrair tudo*). Não rode de dentro do ZIP.
+3. **Feche o jogo e o launcher.**
+4. Dê duplo clique em **`Instalar OpenOMSI HOF-Auto.exe`**. Se o Windows mostrar *"O Windows protegeu o computador"* (o programa não tem assinatura digital paga), clique em **Mais informações → Executar assim mesmo**. Se o antivírus reclamar, é pelo mesmo motivo: o arquivo é compilado no GitHub a partir do código deste repositório (veja a [origem do código](#código-fonte-e-licença)).
+5. Na janela, **aponte o `openomsi.exe` do SEU jogo** (o instalador tenta achar sozinho e pergunta se a pasta encontrada é a certa). Ele usa a pasta desse arquivo e só troca 4 programas do jogo, com backup. Marque os mods que quer e confirme.
+6. **Abra o jogo normalmente.** Pronto.
+
+**Se o jogo estiver em `Arquivos de Programas`** (ou outra pasta protegida), o instalador avisa que não tem permissão e não altera nada: feche e abra de novo com **botão direito → Executar como administrador**.
+
+**Para voltar ao original:** abra o instalador de novo e use *Restaurar/Desinstalar*, ou dê duplo clique em `Desinstalar.cmd`.
+
+### Dashcam: precisa do `ffmpeg.exe`
+
+A dashcam grava MP4 usando o ffmpeg, que **não vem junto** (é um programa de terceiros). O jogo procura o `ffmpeg.exe`, nesta ordem:
+
+- na pasta do jogo (ao lado do `openomsi.exe`);
+- em `%USERPROFILE%\.openomsi\bin`;
+- no `PATH` do Windows (por exemplo, depois de `winget install Gyan.FFmpeg` num terminal) ou na variável `OPENOMSI_FFMPEG`.
+
+Sem o ffmpeg, só a dashcam fica indisponível; o resto funciona.
 
 ## Mods
 
-| Mod | O que faz | Teclas |
-|---|---|---|
-| **HOF automático** | Abrir o jogo → mapa → ônibus → linha/tour → jogar, sem escolher o HOF à mão quando o jogo consegue provar qual é o correto. | — |
-| **Câmeras das portas** | Cadastre câmeras por ônibus (na câmera livre, no ponto de vista desejado). Ao abrir uma porta ligada a câmeras, aparece **um popup** com as câmeras dessa porta lado a lado. Cada câmera aparece **só quando uma das portas dela está aberta** (porta 2 mostra só as câmeras da 2); some quando as portas dela fecham. Gatilho opcional: abrir qualquer porta. | `Ctrl+K` liga/desliga · `Ctrl+Shift+K` cadastra câmera na visão atual · `Ctrl+Shift+1..9` liga/desliga a porta N da última câmera · `Ctrl+Alt+K` remove a última · `Ctrl+Alt+Shift+K` gatilho "qualquer porta". **Nativo:** toque em `Alt` → página 3 → **Câmeras das portas** (liga/desliga, cadastra, escolhe portas, campo de visão, espelhar, remover); em **Controles** há as ações "Câmeras das portas: abrir os ajustes / ligar-desligar / adicionar câmera" para qualquer botão do volante; no **launcher**, Ajustes → **Mods** (liga/desliga de cada mod e edição das câmeras por ônibus) |
-| **Dashcam** | Segunda câmera configurável que grava a viagem inteira em **MP4** (visão limpa por padrão, ou estilo câmera de segurança com relógio e nome). Precisa do `ffmpeg.exe`. | `Ctrl+J` inicia/para · `Ctrl+Shift+J` posiciona na visão atual · `Ctrl+Alt+J` troca o visual · **Nativo:** `Alt` → página 3 → **Dashcam** (posicionar, ver o foco, iniciar/parar, estilo, nome); ações para botões do volante em **Controles**; indicador `● REC` na tela; no launcher, Ajustes → **Mods** |
-| **IAs travadas** (`ai_unstick`) | Recupera trânsito de IA parado de vez, por cima do que o jogo já faz. Só investiga um carro depois de `max(150 s, 2,5 × o maior vermelho do mapa)` **sem progresso e sem motivo legítimo** (semáforo, parada de ônibus, pedestres, o seu veículo, ultrapassagem, estacionamento não contam). Confirma em 3 verificações seguidas, escolhe **a causadora** (cabeça da fila ou membro de um impasse), remove **só ela**, **só fora da vista de qualquer jogador**, nunca ônibus de linha; dá 60 s para a fila andar antes de olhar a próxima; mantém o lugar livre de novos carros por 120 s; registra tudo no log do jogo (`ai-unstick:`). | liga/desliga: caixa do instalador ou `ai_unstick=0` |
-
-Os cadastros ficam em `door_cams.cfg` e `dashcam.cfg` (pasta `.openomsi` do seu usuário), por ônibus; as câmeras, portas, campo de visão e espelhamento se editam no jogo (Alt) ou no launcher (Ajustes → Mods). Vídeos da dashcam: `Vídeos\openOMSI-dashcam`.
-
-### Escolher mods e guardar o perfil
-
-O instalador mostra caixas para cada mod e grava a escolha em `.openomsi\hofauto-mods.cfg` (`nome=1`/`0`; vale na hora, sem reiniciar). Uma **cópia do perfil** (escolhas, câmeras das portas, dashcam, retrovisores) é salva em `Documentos\openOMSI-HOF-Auto\perfil`. Depois de desinstalar ou formatar o PC: instale de novo (o perfil é trazido de volta sozinho, sem sobrescrever nada seu) ou use `Restaurar-Perfil.cmd`.
-
-> Este projeto **não é oficial** e não tem relação com a organização openOMSI nem com o autor do openOMSI. O nome openOMSI é usado só para dizer a que jogo isto se aplica.
-
-
-## OpenOMSI Mod Manager (`Gerenciador.cmd`)
-
-Duplo clique em `Gerenciador.cmd` abre o menu. É o mesmo instalador, com mais funções:
-
-| Função | O que faz |
+| Mod | O que faz |
 |---|---|
-| **Instalar** | Escolhe os mods (caixas), faz backup versionado dos 4 executáveis e confere hashes. |
-| **Atualizar** | Lê a versão do seu jogo, consulta **só as releases deste repositório** (HTTPS), baixa o ZIP da versão compatível, confere o hash de cada arquivo contra o `manifest.json` e instala. Sem release para a sua versão do jogo: recusa e avisa. |
-| **Reparar** | Diagnostica (versão, hashes, mods, ffmpeg, backups), **mostra os problemas e a proposta e pede autorização** antes de reinstalar. |
-| **Diagnóstico** | Só mostra o estado, não altera nada. |
-| **Exportar / Importar perfil** | Copia escolhas, câmeras das portas, dashcam e retrovisores para a pasta que você escolher (ideal: pendrive/outra unidade) e traz de volta depois de formatar. |
-| **Restaurar** | `Desinstalar.cmd` devolve os originais do backup mais recente. |
+| **HOF automático** | Abrir o jogo → mapa → ônibus → linha/tour → jogar, sem escolher o HOF à mão quando o jogo consegue provar qual é o correto. |
+| **Câmeras das portas** | Cadastre câmeras por ônibus, no ponto de vista que quiser. Ao abrir uma porta ligada a câmeras, aparece **um popup** só com as câmeras **daquela porta** (a porta 2 mostra só as câmeras da 2); some quando elas fecham. Gatilho opcional: abrir qualquer porta mostra todas. |
+| **Dashcam** | Câmera fixa no ônibus que grava a viagem em **MP4** (visão limpa ou estilo câmera de segurança com relógio e nome). O painel diz **para onde ela está olhando** e mostra `● REC mm:ss` enquanto grava. |
+| **IAs travadas** (`ai_unstick`) | Recupera trânsito de IA parado de vez, por cima do que o jogo já faz: só age depois de bastante tempo sem progresso e sem motivo legítimo (semáforo, parada, pedestres, o seu veículo…), confirma em verificações seguidas, remove **só o carro causador**, **só fora da vista de qualquer jogador**, nunca ônibus de linha. Registra tudo no log do jogo (`ai-unstick:`). |
 
-Segurança: recusa instalar se a versão do jogo for incompatível com o pacote ou se um arquivo não bater com o manifesto; recusa mexer com o jogo aberto; uma instalação interrompida é desfeita sozinha na próxima execução; as operações locais funcionam offline. O gerenciador **não** modifica nem reverte a instalação oficial do jogo: ele só troca os 4 executáveis (com backup).
+## Como usar no jogo
 
-Manifesto (`manifest.json`, gerado pela release): módulos e versões, versões compatíveis do openOMSI, hash de cada arquivo, dependências (ex.: `ffmpeg` para a dashcam), como atualizar e restaurar. Um novo módulo entra acrescentando uma entrada ali e o patch correspondente; o gerenciador não precisa ser refeito.
+**Câmeras das portas**
+1. Toque em **`Alt`** → vá à **página 3** → **Câmeras das portas**.
+2. Olhe (câmera livre) para onde quer a câmera e aperte **Adicionar uma câmera aqui**.
+3. Marque as **portas** que abrem essa câmera. Dá para ajustar campo de visão, espelhar e remover.
+4. Repita para outras câmeras/portas. Ao abrir a porta, o popup mostra só as câmeras dela.
 
-> Estado: a lógica do gerenciador foi escrita e revisada, mas **ainda não foi executada** (sem PowerShell no ambiente de desenvolvimento). Trate como pronto para teste no seu Windows.
+**Dashcam**
+1. **`Alt` → página 3 → Dashcam → Posicionar a câmera aqui.** Ela fica fixa no ônibus, como uma câmera instalada; o painel diz para onde ela foca.
+2. Quando quiser, volte ao mesmo painel e toque em **Iniciar gravação**; para encerrar, **Parar gravação** (ou, se esquecer, o vídeo continua tocável).
+3. Vídeos em `Vídeos\openOMSI-dashcam`.
 
-## Como instalar (sem comandos)
+**Botões do volante/teclado:** em **Controles**, dê a qualquer botão as ações "Câmeras das portas: …" e "Dashcam: …".
 
-1. Abra a página **[Releases](../../releases)** e baixe o `openOMSI-HOF-Auto-vX.Y.Z.zip` mais novo.
-2. **Extraia o ZIP inteiro** (botão direito → Extrair tudo).
-3. Feche o jogo e o launcher, e dê **duplo clique em `Instalar.cmd`**.
-4. Confirme a pasta do jogo quando a janela perguntar. Pronto: abra o jogo normalmente.
+**Launcher:** Ajustes → **Mods** (liga/desliga cada mod e edita as câmeras por ônibus).
 
-**Para voltar ao original:** duplo clique em `Desinstalar.cmd`.
+**Atalhos de teclado (opcionais):** `Ctrl+K` liga/desliga as câmeras das portas · `Ctrl+Shift+K` cadastra uma câmera na visão atual · `Ctrl+Shift+1..9` liga/desliga a porta N da última câmera · `Ctrl+Alt+K` remove a última · `Ctrl+Alt+Shift+K` gatilho "qualquer porta" · `Ctrl+J` inicia/para a dashcam · `Ctrl+Shift+J` posiciona · `Ctrl+Alt+J` troca o visual.
 
 ## O que o instalador faz (e não faz)
 
-- Troca **somente 4 executáveis** (`openomsi.exe`, `openomsi-launcher.exe`, `openomsi-launcher-app.exe`, `omsi-plugin-host32.exe`).
-- Antes, guarda os originais em `%LOCALAPPDATA%\openOMSI-HOF-Auto\backup\` e confere cada arquivo por hash. Se algo falhar, restaura os originais sozinho.
-- Recusa continuar se o jogo ou o launcher estiver aberto.
-- **Não mexe** em mapas, ônibus, HOFs, configurações, OMSI 2 nem em outros mods. Não vem nenhum conteúdo de terceiros neste projeto.
+- Troca **somente 4 executáveis** do jogo (`openomsi.exe`, `openomsi-launcher.exe`, `openomsi-launcher-app.exe`, `omsi-plugin-host32.exe`).
+- **Prova a versão** do seu jogo pelos hashes dos executáveis. Se não for uma versão conhecida e compatível, bloqueia e não altera nada.
+- Antes de trocar, guarda os originais em backup versionado (`%LOCALAPPDATA%\openOMSI-HOF-Auto\backup\<data-hora>`) e confere cada arquivo por hash. Se algo falhar, restaura sozinho; se a energia cair no meio, desfaz na próxima execução.
+- Recusa continuar com o jogo ou o launcher abertos.
+- **Não mexe** em mapas, ônibus, HOFs, saves, configurações pessoais, OMSI 2 nem em outros mods. Nenhum conteúdo de terceiros vem neste projeto.
+- Guarda uma **cópia do perfil** (escolhas, câmeras, dashcam) em `Documentos\openOMSI-HOF-Auto\perfil`; depois de formatar, instale de novo e ele traz de volta sem sobrescrever nada seu.
 
-## Como as atualizações do jogo são tratadas
+Escolhas dos mods ficam em `.openomsi\hofauto-mods.cfg` na pasta do seu usuário (`nome=1` liga, `nome=0` desliga; vale em segundos, sem reiniciar). Variáveis alternativas: `OPENOMSI_HOF_AUTO=off`, `OPENOMSI_DOOR_CAMS=off`, `OPENOMSI_DASHCAM=off`.
 
-Cada release é compilada **a partir da versão oficial correspondente** do openOMSI, com as nossas alterações aplicadas por cima ([`patches/hof-auto.patch`](patches/hof-auto.patch)). Uma rotina automática (GitHub Actions) confere todo dia se saiu uma versão oficial nova; se sair, ela reaplica o patch, roda os testes e publica a release nova. **Se o patch não aplicar ou um teste falhar, nada é publicado**, então o projeto nunca entrega um jogo quebrado de propósito.
+## Gerenciador (menu)
 
-- Se o jogo oficial se atualizar e sobrescrever os arquivos: baixe a release da versão nova daqui e rode `Instalar.cmd` de novo (o backup anterior fica guardado).
-- Se ainda não houver release para a sua versão do jogo, **não instale** a de outra versão: espere a nova ou use o oficial.
+O mesmo instalador abre um menu (`Gerenciador.cmd` ou o `.exe`) com:
+
+| Função | O que faz |
+|---|---|
+| **Instalar** | Escolhe os mods, faz backup versionado e confere hashes. |
+| **Atualizar** | Consulta **só as releases deste repositório** (HTTPS), baixa o ZIP da versão compatível com o seu jogo, confere cada arquivo contra o `manifest.json` e instala. Sem release para a sua versão: recusa e avisa. |
+| **Reparar** | Diagnostica, **mostra os problemas e a proposta e pede autorização** antes de reinstalar. |
+| **Diagnóstico** | Só mostra o estado; não altera nada. |
+| **Exportar / Importar perfil** | Leva suas escolhas e câmeras para outra pasta/pendrive e traz de volta depois. |
+| **Restaurar** | Devolve os originais de um backup à sua escolha. |
+
+## Quando o jogo oficial se atualiza
+
+Cada release é compilada **a partir da versão oficial correspondente** do openOMSI, com as nossas alterações por cima ([`patches/hof-auto.patch`](patches/hof-auto.patch)). Uma rotina automática confere todo dia se saiu versão oficial nova; se sair, reaplica o patch, roda os testes e publica a release. **Se o patch não aplicar ou um teste falhar, nada é publicado.**
+
+- Se o jogo se atualizar sozinho e sobrescrever os arquivos: o instalador percebe que a versão mudou e **bloqueia** até existir release compatível. Não instale a release de outra versão.
+- Sem release para a sua versão: espere a nova ou use o jogo oficial normalmente.
 
 ## Estado de validação (honesto)
 
-- Testado no jogo, versão **v0.3.54**, no PC do autor: 3 ônibus diferentes, linhas 15 e 103 do mapa Bolsão V, com letreiro automático e cockpit remoto funcionando.
-- **Não** testado: outras linhas e mapas, versões oficiais mais novas, e o instalador deste repositório em outros PCs. O fluxo de build automático (GitHub Actions) ainda não rodou. Trate como **pronto para teste**, não como 100% funcional.
-- **Câmeras das portas e dashcam: recém-implementadas, testadas só por testes automáticos; ainda não confirmadas no jogo.** A dashcam lê a imagem da GPU a cada quadro e pode custar FPS; o texto do estilo câmera de segurança usa a fonte `arial.ttf` do Windows (não testado).
-- Para desligar um mod sem desinstalar: caixa do instalador, ou `nome=0` em `hofauto-mods.cfg`, ou a variável `OPENOMSI_HOF_AUTO=off` (HOF) / `OPENOMSI_DASHCAM=off` / `OPENOMSI_DOOR_CAMS=off`.
+- **Testes automáticos:** lógica do jogo (portas, dashcam, formatos de arquivo, painéis), do launcher e do gerenciador (Windows PowerShell 5.1 e 7) passam no GitHub Actions.
+- **Já visto no jogo (HOF automático):** v0.3.54, em um PC, com 3 ônibus e letreiro/cockpit funcionando.
+- **Ainda não validado no jogo real:** painéis do `Alt`, aba Mods do launcher, o `.exe` de instalação, a gravação da dashcam (e o impacto no FPS, que **não foi medido**), botões do volante. A dashcam lê a imagem da GPU a cada quadro e pode custar FPS.
+- Outros PCs, versões do Windows, mapas e versões do jogo: **sem confirmação ainda**. Trate como **pronto para teste**, não como 100% funcional, e relate o que encontrar em [Issues](https://github.com/Claudenirofc1/OpenOMSI-Mods/issues) junto com o arquivo de log do jogo e o `log` do instalador (`%LOCALAPPDATA%\openOMSI-HOF-Auto`).
+
+Mais detalhes, atualização e checklist de testes: **[docs/INSTALACAO.md](docs/INSTALACAO.md)**.
 
 ## Código-fonte e licença
 
-O openOMSI é licenciado sob **AGPL-3.0**; este projeto mantém a mesma licença ([LICENSE](LICENSE)). O código-fonte correspondente de cada release é: o openOMSI oficial na tag indicada em `ORIGEM-DO-CODIGO.txt` + o arquivo [`patches/hof-auto.patch`](patches/hof-auto.patch). OMSI e OMSI 2 são marcas dos seus respectivos donos.
-
-
-**Guia completo de instalação, uso e checklist de testes:** [docs/INSTALACAO.md](docs/INSTALACAO.md)
+O openOMSI é licenciado sob **AGPL-3.0**; este projeto mantém a mesma licença ([LICENSE](LICENSE)). O código-fonte correspondente de cada release é: o openOMSI oficial na tag indicada em `ORIGEM-DO-CODIGO.txt` (dentro do ZIP) + o arquivo [`patches/hof-auto.patch`](patches/hof-auto.patch). O `.exe` de instalação é compilado no GitHub a partir de [`tools/Instalar.cs`](tools/Instalar.cs) (só inicia o script `Instalar-HOF-Auto.ps1`, que está em texto aberto no ZIP). OMSI e OMSI 2 são marcas dos seus respectivos donos.

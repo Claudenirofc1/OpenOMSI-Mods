@@ -27,7 +27,7 @@ Add-Type -AssemblyName System.Drawing
 $exes = @('openomsi.exe', 'openomsi-launcher.exe', 'openomsi-launcher-app.exe', 'omsi-plugin-host32.exe')
 $aqui = Split-Path -Parent $MyInvocation.MyCommand.Path
 $novos = Join-Path $aqui 'exe'
-$repoGh = 'Claudenirofc1/openOMSI-HOF-Auto'
+$repoGh = 'Claudenirofc1/OpenOMSI-Mods'
 if ($RaizTeste) {
     $dadosDir = Join-Path $RaizTeste 'dados'
     $homeCfg = Join-Path $RaizTeste 'home\.openomsi'
@@ -525,6 +525,10 @@ function Principal {
     if (-not $vj) { Msg ((Texto-Diag $diag) + "`n`nInstalacao BLOQUEADA: nao foi possivel provar a versao/compatibilidade. Nada foi alterado.") 'openOMSI Mod Manager' 'OK' 'Error' | Out-Null; return 1 }
     if (@($manifesto.compatible_openomsi) -notcontains $vj) { Msg ((Texto-Diag $diag) + "`n`nInstalacao BLOQUEADA: versao do jogo nao suportada por este pacote. Nada foi alterado.") 'openOMSI Mod Manager' 'OK' 'Error' | Out-Null; return 1 }
     $compat = Compat-Modulos $manifesto $vj
+    # a pasta do jogo precisa aceitar escrita (jogo em 'Arquivos de Programas' exige administrador)
+    $sonda = Join-Path $dest ('.hofauto-teste-' + [guid]::NewGuid().ToString('N'))
+    try { Set-Content -LiteralPath $sonda -Value 'x' -ErrorAction Stop; Remove-Item -LiteralPath $sonda -Force -ErrorAction SilentlyContinue }
+    catch { Msg "Sem permissao para gravar na pasta do jogo:`n$dest`n`nFeche este programa e abra de novo com o botao direito > Executar como administrador (comum quando o jogo esta em Arquivos de Programas). Nada foi alterado." 'openOMSI Mod Manager' 'OK' 'Warning' | Out-Null; return 1 }
     if ($modo -eq 'Reparar') {
         if (-not $diag.Problemas.Count) { Msg (Texto-Diag $diag) 'Nada a reparar' 'OK' 'Information' | Out-Null; return 0 }
         $r1 = Msg ((Texto-Diag $diag) + "`n`nProposta: reinstalar os 4 executaveis do pacote (com backup) e reaplicar suas escolhas.`n`nAutoriza?") 'Reparar' 'YesNo' 'Question'
