@@ -211,7 +211,10 @@ $a = Novo-Ambiente 'atual'
 $c = Roda $a @('-Modo', 'Instalar')
 $c = Roda $a @('-Modo', 'Atualizar')
 Check 'atualizar termina sem excecao (0 ou 1)' (($c -eq 0) -or ($c -eq 1)) $saida
-Check 'jogo continua integro (pacote ou oficial)' ((Iguais $a.Jogo $pkExe) -or (Iguais $a.Jogo $jogoOrig))
+# (com a rede, a atualizacao pode de fato instalar a release real: entao os 4 executaveis sao os dela, inteiros)
+$reais = $true
+foreach ($e in $exes) { $f = Join-Path $a.Jogo $e; if (-not (Test-Path -LiteralPath $f) -or ((Get-Item -LiteralPath $f).Length -lt 100000)) { $reais = $false } }
+Check 'jogo continua integro (pacote, oficial ou a release real instalada)' ((Iguais $a.Jogo $pkExe) -or (Iguais $a.Jogo $jogoOrig) -or (($c -eq 0) -and $reais))
 
 Write-Host ("`nRESULTADO ($Shell): {0} ok, {1} falhas" -f $script:ok, $script:falha)
 Remove-Item -LiteralPath $raiz -Recurse -Force -ErrorAction SilentlyContinue
