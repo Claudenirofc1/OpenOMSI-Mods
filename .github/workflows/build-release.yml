@@ -100,6 +100,9 @@ jobs:
           cargo test --locked -p omsi-cfg --lib addon_switch || exit /b 1
           cargo test --locked -p omsi-app --lib door_cams || exit /b 1
           cargo test --locked -p omsi-app --lib dashcam || exit /b 1
+          cargo test --locked -p omsi-cfg --lib || exit /b 1
+          cargo test --locked -p omsi-app --lib game_panels || exit /b 1
+          cargo test --locked -p omsi-app --lib door_cams || exit /b 1
           cargo test --locked -p omsi-sim --lib unstick || exit /b 1
           cargo test --locked -p omsi-sim --lib longest_red || exit /b 1
       - name: Compilar (script oficial)

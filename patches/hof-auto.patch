@@ -1,9 +1,9 @@
 diff --git a/crates/omsi-app/locales/hof_auto.yml b/crates/omsi-app/locales/hof_auto.yml
 new file mode 100644
-index 00000000..04f48f8f
+index 00000000..8221d47f
 --- /dev/null
 +++ b/crates/omsi-app/locales/hof_auto.yml
-@@ -0,0 +1,70 @@
+@@ -0,0 +1,187 @@
 +# Automatic depot-file (HOF) choice: LOCAL strings (hof-auto prototype). English strings are the keys; pt is Brazilian Portuguese.
 +_version: 2
 +
@@ -74,6 +74,123 @@ index 00000000..04f48f8f
 +"exact":
 +  pt: "exata"
 +  pt-pt: "exata"
++
++"Door cameras":
++  pt: "Câmeras das portas"
++  pt-pt: "Câmeras das portas"
++
++"Get into a bus first: the cameras belong to the bus.":
++  pt: "Entre em um ônibus primeiro: as câmeras pertencem ao ônibus."
++  pt-pt: "Entre em um ônibus primeiro: as câmeras pertencem ao ônibus."
++
++"A camera's picture pops up while one of its doors is open. Cameras are kept for this bus.":
++  pt: "A imagem de uma câmera aparece enquanto uma das portas dela está aberta. As câmeras ficam salvas para este ônibus."
++  pt-pt: "A imagem de uma câmera aparece enquanto uma das portas dela está aberta. As câmeras ficam salvas para este ônibus."
++
++"Door cameras on":
++  pt: "Câmeras das portas ligadas"
++  pt-pt: "Câmeras das portas ligadas"
++
++"Any door shows them":
++  pt: "Qualquer porta mostra"
++  pt-pt: "Qualquer porta mostra"
++
++"No camera yet: look where you want it (the free camera too) and press Add.":
++  pt: "Nenhuma câmera ainda: olhe para onde a quer (a câmera livre também) e aperte Adicionar."
++  pt-pt: "Nenhuma câmera ainda: olhe para onde a quer (a câmera livre também) e aperte Adicionar."
++
++"Look here":
++  pt: "Olhar aqui"
++  pt-pt: "Olhar aqui"
++
++
++"Door":
++  pt: "Porta"
++  pt-pt: "Porta"
++
++
++"Mirror image (left / right)":
++  pt: "Imagem espelhada (esquerda / direita)"
++  pt-pt: "Imagem espelhada (esquerda / direita)"
++
++"Add a camera here":
++  pt: "Adicionar uma câmera aqui"
++  pt-pt: "Adicionar uma câmera aqui"
++
++
++"No camera to register":
++  pt: "Nenhuma câmera para cadastrar"
++  pt-pt: "Nenhuma câmera para cadastrar"
++
++"The camera now looks where your view does.":
++  pt: "A câmera agora olha para onde a sua visão olha."
++  pt-pt: "A câmera agora olha para onde a sua visão olha."
++
++"Door cameras: open the settings":
++  pt: "Câmeras das portas: abrir os ajustes"
++  pt-pt: "Câmeras das portas: abrir os ajustes"
++
++"Door cameras: on / off":
++  pt: "Câmeras das portas: ligar / desligar"
++  pt-pt: "Câmeras das portas: ligar / desligar"
++
++"Door cameras: add a camera where the view is":
++  pt: "Câmeras das portas: adicionar uma câmera onde está a visão"
++  pt-pt: "Câmeras das portas: adicionar uma câmera onde está a visão"
++
++
++"HOF-Auto add-ons":
++  pt: "Complementos HOF-Auto"
++  pt-pt: "Complementos HOF-Auto"
++
++"Automatic depot file (HOF)":
++  pt: "Arquivo de depósito (HOF) automático"
++  pt-pt: "Arquivo de depósito (HOF) automático"
++
++"Picks the depot file only when the game can prove it is the right one.":
++  pt: "Escolhe o HOF só quando o jogo consegue provar que é o correto."
++  pt-pt: "Escolhe o HOF só quando o jogo consegue provar que é o correto."
++
++"A popup with the cameras you registered while their doors are open.":
++  pt: "Um popup com as câmeras cadastradas enquanto as portas delas estão abertas."
++  pt-pt: "Um popup com as câmeras cadastradas enquanto as portas delas estão abertas."
++
++"Dashcam":
++  pt: "Dashcam"
++  pt-pt: "Dashcam"
++
++"Records the road ahead to an MP4 (needs ffmpeg).":
++  pt: "Grava a pista à frente em MP4 (precisa do ffmpeg)."
++  pt-pt: "Grava a pista à frente em MP4 (precisa do ffmpeg)."
++
++"Stuck traffic recovery":
++  pt: "Recuperação de trânsito travado"
++  pt-pt: "Recuperação de trânsito travado"
++
++"Removes an AI car that stood for good, out of everybody's sight.":
++  pt: "Remove um carro de IA parado de vez, fora da vista de todos."
++  pt-pt: "Remove um carro de IA parado de vez, fora da vista de todos."
++
++"These are the add-ons of the HOF-Auto package. Switching one off makes the game behave as the official one for that feature, at once.":
++  pt: "São os complementos do pacote HOF-Auto. Desligar um faz o jogo se comportar como o oficial naquele recurso, na hora."
++  pt-pt: "São os complementos do pacote HOF-Auto. Desligar um faz o jogo se comportar como o oficial naquele recurso, na hora."
++
++"Door cameras by bus":
++  pt: "Câmeras das portas por ônibus"
++  pt-pt: "Câmeras das portas por ônibus"
++
++"No door camera yet. In the game press Alt, choose \"Door cameras\" and \"Add a camera here\", or give a button of your wheel the action \"Door cameras: add a camera where the view is\" in Controls.":
++  pt: "Nenhuma câmera ainda. No jogo aperte Alt, escolha \"Câmeras das portas\" e \"Adicionar uma câmera aqui\", ou dê a um botão do seu volante a ação \"Câmeras das portas: adicionar uma câmera onde está a visão\" em Controles."
++  pt-pt: "Nenhuma câmera ainda. No jogo aperte Alt, escolha \"Câmeras das portas\" e \"Adicionar uma câmera aqui\", ou dê a um botão do seu volante a ação \"Câmeras das portas: adicionar uma câmera onde está a visão\" em Controles."
++
++
++"Any door":
++  pt: "Qualquer porta"
++  pt-pt: "Qualquer porta"
++
++"Remove this camera":
++  pt: "Remover esta câmera"
++  pt-pt: "Remover esta câmera"
 diff --git a/crates/omsi-app/src/app/groups.rs b/crates/omsi-app/src/app/groups.rs
 index 5489e375..20ba1583 100644
 --- a/crates/omsi-app/src/app/groups.rs
@@ -146,6 +263,37 @@ index 85b52022..50b5cee6 100644
          let (skip, on_screen): (&[usize], &[usize]) = if every_frame { (&panel_cams, &[]) } else { (&[], &panel_cams) };
          if every_frame && !panel_cams.is_empty() {
              if let (Some(w), Some(p)) = (self.world.as_ref(), self.player.as_ref()) {
+diff --git a/crates/omsi-app/src/app_impl/actions.rs b/crates/omsi-app/src/app_impl/actions.rs
+index 72fd720b..250e0539 100644
+--- a/crates/omsi-app/src/app_impl/actions.rs
++++ b/crates/omsi-app/src/app_impl/actions.rs
+@@ -328,6 +328,26 @@ impl App {
+                 let msg = self.sound.radio.toggle_power(self.player.as_ref().map(|p| &p.vehicle));
+                 self.service_msg = Some((msg, 3.0));
+             }
++            // the door cameras (openOMSI HOF-Auto add-on): any button can be given these in Controls
++            "doorcams_panel" | "doorcams_toggle" | "doorcams_add" if omsi_cfg::addon_switch::enabled("door_cams") => {
++                let eye = self.camera.as_ref().map(|c| (c.position, c.forward(), c.fov_deg));
++                if let Some(p) = self.player.as_ref() {
++                    match name {
++                        "doorcams_panel" => crate::game_panels::door_cams_panel::open(self),
++                        "doorcams_toggle" => {
++                            let msg = self.gfx.door_cams.toggle(p);
++                            self.service_msg = Some((msg, 4.0));
++                        }
++                        _ => {
++                            let msg = match eye {
++                                Some((pos, fwd, fov)) => self.gfx.door_cams.register(p, pos, fwd, fov),
++                                None => "No camera to register".into(),
++                            };
++                            self.service_msg = Some((msg, 5.0));
++                        }
++                    }
++                }
++            }
+             "radio_next" | "radio_previous" | "radio_volume_up" | "radio_volume_down" => {
+                 let msg = match name {
+                     "radio_next" => self.sound.radio.next_station(),
 diff --git a/crates/omsi-app/src/camera_util.rs b/crates/omsi-app/src/camera_util.rs
 index f67fc0ba..c14cfdd5 100644
 --- a/crates/omsi-app/src/camera_util.rs
@@ -605,10 +753,10 @@ index 00000000..8a084530
 +}
 diff --git a/crates/omsi-app/src/door_cams.rs b/crates/omsi-app/src/door_cams.rs
 new file mode 100644
-index 00000000..d7e9cb6c
+index 00000000..e9500e09
 --- /dev/null
 +++ b/crates/omsi-app/src/door_cams.rs
-@@ -0,0 +1,497 @@
+@@ -0,0 +1,477 @@
 +//! Door cameras (openOMSI HOF-Auto add-on): cameras the player puts on a bus, shown in a popup
 +//! while the doors they watch are open - the rear door's view for the driver who is watching
 +//! the mirror, say.
@@ -636,21 +784,14 @@ index 00000000..d7e9cb6c
 +use std::sync::{Mutex, OnceLock};
 +use std::time::Instant;
 +
-+/// A camera of the bus: where it is in the bus's frame (x right, y forward, z up), which way it
-+/// looks (degrees, 0 = ahead, positive to the right; pitch positive up), its field of view,
-+/// and the doors it watches.
-+#[derive(Clone, Debug, PartialEq)]
-+pub(crate) struct DoorCam {
-+    pub name: String,
-+    pub pos: [f32; 3],
-+    pub yaw: f32,
-+    pub pitch: f32,
-+    pub fov: f32,
-+    /// Door numbers as Shift+1..9 count them (1 = the first from the front).
-+    pub doors: Vec<usize>,
-+    /// The picture is turned over in the popup (left to right / top to bottom).
-+    pub flip_x: bool,
-+    pub flip_y: bool,
++pub(crate) use omsi_cfg::door_cams_file::DoorCam;
++
++/// What the Alt menu's panel shows: the switches, the cameras and how many doors the bus has.
++pub(crate) struct Snapshot {
++    pub enabled: bool,
++    pub all_doors: bool,
++    pub cams: Vec<DoorCam>,
++    pub doors: usize,
 +}
 +
 +/// Seconds between two looks at the doors.
@@ -891,6 +1032,80 @@ index 00000000..d7e9cb6c
 +    fn save(&self) {
 +        store(&self.key, self.enabled, self.all_doors, &self.cams);
 +    }
++
++    // --- the Alt menu's panel (`game_panels::door_cams_panel`): the same state the keys change ---
++
++    /// What the panel shows for the bus: the cameras are loaded first.
++    pub fn snapshot(&mut self, p: &Player) -> Snapshot {
++        self.sync(p);
++        Snapshot { enabled: self.enabled, all_doors: self.all_doors, cams: self.cams.clone(), doors: crate::player::door_keys(&p.vehicle.ty).len().clamp(1, 9) }
++    }
++
++    pub fn set_enabled(&mut self, p: &Player, on: bool) {
++        self.sync(p);
++        self.enabled = on;
++        self.visible = false;
++        self.save();
++    }
++
++    pub fn set_all(&mut self, p: &Player, on: bool) {
++        self.sync(p);
++        self.all_doors = on;
++        self.save();
++    }
++
++    /// Door `n` (1 = the first from the front) on or off camera `i`.
++    pub fn set_door(&mut self, p: &Player, i: usize, n: usize, on: bool) {
++        self.sync(p);
++        if let Some(c) = self.cams.get_mut(i) {
++            c.doors.retain(|d| *d != n);
++            if on {
++                c.doors.push(n);
++                c.doors.sort_unstable();
++            }
++            self.save();
++        }
++    }
++
++    pub fn set_flip(&mut self, p: &Player, i: usize, on: bool) {
++        self.sync(p);
++        if let Some(c) = self.cams.get_mut(i) {
++            c.flip_x = on;
++            self.save();
++        }
++    }
++
++    pub fn set_fov(&mut self, p: &Player, i: usize, fov: f32) {
++        self.sync(p);
++        if let Some(c) = self.cams.get_mut(i) {
++            c.fov = fov.clamp(30.0, 110.0);
++            self.save();
++        }
++    }
++
++    pub fn remove_at(&mut self, p: &Player, i: usize) {
++        self.sync(p);
++        if i < self.cams.len() {
++            self.cams.remove(i);
++            self.visible = false;
++            self.save();
++        }
++    }
++
++    /// Camera `i` moved to where `eye` looks along `forward` now.
++    pub fn aim_at(&mut self, p: &Player, i: usize, eye: DVec3, forward: Vec3, fov: f32) {
++        self.sync(p);
++        let (pos, yaw, pitch) = to_bus_frame(p.vehicle.position, p.vehicle.body_rotation(), eye, forward);
++        if let Some(c) = self.cams.get_mut(i) {
++            c.pos = pos;
++            c.yaw = yaw;
++            c.pitch = pitch;
++            if fov > 10.0 {
++                c.fov = fov.clamp(30.0, 110.0);
++            }
++            self.save();
++        }
++    }
 +}
 +
 +fn bus_camera(c: &DoorCam) -> omsi_vehicle::Camera {
@@ -917,94 +1132,25 @@ index 00000000..d7e9cb6c
 +}
 +
 +fn file() -> Option<std::path::PathBuf> {
-+    crate::settings::Settings::path().map(|p| p.with_file_name("door_cams.cfg"))
-+}
-+
-+fn clean(name: &str) -> String {
-+    name.chars().filter(|c| !matches!(c, '|' | '=' | ';' | '\n' | '\r')).collect::<String>().trim().to_string()
-+}
-+
-+fn format_cam(c: &DoorCam) -> String {
-+    let doors: Vec<String> = c.doors.iter().map(|d| d.to_string()).collect();
-+    let flip = format!("{}{}", if c.flip_x { "x" } else { "" }, if c.flip_y { "y" } else { "" });
-+    format!(
-+        "{};{:.3},{:.3},{:.3};{:.2};{:.2};{:.1};{};{}",
-+        clean(&c.name), c.pos[0], c.pos[1], c.pos[2], c.yaw, c.pitch, c.fov, doors.join(","), flip
-+    )
-+}
-+
-+fn parse_cam(value: &str) -> Option<DoorCam> {
-+    let f: Vec<&str> = value.split(';').collect();
-+    if f.len() < 5 {
-+        return None;
-+    }
-+    let pos: Vec<f32> = f[1].split(',').filter_map(|s| s.trim().parse().ok()).collect();
-+    if pos.len() != 3 {
-+        return None;
-+    }
-+    let num = |s: &str| s.trim().parse::<f32>().ok().filter(|x| x.is_finite());
-+    let doors: Vec<usize> = f.get(5).map(|s| s.split(',').filter_map(|d| d.trim().parse().ok()).filter(|d| *d >= 1).collect()).unwrap_or_default();
-+    let flip = f.get(6).copied().unwrap_or("");
-+    Some(DoorCam {
-+        name: clean(f[0]),
-+        pos: [pos[0], pos[1], pos[2]],
-+        yaw: num(f[2])?,
-+        pitch: num(f[3])?.clamp(-89.0, 89.0),
-+        fov: num(f[4])?.clamp(20.0, 120.0),
-+        doors,
-+        flip_x: flip.contains('x'),
-+        flip_y: flip.contains('y'),
-+    })
++    omsi_cfg::door_cams_file::file()
 +}
 +
 +/// (on, all doors, cameras) of the bus at `path`.
 +fn load(path: &str) -> (bool, bool, Vec<DoorCam>) {
-+    let Some(text) = file().and_then(|f| std::fs::read_to_string(f).ok()) else { return (true, false, Vec::new()) };
-+    parse(&text, &path.to_ascii_lowercase())
-+}
-+
-+fn parse(text: &str, key: &str) -> (bool, bool, Vec<DoorCam>) {
-+    let (mut on, mut all, mut cams) = (true, false, Vec::new());
-+    for line in text.lines() {
-+        let Some((head, value)) = line.split_once('=') else { continue };
-+        let Some((path, what)) = head.rsplit_once('|') else { continue };
-+        if path.trim().to_ascii_lowercase() != key {
-+            continue;
-+        }
-+        match what.trim() {
-+            "on" => on = value.trim() != "0",
-+            "all" => all = value.trim() == "1",
-+            "cam" => cams.extend(parse_cam(value)),
-+            _ => {}
-+        }
-+    }
-+    (on, all, cams)
-+}
-+
-+fn render(key: &str, on: bool, all: bool, cams: &[DoorCam]) -> Vec<String> {
-+    let mut lines = vec![format!("{key}|on={}", on as u8), format!("{key}|all={}", all as u8)];
-+    lines.extend(cams.iter().map(|c| format!("{key}|cam={}", format_cam(c))));
-+    lines
++    let Some(f) = file() else { return (true, false, Vec::new()) };
++    let b = omsi_cfg::door_cams_file::load_from(&f, path);
++    (b.on, b.all_doors, b.cams)
 +}
 +
 +fn store(key: &str, on: bool, all: bool, cams: &[DoorCam]) {
-+    let Some(p) = file() else { return };
-+    let text = std::fs::read_to_string(&p).unwrap_or_default();
-+    let mut lines: Vec<String> = text
-+        .lines()
-+        .filter(|l| l.split_once('=').and_then(|(k, _)| k.rsplit_once('|')).is_none_or(|(f, _)| f.trim().to_ascii_lowercase() != key))
-+        .map(str::to_string)
-+        .collect();
-+    lines.extend(render(key, on, all, cams));
-+    if let Some(d) = p.parent() {
-+        let _ = std::fs::create_dir_all(d);
-+    }
-+    let _ = std::fs::write(&p, lines.join("\n") + "\n");
++    let Some(f) = file() else { return };
++    let _ = omsi_cfg::door_cams_file::store_to(&f, key, &omsi_cfg::door_cams_file::BusCams { on, all_doors: all, cams: cams.to_vec() });
 +}
 +
 +#[cfg(test)]
 +mod tests {
 +    use super::*;
++    use omsi_cfg::door_cams_file::{format_cam, parse_cam};
 +
 +    fn cam(doors: &[usize]) -> DoorCam {
 +        DoorCam { name: "c".into(), pos: [1.0, -4.0, 2.0], yaw: 180.0, pitch: -20.0, fov: 70.0, doors: doors.to_vec(), flip_x: false, flip_y: false }
@@ -1073,24 +1219,6 @@ index 00000000..d7e9cb6c
 +        assert!((yaw + 90.0).abs() < 1e-3, "looks left: {yaw}");
 +    }
 +
-+    #[test]
-+    fn the_file_keeps_the_cameras_of_each_bus_apart() {
-+        let a = DoorCam { name: "Porta traseira".into(), flip_x: true, doors: vec![2, 4], ..cam(&[]) };
-+        let b = cam(&[1]);
-+        let mut text = render("vehicles/a/a.bus", true, true, std::slice::from_ref(&a)).join("\n");
-+        text.push('\n');
-+        text.push_str(&render("vehicles/b/b.bus", false, false, std::slice::from_ref(&b)).join("\n"));
-+        let (on, all, cams) = parse(&text, "vehicles/a/a.bus");
-+        assert!(on && all);
-+        assert_eq!(cams.len(), 1);
-+        assert_eq!(cams[0].name, "Porta traseira");
-+        assert_eq!(cams[0].doors, vec![2, 4]);
-+        assert!(cams[0].flip_x && !cams[0].flip_y);
-+        assert!((cams[0].yaw - 180.0).abs() < 0.01 && (cams[0].pos[1] + 4.0).abs() < 0.001);
-+        let (on_b, all_b, cams_b) = parse(&text, "vehicles/b/b.bus");
-+        assert!(!on_b && !all_b && cams_b.len() == 1);
-+        assert!(parse(&text, "vehicles/none.bus").2.is_empty());
-+    }
 +
 +    #[test]
 +    fn a_damaged_line_is_left_out() {
@@ -1106,6 +1234,332 @@ index 00000000..d7e9cb6c
 +        assert_eq!(back.name, "abcd");
 +    }
 +}
+diff --git a/crates/omsi-app/src/game_controller_menu.rs b/crates/omsi-app/src/game_controller_menu.rs
+index 30aa24ef..2de6256f 100644
+--- a/crates/omsi-app/src/game_controller_menu.rs
++++ b/crates/omsi-app/src/game_controller_menu.rs
+@@ -26,7 +26,7 @@ fn event_names(app: &App, device: &DeviceCfg) -> Vec<(String, String)> {
+         .chain(crate::game_lists::keyboard_actions(app))
+         .chain(app.player.as_ref().into_iter().flat_map(|p| p.vehicle.ty.program.trigger_names()))
+         .chain(["kw_s_R_fest", "kw_s_1_fest", "kw_s_2_fest", "kw_s_3_fest", "kw_s_4_fest", "kw_s_5_fest", "kw_s_6_fest", "kw_s_7_fest", "kw_s_8_fest", "kw_s_9_fest", "kw_s_10_fest",
+-                "gear_up", "gear_down", "view_look_left", "view_look_right", "view_look_up", "view_look_down", "view_toggle_viewpoint", "view_driver", "view_outside", "view_passenger", "voice_nearby", "voice_radio", "open_menu", "radio_power", "get_up"].into_iter().map(str::to_string)) {
++                "gear_up", "gear_down", "view_look_left", "view_look_right", "view_look_up", "view_look_down", "view_toggle_viewpoint", "view_driver", "view_outside", "view_passenger", "voice_nearby", "voice_radio", "open_menu", "radio_power", "get_up", "doorcams_panel", "doorcams_toggle", "doorcams_add"].into_iter().map(str::to_string)) {
+         if !action.is_empty() && !events.iter().any(|(a, _)| a.eq_ignore_ascii_case(&action)) {
+             let label = if action.eq_ignore_ascii_case("voice_radio") {
+                 "Multiplayer voice: radio, whole session (hold)".into()
+@@ -36,6 +36,12 @@ fn event_names(app: &App, device: &DeviceCfg) -> Vec<(String, String)> {
+                 "Open / close the main menu".into()
+             } else if action.eq_ignore_ascii_case("radio_power") {
+                 "Radio: on / off".into()
++            } else if action.eq_ignore_ascii_case("doorcams_panel") {
++                "Door cameras: open the settings".into()
++            } else if action.eq_ignore_ascii_case("doorcams_toggle") {
++                "Door cameras: on / off".into()
++            } else if action.eq_ignore_ascii_case("doorcams_add") {
++                "Door cameras: add a camera where the view is".into()
+             } else {
+                 names.control(&action)
+             };
+diff --git a/crates/omsi-app/src/game_panels/door_cams_panel.rs b/crates/omsi-app/src/game_panels/door_cams_panel.rs
+new file mode 100644
+index 00000000..a8a10ada
+--- /dev/null
++++ b/crates/omsi-app/src/game_panels/door_cams_panel.rs
+@@ -0,0 +1,153 @@
++//! The door cameras' panel (Alt, the "Door cameras" tile; a button of the controls too): the
++//! switch, the "any door" trigger and each camera of the bus - which doors open it, its field of
++//! view, the picture turned over, where it looks (put where the view is now) - and a button to
++//! register a new camera where the view is. It changes the same state the Ctrl+K keys do
++//! (`door_cams`), so the two always agree, and what is set is kept in `door_cams.cfg` at once.
++
++use super::{button, card, divider, el, grow_row, note, row, slider_row, text, title};
++use omsi_plugin::api::Value;
++use omsi_plugin::ui::{Anchor, Element, Kind, Panel, RowAlign, Weight};
++use omsi_ui::theme::Palette;
++use omsi_ui::tr;
++
++const FOV: (f32, f32) = (30.0, 110.0);
++
++#[derive(Default)]
++pub(crate) struct DoorCamsPanel {
++    said: Option<String>,
++}
++
++fn check(id: &str, label: &str, on: bool) -> Element {
++    el(Some(id), Kind::Checkbox { text: label.to_string(), checked: on })
++}
++
++impl DoorCamsPanel {
++    pub(crate) fn panel(&self, app: &mut crate::App, pal: Palette) -> Panel {
++        let snap = match app.player.as_ref() {
++            Some(p) => Some(app.gfx.door_cams.snapshot(p)),
++            None => None,
++        };
++        let mut c = vec![title(&tr("Door cameras"))];
++        let Some(s) = snap else {
++            c.push(note(&tr("Get into a bus first: the cameras belong to the bus."), pal));
++            c.push(button("close", &tr("Close"), Some("close")));
++            return card(Anchor::Center, 0.0, 0.0, 460.0, 235, pal, c);
++        };
++        c.push(note(&tr("A camera's picture pops up while one of its doors is open. Cameras are kept for this bus."), pal));
++        c.push(grow_row(vec![
++            check("on", &tr("Door cameras on"), s.enabled),
++            check("all", &tr("Any door shows them"), s.all_doors),
++        ]));
++        c.push(divider());
++        if s.cams.is_empty() {
++            c.push(note(&tr("No camera yet: look where you want it (the free camera too) and press Add."), pal));
++        }
++        for (i, cam) in s.cams.iter().enumerate() {
++            c.push(row(
++                vec![
++                    Element { grow: true, ..text(&cam.name, 14.0, Weight::Bold) },
++                    button(&format!("c{i}aim"), &tr("Look here"), Some("my_location")),
++                    button(&format!("c{i}del"), &tr("Remove"), Some("delete")),
++                ],
++                RowAlign::Start,
++            ));
++            let doors: Vec<Element> = (1..=s.doors).map(|n| check(&format!("c{i}d{n}"), &format!("{} {n}", tr("Door")), cam.doors.contains(&n))).collect();
++            c.push(row(doors, RowAlign::Start));
++            c.push(slider_row(&format!("c{i}fov"), &tr("Field of view"), &format!("{:.0}°", cam.fov), cam.fov, FOV, 1.0));
++            c.push(check(&format!("c{i}flip"), &tr("Mirror image (left / right)"), cam.flip_x));
++            c.push(divider());
++        }
++        c.push(grow_row(vec![
++            button("add", &tr("Add a camera here"), Some("photo_camera")),
++            button("close", &tr("Close"), Some("close")),
++        ]));
++        if let Some(said) = &self.said {
++            c.push(note(said, pal));
++        }
++        card(Anchor::Center, 0.0, 0.0, 460.0, 235, pal, c)
++    }
++}
++
++pub(crate) fn open(app: &mut crate::App) {
++    app.menus.game_panels.door_cams = Some(DoorCamsPanel::default());
++}
++
++/// "c<i>d<n>", "c<i>fov", ...: the camera and what is asked of it.
++fn cam_id(id: &str) -> Option<(usize, &str)> {
++    let rest = id.strip_prefix('c')?;
++    let at = rest.find(|ch: char| !ch.is_ascii_digit())?;
++    Some((rest[..at].parse().ok()?, &rest[at..]))
++}
++
++pub(crate) fn click(app: &mut crate::App, id: &str) {
++    let eye = app.camera.as_ref().map(|c| (c.position, c.forward(), c.fov_deg));
++    let said = match id {
++        "close" => {
++            app.menus.game_panels.door_cams = None;
++            return;
++        }
++        "add" => {
++            let Some(p) = app.player.as_ref() else { return };
++            match eye {
++                Some((pos, fwd, fov)) => Some(app.gfx.door_cams.register(p, pos, fwd, fov)),
++                None => Some(tr("No camera to register").into_owned()),
++            }
++        }
++        _ => {
++            let Some((i, what)) = cam_id(id) else { return };
++            let Some(p) = app.player.as_ref() else { return };
++            match what {
++                "del" => {
++                    app.gfx.door_cams.remove_at(p, i);
++                    None
++                }
++                "aim" => {
++                    if let Some((pos, fwd, fov)) = eye {
++                        app.gfx.door_cams.aim_at(p, i, pos, fwd, fov);
++                    }
++                    Some(tr("The camera now looks where your view does.").into_owned())
++                }
++                _ => return,
++            }
++        }
++    };
++    if let Some(d) = app.menus.game_panels.door_cams.as_mut() {
++        d.said = said;
++    }
++}
++
++pub(crate) fn change(app: &mut crate::App, id: &str, value: &Value) {
++    let Some(p) = app.player.as_ref() else { return };
++    match (id, value) {
++        ("on", Value::Bool(b)) => app.gfx.door_cams.set_enabled(p, *b),
++        ("all", Value::Bool(b)) => app.gfx.door_cams.set_all(p, *b),
++        _ => {
++            let Some((i, what)) = cam_id(id) else { return };
++            match (what, value) {
++                ("fov", Value::Num(v)) => app.gfx.door_cams.set_fov(p, i, *v as f32),
++                ("flip", Value::Bool(b)) => app.gfx.door_cams.set_flip(p, i, *b),
++                (d, Value::Bool(b)) => {
++                    if let Some(n) = d.strip_prefix('d').and_then(|n| n.parse().ok()) {
++                        app.gfx.door_cams.set_door(p, i, n, *b);
++                    }
++                }
++                _ => {}
++            }
++        }
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use super::cam_id;
++
++    #[test]
++    fn a_cameras_element_names_its_camera_and_what_it_is() {
++        assert_eq!(cam_id("c0d2"), Some((0, "d2")));
++        assert_eq!(cam_id("c12fov"), Some((12, "fov")));
++        assert_eq!(cam_id("c3flip"), Some((3, "flip")));
++        assert_eq!(cam_id("close"), None);
++        assert_eq!(cam_id("c"), None);
++        assert_eq!(cam_id("cxd1"), None);
++    }
++}
+diff --git a/crates/omsi-app/src/game_panels/mod.rs b/crates/omsi-app/src/game_panels/mod.rs
+index bf5949f1..a8be7f9c 100644
+--- a/crates/omsi-app/src/game_panels/mod.rs
++++ b/crates/omsi-app/src/game_panels/mod.rs
+@@ -15,6 +15,7 @@ use omsi_ui::theme::Palette;
+ mod dest_form;
+ mod multiplayer;
+ mod move_here;
++pub(crate) mod door_cams_panel;
+ pub(crate) mod radio_panel;
+ pub(crate) use dest_form::open as open_dest_form;
+ pub(crate) use move_here::ask as ask_move;
+@@ -45,6 +46,7 @@ pub(crate) struct GamePanels {
+     pub(crate) multiplayer: Option<multiplayer::Multiplayer>,
+     pub(crate) view: Option<view_editor::ViewEditor>,
+     pub(crate) radio: Option<radio_panel::RadioPanel>,
++    pub(crate) door_cams: Option<door_cams_panel::DoorCamsPanel>,
+     pub(crate) remote: Option<remote_panel::RemotePanel>,
+     /// Where the map camera's click asks to move the bus to.
+     pub(crate) move_to: Option<glam::DVec3>,
+@@ -53,7 +55,7 @@ pub(crate) struct GamePanels {
+ impl GamePanels {
+     /// Whether any panel is open.
+     pub(crate) fn any(&self) -> bool {
+-        self.multiplayer.is_some() || self.quick.is_some() || self.trip.is_some() || self.dest.is_some() || self.view.is_some() || self.radio.is_some() || self.move_to.is_some() || self.remote.is_some()
++        self.multiplayer.is_some() || self.quick.is_some() || self.trip.is_some() || self.dest.is_some() || self.view.is_some() || self.radio.is_some() || self.door_cams.is_some() || self.move_to.is_some() || self.remote.is_some()
+     }
+ 
+     /// Whether the panels have the mouse.
+@@ -128,6 +130,14 @@ pub(super) fn card(anchor: omsi_plugin::ui::Anchor, x: f32, y: f32, width: f32,
+ // --- the frame -----------------------------------------------------------------------------
+ 
+ impl crate::App {
++    /// The door cameras' panel for this frame (it needs the app mutably: the cameras load with the bus).
++    fn take_door_cams_panel(&mut self, pal: Palette) -> Option<Panel> {
++        let d = self.menus.game_panels.door_cams.take()?;
++        let panel = d.panel(self, pal);
++        self.menus.game_panels.door_cams = Some(d);
++        Some(panel)
++    }
++
+     /// Work off what was clicked and changed, set the open panels and draw them.
+     pub(crate) fn frame_game_panels(&mut self, dt: f32, hud: [f32; 4], vr_active: bool) {
+         let changes = self.menus.game_panels.ui.take_changes(GAME);
+@@ -146,6 +156,7 @@ impl crate::App {
+                 "view" => view_editor::click(self, el),
+                 "move" => move_here::click(self, el),
+                 "radio" => radio_panel::click(self, el),
++                "doorcams" => door_cams_panel::click(self, el),
+                 "remote" => remote_panel::click(self, el),
+                 _ => {}
+             }
+@@ -153,6 +164,7 @@ impl crate::App {
+         for c in changes {
+             match c.panel.as_str() {
+                 "view" => view_editor::change(self, &c.element, &c.value),
++                "doorcams" => door_cams_panel::change(self, &c.element, &c.value),
+                 "dest" => dest_form::change(self, &c.element, &c.value),
+                 "multiplayer" => {},
+                 _ => {}
+@@ -191,6 +203,7 @@ impl crate::App {
+             ("quick", self.menus.game_panels.quick.as_ref().map(|q| q.panel(self))),
+             ("move", self.menus.game_panels.move_to.map(|at| move_here::panel(at, pal))),
+             ("radio", self.menus.game_panels.radio.as_ref().map(|r| r.panel(self, pal))),
++            ("doorcams", self.take_door_cams_panel(pal)),
+             ("remote", self.menus.game_panels.remote.as_ref().map(|r| r.panel(self, pal))),
+         ];
+         let gp = &mut self.menus.game_panels;
+@@ -328,7 +341,7 @@ impl crate::App {
+             return true;
+         }
+         let gp = &mut self.menus.game_panels;
+-        if gp.quick.take().is_some() || gp.move_to.take().is_some() || gp.dest.take().is_some() || gp.trip.take().is_some() || gp.radio.take().is_some() || gp.remote.take().is_some() {
++        if gp.quick.take().is_some() || gp.move_to.take().is_some() || gp.dest.take().is_some() || gp.trip.take().is_some() || gp.radio.take().is_some() || gp.door_cams.take().is_some() || gp.remote.take().is_some() {
+             return true;
+         }
+         if gp.view.is_some() {
+diff --git a/crates/omsi-app/src/game_panels/quick_menu.rs b/crates/omsi-app/src/game_panels/quick_menu.rs
+index 54cd8618..72977fe2 100644
+--- a/crates/omsi-app/src/game_panels/quick_menu.rs
++++ b/crates/omsi-app/src/game_panels/quick_menu.rs
+@@ -26,7 +26,7 @@ pub(crate) const PER_PAGE: usize = 15;
+ const WIDTH: f32 = 5.0 * 84.0 + 4.0 * 8.0 + 2.0 * 14.0;
+ 
+ /// The tiles: id, label, icon - in OMSI's order, five to a row, fifteen to a page.
+-pub(crate) const TILES: [(&str, &str, &str); 30] = [
++pub(crate) const TILES: [(&str, &str, &str); 31] = [
+     ("place", "Place a vehicle", "add"),
+     ("switch", "Change vehicle", "sync_alt"),
+     ("remove", "Remove vehicle", "delete"),
+@@ -58,6 +58,8 @@ pub(crate) const TILES: [(&str, &str, &str); 30] = [
+     ("players", "Player list", "group"),
+     ("admin", "Administration", "dns"),
+     ("radio", "Radio", "radio"),
++    // openOMSI HOF-Auto add-on
++    ("doorcams", "Door cameras", "door_front"),
+ ];
+ 
+ /// The tiles that are the game menu's lines, offered only when it offers them now.
+@@ -262,6 +264,7 @@ fn start(app: &mut crate::App, id: &str, mouse: bool) {
+     match id {
+         "dest" => super::dest_form::open(app),
+         "radio" => super::radio_panel::open(app),
++        "doorcams" => super::door_cams_panel::open(app),
+         "arrows" => {
+             crate::game_lists::option_do(
+                 app,
+@@ -314,7 +317,7 @@ mod tests {
+         }
+         let ids: std::collections::HashSet<_> = TILES.iter().map(|t| t.0).collect();
+         assert_eq!(ids.len(), TILES.len());
+-        assert_eq!(pages(), 2);
++        assert_eq!(pages(), 3);
+         assert_eq!(page_tiles(0).len(), 15);
+         assert!(omsi_ui::icons::svg("chevron_right").is_some());
+     }
+@@ -354,13 +357,14 @@ mod tests {
+         assert_eq!(q.focus, 11, "no row under the last");
+         q.focus = 14;
+         q.step(1, 0);
+-        // the second page has 14 tiles: its third row ends at 13
++        // the second page is full: its third row starts at 10
+         assert_eq!((q.page, q.focus), (1, 10));
+         q.step(-1, 0);
+         assert_eq!((q.page, q.focus), (0, 14));
+         q.focus = 0;
+         q.step(-1, 0);
+-        assert_eq!((q.page, q.focus), (1, 4));
++        // before the first page: the last, which has one tile (the add-on's)
++        assert_eq!(q.page, 2);
+         q.turn(1);
+         assert_eq!(q.page, 0);
+     }
+@@ -460,6 +464,7 @@ mod tests {
+         click(&mut app, "next");
+         assert_eq!(app.menus.game_panels.quick.as_ref().map(|q| q.page), Some(1));
+         click(&mut app, "next");
++        click(&mut app, "next");
+         assert_eq!(app.menus.game_panels.quick.as_ref().map(|q| q.page), Some(0));
+     }
+ 
 diff --git a/crates/omsi-app/src/input_script.rs b/crates/omsi-app/src/input_script.rs
 index a44cb7e4..9702a20c 100644
 --- a/crates/omsi-app/src/input_script.rs
@@ -1218,10 +1672,10 @@ index 382a9b0b..4330ff66 100644
              plugin_cables: Default::default(),
 diff --git a/crates/omsi-cfg/src/addon_switch.rs b/crates/omsi-cfg/src/addon_switch.rs
 new file mode 100644
-index 00000000..f8d1a109
+index 00000000..fb8ecc76
 --- /dev/null
 +++ b/crates/omsi-cfg/src/addon_switch.rs
-@@ -0,0 +1,84 @@
+@@ -0,0 +1,141 @@
 +//! On/off switches of the HOF-Auto add-ons (hof_auto, door_cams, dashcam, ...): the installer's
 +//! check boxes write them into `hofauto-mods.cfg` next to the settings (`name=1` / `name=0`, `#`
 +//! starts a comment), the game reads them while it runs. A name that is not there is on. The
@@ -1242,6 +1696,51 @@ index 00000000..f8d1a109
 +        .filter(|(k, _)| k.trim().eq_ignore_ascii_case(name))
 +        .map(|(_, v)| !matches!(v.trim().to_ascii_lowercase().as_str(), "0" | "off" | "false" | "no"))
 +        .next_back()
++}
++
++/// `text` with the switch `name` put to `on`: its line changed in place (comments and every other
++/// line stay), or added at the end.
++pub fn with_switch(text: &str, name: &str, on: bool) -> String {
++    let value = format!("{name}={}", on as u8);
++    let mut done = false;
++    let mut lines: Vec<String> = text
++        .lines()
++        .map(|l| {
++            let code = l.split('#').next().unwrap_or("");
++            match code.split_once('=') {
++                Some((k, _)) if k.trim().eq_ignore_ascii_case(name) => {
++                    done = true;
++                    value.clone()
++                }
++                _ => l.to_string(),
++            }
++        })
++        .collect();
++    if !done {
++        lines.push(value);
++    }
++    lines.join("\n") + "\n"
++}
++
++/// Put the switch `name` to `on` in the file (the game reads it again within seconds).
++pub fn set(name: &str, on: bool) -> std::io::Result<()> {
++    let path = file().ok_or_else(|| std::io::Error::other("no home folder"))?;
++    let text = std::fs::read_to_string(&path).unwrap_or_default();
++    if let Some(d) = path.parent() {
++        std::fs::create_dir_all(d)?;
++    }
++    std::fs::write(&path, with_switch(&text, name, on))?;
++    *CACHE.lock().unwrap_or_else(|e| e.into_inner()) = None;
++    Ok(())
++}
++
++/// What the file says of `name` now: its switch, on when it has none.
++pub fn read(name: &str) -> bool {
++    let var = format!("OPENOMSI_{}", name.to_ascii_uppercase());
++    if let Some(v) = from_env(name, std::env::var(&var).ok().as_deref()) {
++        return v;
++    }
++    file().and_then(|f| std::fs::read_to_string(f).ok()).and_then(|t| parse(&t, name)).unwrap_or(true)
 +}
 +
 +/// The environment variable's say on `name`, if it says.
@@ -1277,6 +1776,18 @@ index 00000000..f8d1a109
 +    use super::*;
 +
 +    #[test]
++    fn a_switch_is_changed_in_place_and_the_rest_stays() {
++        let text = "# my choices\nhof_auto=1\ndoor_cams = 1 # popup\n";
++        let out = with_switch(text, "door_cams", false);
++        assert_eq!(out, "# my choices\nhof_auto=1\ndoor_cams=0\n");
++        assert_eq!(parse(&out, "door_cams"), Some(false));
++        assert_eq!(parse(&out, "hof_auto"), Some(true));
++        let added = with_switch(&out, "dashcam", true);
++        assert!(added.ends_with("dashcam=1\n") && added.starts_with("# my choices\n"));
++        assert_eq!(with_switch(&added, "dashcam", true), added, "twice the same");
++    }
++
++    #[test]
 +    fn a_name_that_is_not_in_the_file_is_on() {
 +        assert_eq!(parse("", "dashcam"), None);
 +        assert_eq!(parse("door_cams=0\n", "dashcam"), None);
@@ -1306,20 +1817,273 @@ index 00000000..f8d1a109
 +        assert_eq!(from_env("x", None), None);
 +    }
 +}
+diff --git a/crates/omsi-cfg/src/door_cams_file.rs b/crates/omsi-cfg/src/door_cams_file.rs
+new file mode 100644
+index 00000000..5259e0ef
+--- /dev/null
++++ b/crates/omsi-cfg/src/door_cams_file.rs
+@@ -0,0 +1,246 @@
++//! The file of the door cameras (HOF-Auto add-on): `door_cams.cfg` next to the settings, one
++//! line each, `<bus path>|on=1`, `<bus path>|all=0` and `<bus path>|cam=name;x,y,z;yaw;pitch;fov;doors;flip`.
++//! The game (`omsi-app`'s door cameras and their panel) and the launcher read and write it
++//! through here, so both always agree on the format.
++
++use std::path::{Path, PathBuf};
++
++/// A camera of the bus: where it is in the bus's frame (x right, y forward, z up), which way it
++/// looks (degrees, 0 = ahead, positive to the right; pitch positive up), its field of view,
++/// and the doors it watches.
++#[derive(Clone, Debug, PartialEq)]
++pub struct DoorCam {
++    pub name: String,
++    pub pos: [f32; 3],
++    pub yaw: f32,
++    pub pitch: f32,
++    pub fov: f32,
++    /// Door numbers as Shift+1..9 count them (1 = the first from the front).
++    pub doors: Vec<usize>,
++    /// The picture is turned over in the popup (left to right / top to bottom).
++    pub flip_x: bool,
++    pub flip_y: bool,
++}
++
++/// What the file says of one bus.
++#[derive(Clone, Debug, PartialEq)]
++pub struct BusCams {
++    pub on: bool,
++    pub all_doors: bool,
++    pub cams: Vec<DoorCam>,
++}
++
++impl Default for BusCams {
++    fn default() -> Self {
++        BusCams { on: true, all_doors: false, cams: Vec::new() }
++    }
++}
++
++/// `~/.openomsi/door_cams.cfg`.
++pub fn file() -> Option<PathBuf> {
++    let home = std::env::var_os("HOME").or_else(|| std::env::var_os("USERPROFILE"))?;
++    Some(PathBuf::from(home).join(".openomsi").join("door_cams.cfg"))
++}
++
++pub fn clean(name: &str) -> String {
++    name.chars().filter(|c| !matches!(c, '|' | '=' | ';' | '\n' | '\r')).collect::<String>().trim().to_string()
++}
++
++pub fn format_cam(c: &DoorCam) -> String {
++    let doors: Vec<String> = c.doors.iter().map(|d| d.to_string()).collect();
++    let flip = format!("{}{}", if c.flip_x { "x" } else { "" }, if c.flip_y { "y" } else { "" });
++    format!(
++        "{};{:.3},{:.3},{:.3};{:.2};{:.2};{:.1};{};{}",
++        clean(&c.name), c.pos[0], c.pos[1], c.pos[2], c.yaw, c.pitch, c.fov, doors.join(","), flip
++    )
++}
++
++pub fn parse_cam(value: &str) -> Option<DoorCam> {
++    let f: Vec<&str> = value.split(';').collect();
++    if f.len() < 5 {
++        return None;
++    }
++    let pos: Vec<f32> = f[1].split(',').filter_map(|s| s.trim().parse().ok()).collect();
++    if pos.len() != 3 {
++        return None;
++    }
++    let num = |s: &str| s.trim().parse::<f32>().ok().filter(|x| x.is_finite());
++    let doors: Vec<usize> = f.get(5).map(|s| s.split(',').filter_map(|d| d.trim().parse().ok()).filter(|d| *d >= 1).collect()).unwrap_or_default();
++    let flip = f.get(6).copied().unwrap_or("");
++    Some(DoorCam {
++        name: clean(f[0]),
++        pos: [pos[0], pos[1], pos[2]],
++        yaw: num(f[2])?,
++        pitch: num(f[3])?.clamp(-89.0, 89.0),
++        fov: num(f[4])?.clamp(20.0, 120.0),
++        doors,
++        flip_x: flip.contains('x'),
++        flip_y: flip.contains('y'),
++    })
++}
++
++/// What the launcher changes of one camera: the doors it watches, its field of view, the picture
++/// turned over, its name - or its removal. The place it looks from stays what the game wrote.
++#[derive(Clone, Debug, Default, PartialEq)]
++pub struct CamEdit {
++    pub doors: Option<Vec<usize>>,
++    pub fov: Option<f32>,
++    pub flip_x: Option<bool>,
++    pub name: Option<String>,
++    pub remove: bool,
++}
++
++/// `edits[i]` applied to camera `i` (an edit with no camera is ignored); the doors are 1..=9, no repeats.
++pub fn apply_edits(b: &mut BusCams, edits: &[CamEdit]) {
++    for (i, e) in edits.iter().enumerate() {
++        let Some(c) = b.cams.get_mut(i) else { break };
++        if let Some(d) = &e.doors {
++            let mut d: Vec<usize> = d.iter().copied().filter(|n| (1..=9).contains(n)).collect();
++            d.sort_unstable();
++            d.dedup();
++            c.doors = d;
++        }
++        if let Some(f) = e.fov.filter(|f| f.is_finite()) {
++            c.fov = f.clamp(20.0, 120.0);
++        }
++        if let Some(x) = e.flip_x {
++            c.flip_x = x;
++        }
++        if let Some(n) = &e.name {
++            let n = clean(n);
++            if !n.is_empty() {
++                c.name = n;
++            }
++        }
++    }
++    let keep: Vec<bool> = (0..b.cams.len()).map(|i| !edits.get(i).is_some_and(|e| e.remove)).collect();
++    let mut k = keep.into_iter();
++    b.cams.retain(|_| k.next().unwrap_or(true));
++}
++
++/// The buses the text has lines for (as written, in the order first met).
++pub fn buses(text: &str) -> Vec<String> {
++    let mut out: Vec<String> = Vec::new();
++    for line in text.lines() {
++        let Some((head, _)) = line.split_once('=') else { continue };
++        let Some((path, _)) = head.rsplit_once('|') else { continue };
++        let path = path.trim();
++        if !path.is_empty() && !out.iter().any(|p| p.eq_ignore_ascii_case(path)) {
++            out.push(path.to_string());
++        }
++    }
++    out
++}
++
++/// What the text says of the bus `key` (its path, any case).
++pub fn parse(text: &str, key: &str) -> BusCams {
++    let key = key.to_ascii_lowercase();
++    let mut b = BusCams::default();
++    for line in text.lines() {
++        let Some((head, value)) = line.split_once('=') else { continue };
++        let Some((path, what)) = head.rsplit_once('|') else { continue };
++        if path.trim().to_ascii_lowercase() != key {
++            continue;
++        }
++        match what.trim() {
++            "on" => b.on = value.trim() != "0",
++            "all" => b.all_doors = value.trim() == "1",
++            "cam" => b.cams.extend(parse_cam(value)),
++            _ => {}
++        }
++    }
++    b
++}
++
++/// The lines of the bus `key`.
++pub fn render(key: &str, b: &BusCams) -> Vec<String> {
++    let mut lines = vec![format!("{key}|on={}", b.on as u8), format!("{key}|all={}", b.all_doors as u8)];
++    lines.extend(b.cams.iter().map(|c| format!("{key}|cam={}", format_cam(c))));
++    lines
++}
++
++/// `text` with the bus `key`'s lines put as `b` has them and every other line left as it was.
++pub fn with_bus(text: &str, key: &str, b: &BusCams) -> String {
++    let key_l = key.to_ascii_lowercase();
++    let mut lines: Vec<String> = text
++        .lines()
++        .filter(|l| l.split_once('=').and_then(|(k, _)| k.rsplit_once('|')).is_none_or(|(f, _)| f.trim().to_ascii_lowercase() != key_l))
++        .map(str::to_string)
++        .collect();
++    lines.extend(render(key, b));
++    lines.join("\n") + "\n"
++}
++
++/// The bus's lines in the file at `path`.
++pub fn load_from(path: &Path, key: &str) -> BusCams {
++    std::fs::read_to_string(path).map(|t| parse(&t, key)).unwrap_or_default()
++}
++
++/// Write the bus's lines into the file at `path` (the rest of the file stays).
++pub fn store_to(path: &Path, key: &str, b: &BusCams) -> std::io::Result<()> {
++    let text = std::fs::read_to_string(path).unwrap_or_default();
++    if let Some(d) = path.parent() {
++        std::fs::create_dir_all(d)?;
++    }
++    std::fs::write(path, with_bus(&text, key, b))
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    fn cam() -> DoorCam {
++        DoorCam { name: "Porta traseira".into(), pos: [1.0, -4.0, 2.0], yaw: 180.0, pitch: -20.0, fov: 70.0, doors: vec![2, 4], flip_x: true, flip_y: false }
++    }
++
++    #[test]
++    fn the_file_keeps_the_cameras_of_each_bus_apart() {
++        let a = BusCams { on: true, all_doors: true, cams: vec![cam()] };
++        let b = BusCams { on: false, all_doors: false, cams: vec![DoorCam { doors: vec![1], flip_x: false, ..cam() }] };
++        let text = with_bus(&with_bus("", "vehicles/a/a.bus", &a), "vehicles/b/b.bus", &b);
++        assert_eq!(parse(&text, "Vehicles/A/a.bus"), a);
++        assert_eq!(parse(&text, "vehicles/b/b.bus").on, false);
++        assert_eq!(buses(&text), vec!["vehicles/a/a.bus", "vehicles/b/b.bus"]);
++    }
++
++    #[test]
++    fn writing_one_bus_leaves_every_other_line_alone() {
++        let text = "# mine\nvehicles/x/x.bus|on=0\n";
++        let out = with_bus(text, "vehicles/a/a.bus", &BusCams::default());
++        assert!(out.contains("vehicles/x/x.bus|on=0"));
++        let again = with_bus(&out, "vehicles/a/a.bus", &BusCams::default());
++        assert_eq!(out, again, "writing twice changes nothing");
++    }
++
++    #[test]
++    fn a_broken_camera_line_is_skipped_not_fatal() {
++        let text = "a.bus|cam=nonsense\na.bus|cam=x;1,2;0;0;70\na.bus|cam=ok;1,2,3;10;5;70;1,2;x\n";
++        let b = parse(text, "a.bus");
++        assert_eq!(b.cams.len(), 1);
++        assert_eq!(b.cams[0].doors, vec![1, 2]);
++        assert!(b.cams[0].flip_x);
++    }
++
++    #[test]
++    fn the_launchers_edits_change_what_they_name_and_nothing_else() {
++        let mut b = BusCams { on: true, all_doors: false, cams: vec![cam(), DoorCam { name: "B".into(), ..cam() }, DoorCam { name: "C".into(), ..cam() }] };
++        let edits = [
++            CamEdit { doors: Some(vec![3, 3, 12, 1]), fov: Some(500.0), flip_x: Some(false), ..Default::default() },
++            CamEdit { remove: true, ..Default::default() },
++        ];
++        apply_edits(&mut b, &edits);
++        assert_eq!(b.cams.len(), 2);
++        assert_eq!(b.cams[0].doors, vec![1, 3]);
++        assert_eq!(b.cams[0].fov, 120.0);
++        assert!(!b.cams[0].flip_x);
++        assert_eq!(b.cams[0].pos, [1.0, -4.0, 2.0], "where it looks from stays");
++        assert_eq!(b.cams[1].name, "C", "the one removed is the second");
++    }
++
++    #[test]
++    fn a_field_of_view_and_pitch_are_kept_in_range() {
++        let b = parse("a.bus|cam=c;0,0,0;0;500;999;1\n", "a.bus");
++        assert_eq!(b.cams[0].pitch, 89.0);
++        assert_eq!(b.cams[0].fov, 120.0);
++    }
++}
 diff --git a/crates/omsi-cfg/src/lib.rs b/crates/omsi-cfg/src/lib.rs
-index 96947984..a90351d6 100644
+index 96947984..d944090a 100644
 --- a/crates/omsi-cfg/src/lib.rs
 +++ b/crates/omsi-cfg/src/lib.rs
-@@ -23,6 +23,7 @@
+@@ -23,6 +23,8 @@
  
  use std::path::{Path, PathBuf};
  
 +pub mod addon_switch;
++pub mod door_cams_file;
  pub mod cache_budget;
  pub mod cache_activity;
  pub mod codepage;
 diff --git a/crates/omsi-launcher-api/src/lib.rs b/crates/omsi-launcher-api/src/lib.rs
-index fff03d73..6a32baf9 100644
+index fff03d73..a7eb869f 100644
 --- a/crates/omsi-launcher-api/src/lib.rs
 +++ b/crates/omsi-launcher-api/src/lib.rs
 @@ -204,6 +204,14 @@ fn default_hof(map: Value, bus: Value, date: String, line: Option<String>) -> An
@@ -1337,7 +2101,80 @@ index fff03d73..6a32baf9 100644
  fn saved_situations(map: String) -> Answer {
      to_json(core::saved_situations(&map))
  }
-@@ -837,6 +845,7 @@ fn answer(cmd: &str, args: &Value, p: &dyn Platform) -> Answer {
+@@ -363,6 +371,72 @@ fn radio_stations_save(list: Vec<Value>) -> Answer {
+ 
+ static RADIO_WRITE: std::sync::Mutex<()> = std::sync::Mutex::new(());
+ 
++// --- LOCAL (hof-auto): the add-ons' switches and the door cameras, from the launcher -------
++
++/// The add-ons the installer offers, with their switch names.
++const HOFAUTO_MODS: [&str; 4] = ["hof_auto", "door_cams", "dashcam", "ai_unstick"];
++static HOFAUTO_WRITE: std::sync::Mutex<()> = std::sync::Mutex::new(());
++
++fn hofauto_state() -> Answer {
++    let _one = HOFAUTO_WRITE.lock().unwrap_or_else(|e| e.into_inner());
++    let mods: Vec<Value> = HOFAUTO_MODS.iter().map(|m| json!({ "id": m, "on": omsi_cfg::addon_switch::read(m) })).collect();
++    let text = omsi_cfg::door_cams_file::file().and_then(|f| std::fs::read_to_string(f).ok()).unwrap_or_default();
++    let buses: Vec<Value> = omsi_cfg::door_cams_file::buses(&text)
++        .into_iter()
++        .map(|bus| {
++            let b = omsi_cfg::door_cams_file::parse(&text, &bus);
++            let cams: Vec<Value> = b.cams.iter().map(|c| json!({ "name": c.name, "doors": c.doors, "fov": c.fov, "flip_x": c.flip_x })).collect();
++            json!({ "bus": bus, "on": b.on, "all_doors": b.all_doors, "cams": cams })
++        })
++        .collect();
++    Ok(json!({ "mods": mods, "buses": buses }))
++}
++
++fn hofauto_mod_set(name: String, on: bool) -> Answer {
++    if !HOFAUTO_MODS.contains(&name.as_str()) {
++        return Err(format!("unknown add-on: {name}"));
++    }
++    {
++        let _one = HOFAUTO_WRITE.lock().unwrap_or_else(|e| e.into_inner());
++        omsi_cfg::addon_switch::set(&name, on).map_err(err)?;
++    }
++    hofauto_state()
++}
++
++/// One bus's door cameras: its switches and the edits of its cameras (by position, see
++/// `omsi_cfg::door_cams_file::apply_edits`).
++fn hofauto_door_set(bus: String, on: Option<bool>, all_doors: Option<bool>, cams: Vec<Value>) -> Answer {
++    use omsi_cfg::door_cams_file as f;
++    let edits: Vec<f::CamEdit> = cams
++        .iter()
++        .map(|c| f::CamEdit {
++            doors: c.get("doors").and_then(|d| d.as_array()).map(|d| d.iter().filter_map(|n| n.as_u64().map(|n| n as usize)).collect()),
++            fov: c.get("fov").and_then(|v| v.as_f64()).map(|v| v as f32),
++            flip_x: c.get("flip_x").and_then(|v| v.as_bool()),
++            name: c.get("name").and_then(|v| v.as_str()).map(str::to_string),
++            remove: c.get("remove").and_then(|v| v.as_bool()).unwrap_or(false),
++        })
++        .collect();
++    {
++        let _one = HOFAUTO_WRITE.lock().unwrap_or_else(|e| e.into_inner());
++        let path = f::file().ok_or("no home folder")?;
++        let text = std::fs::read_to_string(&path).unwrap_or_default();
++        if !f::buses(&text).iter().any(|b| b.eq_ignore_ascii_case(&bus)) {
++            return Err(format!("no door cameras registered for {bus}"));
++        }
++        let mut b = f::parse(&text, &bus);
++        if let Some(v) = on {
++            b.on = v;
++        }
++        if let Some(v) = all_doors {
++            b.all_doors = v;
++        }
++        f::apply_edits(&mut b, &edits);
++        f::store_to(&path, &bus, &b).map_err(err)?;
++    }
++    hofauto_state()
++}
++
+ // --- mods ------------------------------------------------------------------------------
+ 
+ fn mods_status() -> Answer {
+@@ -837,6 +911,7 @@ fn answer(cmd: &str, args: &Value, p: &dyn Platform) -> Answer {
          "lines" => lines(arg::<String>(args, "map")?, arg::<String>(args, "date")?),
          "ibis" => ibis(arg::<String>(args, "bus")?, arg::<String>(args, "hof")?, arg::<String>(args, "line")?, arg::<Option<String>>(args, "terminus")?, arg::<Option<Vec<String>>>(args, "stops")?),
          "default_hof" => default_hof(arg::<Value>(args, "map")?, arg::<Value>(args, "bus")?, arg::<String>(args, "date")?, arg::<Option<String>>(args, "line")?),
@@ -1345,6 +2182,16 @@ index fff03d73..6a32baf9 100644
          "saved_situations" => saved_situations(arg::<String>(args, "map")?),
          "delete_situation" => delete_situation(arg::<String>(args, "map")?, arg::<String>(args, "file")?),
          "rename_situation" => rename_situation(arg::<String>(args, "map")?, arg::<String>(args, "file")?, arg::<String>(args, "name")?),
+@@ -882,6 +957,9 @@ fn answer(cmd: &str, args: &Value, p: &dyn Platform) -> Answer {
+         "keybindings_get" => keybindings_get(),
+         "keybindings_save" => keybindings_save(arg::<Value>(args, "bindings")?),
+         "radio_stations" => radio_stations(),
++        "hofauto_state" => hofauto_state(), // LOCAL (hof-auto)
++        "hofauto_mod_set" => hofauto_mod_set(arg::<String>(args, "name")?, arg::<bool>(args, "on")?), // LOCAL (hof-auto)
++        "hofauto_door_set" => hofauto_door_set(arg::<String>(args, "bus")?, arg::<Option<bool>>(args, "on")?, arg::<Option<bool>>(args, "all_doors")?, arg::<Option<Vec<Value>>>(args, "cams")?.unwrap_or_default()), // LOCAL (hof-auto)
+         "radio_stations_save" => radio_stations_save(arg::<Vec<Value>>(args, "list")?),
+         "mods_status" => mods_status(),
+         "add_hofs" => add_hofs(arg::<Vec<String>>(args, "files")?),
 diff --git a/crates/omsi-launcher-core/src/hof_auto.rs b/crates/omsi-launcher-core/src/hof_auto.rs
 new file mode 100644
 index 00000000..8e2c7f29
@@ -3222,3 +4069,201 @@ index 375649ef..dd41c724 100644
 +    let g = TrafficLightController::new(vec![vec![(6, 100.0)]], 100.0);
 +    assert_eq!(g.max_red(), 0.0);
 +}
+diff --git a/launcher/ui/js/data.js b/launcher/ui/js/data.js
+index 4ac06fe6..fdfc36be 100644
+--- a/launcher/ui/js/data.js
++++ b/launcher/ui/js/data.js
+@@ -370,7 +370,7 @@ export function choose(patch) {
+     loadLines();
+   }
+   if (c.map !== before.map) loadSituations();
+-  if (c.map !== before.map || c.bus !== before.bus || c.date !== before.date || c.line !== before.line || c.free !== before.free) updateHof();
++  if (c.map !== before.map || c.bus !== before.bus || c.date !== before.date || c.line !== before.line || c.tour !== before.tour || c.free !== before.free) updateHof(); // LOCAL (hof-auto): the tour is part of the choice
+   else if (c.hof !== before.hof || c.hof_manual !== before.hof_manual) loadIbis();
+ }
+ 
+@@ -395,11 +395,24 @@ export async function loadLines() {
+ 
+ export async function updateHof() {
+   const c = S.choice;
+-  const hof = await call('default_hof', { map: curMap() || null, bus: curBus() || null, date: c.date, line: c.free ? null : c.line }).catch(() => '');
+-  set({ hof });
++  // LOCAL (hof-auto): the depot file backed by the tour's own destinations; the official
++  // answer (`default_hof`) when the backend has no `hof_auto` or it fails
++  const ask = { map: curMap() || null, bus: curBus() || null, date: c.date, line: c.free ? null : c.line };
++  const auto = await call('hof_auto', { ...ask, tour: c.free ? null : c.tour || null }).catch(() => null);
++  const hof = auto ? auto.hof : await call('default_hof', ask).catch(() => '');
++  set({ hof, hofAuto: auto });
+   loadIbis();
+ }
+ 
++/** LOCAL (hof-auto): the reason the launch must wait for the depot file to be chosen by hand,
++ * or '' (a depot file chosen by hand is never blocked). */
++export async function hofGuard() {
++  const c = S.choice;
++  if (c.hof_manual || c.free || !c.line || !c.tour) return '';
++  const auto = await call('hof_auto', { map: curMap() || null, bus: curBus() || null, date: c.date, line: c.line, tour: c.tour }).catch(() => null);
++  return auto?.block ? auto.message : '';
++}
++
+ export const dutyHof = () => (S.choice.hof_manual ? S.choice.hof : S.hof) || '';
+ 
+ let ibisAsked = '';
+@@ -584,6 +597,11 @@ export async function start(extra) {
+     const approved = extra?.__fleetApproved === true;
+     // UI-only consent: do not serialize this ephemeral flag into the launch duty.
+     const { __fleetApproved: _consent, ...dutyExtra } = extra || {};
++    const blocked = await hofGuard();
++    if (blocked) {
++      toast(blocked, 'error', 12000);
++      return null;
++    }
+     const d = await duty(dutyExtra);
+     if (serverBuses() && S.choice?.lan_server?.fleet_version === 1 && !serverFleetSelection()) {
+       // Only the new authoritative catalogue requires a verified LISTBUS offer.
+diff --git a/launcher/ui/js/pages/bus-list.js b/launcher/ui/js/pages/bus-list.js
+index 372085c6..53a9fdf8 100644
+--- a/launcher/ui/js/pages/bus-list.js
++++ b/launcher/ui/js/pages/bus-list.js
+@@ -194,6 +194,7 @@ export function BusOptions() {
+       <${Field} label="Depot file">
+         <${Select} raw value=${c.hof_manual ? c.hof : ''} options=${hofs} onChange=${(h) => choose({ hof: h, hof_manual: !!h })} />
+       </${Field}>
++      ${!c.hof_manual && s.hofAuto?.message && s.hofAuto.severity !== 'Ok' && html`<${Notice} kind=${s.hofAuto.block ? 'danger' : 'warn'}>${s.hofAuto.message}${s.hofAuto.candidates?.length ? ` (${s.hofAuto.candidates.join(', ')})` : ''}</${Notice}>`}
+       ${v.description && html`<p class="dim selectable bus-about">${v.description}</p>`}
+       <div class="muted small selectable ellipsis" title=${v.file}>${v.file}</div>
+     </div>`}
+diff --git a/launcher/ui/js/pages/hof-auto.js b/launcher/ui/js/pages/hof-auto.js
+new file mode 100644
+index 00000000..f329062e
+--- /dev/null
++++ b/launcher/ui/js/pages/hof-auto.js
+@@ -0,0 +1,71 @@
++// LOCAL (hof-auto): the add-ons' switches and the door cameras, set from the launcher.
++// The game reads both files again within seconds, so a change shows in a running game too.
++// Cameras are registered in the game (Alt, "Door cameras", or the controls' buttons): where a
++// camera looks from is set there; here the doors, the field of view, the mirror image and the
++// removal are.
++
++import { html, useState, useEffect } from '../../vendor/preact-htm.js';
++import { toast } from '../store.js';
++import { call } from '../api.js';
++import { t } from '../i18n.js';
++import { Button, Toggle, Slider, Notice } from '../ui.js';
++
++const MODS = [
++  ['hof_auto', 'Automatic depot file (HOF)', 'Picks the depot file only when the game can prove it is the right one.'],
++  ['door_cams', 'Door cameras', 'A popup with the cameras you registered while their doors are open.'],
++  ['dashcam', 'Dashcam', 'Records the road ahead to an MP4 (needs ffmpeg).'],
++  ['ai_unstick', 'Stuck traffic recovery', 'Removes an AI car that stood for good, out of everybody\'s sight.'],
++];
++
++/** The bus's name: its file without the folders. */
++const busName = (p) => p.split(/[\\/]/).pop().replace(/\.bus$/i, '') || p;
++
++export function HofAutoMods() {
++  const [state, setState] = useState(null);
++  const run = (cmd, args) =>
++    call(cmd, args).then(setState).catch((e) => toast(t(e.message), 'error'));
++  useEffect(() => {
++    let gone = false;
++    call('hofauto_state')
++      .then((s) => !gone && setState(s))
++      .catch((e) => {
++        if (!gone) setState({ mods: [], buses: [] });
++        toast(t(e.message), 'error');
++      });
++    return () => {
++      gone = true;
++    };
++  }, []);
++  if (!state) return null;
++  const on = (id) => state.mods.find((m) => m.id === id)?.on !== false;
++  const edit = (bus, index, patch) => {
++    const cams = state.buses.find((b) => b.bus === bus).cams.map(() => ({}));
++    cams[index] = patch;
++    return run('hofauto_door_set', { bus, cams });
++  };
++  return html`<div class="hofauto">
++    ${MODS.map(([id, label, help]) => html`<${Toggle} key=${id} checked=${on(id)} label=${label} help=${help} onChange=${(v) => run('hofauto_mod_set', { name: id, on: v })} />`)}
++    <p class="muted small">${t('These are the add-ons of the HOF-Auto package. Switching one off makes the game behave as the official one for that feature, at once.')}</p>
++    <h3>${t('Door cameras by bus')}</h3>
++    ${!state.buses.length
++      ? html`<${Notice}>${t('No door camera yet. In the game press Alt, choose "Door cameras" and "Add a camera here", or give a button of your wheel the action "Door cameras: add a camera where the view is" in Controls.')}<//>`
++      : state.buses.map((b) => html`<div class="card" key=${b.bus} style="margin:8px 0;padding:10px">
++          <div class="row" style="justify-content:space-between;gap:8px">
++            <b title=${b.bus}>${busName(b.bus)}</b>
++            <span class="row" style="gap:12px">
++              <${Toggle} checked=${b.on} label="On" onChange=${(v) => run('hofauto_door_set', { bus: b.bus, on: v })} />
++              <${Toggle} checked=${b.all_doors} label="Any door" onChange=${(v) => run('hofauto_door_set', { bus: b.bus, all_doors: v })} />
++            </span>
++          </div>
++          ${b.cams.map((c, i) => html`<div key=${i} style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line, #8884)">
++            <div class="row" style="justify-content:space-between"><span>${c.name}</span>
++              <${Button} small kind="ghost" icon="trash" title="Remove this camera" onClick=${() => edit(b.bus, i, { remove: true })} /></div>
++            <div class="row" style="gap:6px;flex-wrap:wrap;margin:4px 0">
++              ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => html`<${Button} key=${n} small kind=${c.doors.includes(n) ? '' : 'ghost'} onClick=${() => edit(b.bus, i, { doors: c.doors.includes(n) ? c.doors.filter((d) => d !== n) : [...c.doors, n] })}>${t('Door')} ${n}<//>`)}
++            </div>
++            <${Slider} label="Field of view" value=${c.fov} min=${30} max=${110} step=${1} format=${(v) => `${v.toFixed(0)}°`} onChange=${(v) => edit(b.bus, i, { fov: v })} />
++            <${Toggle} checked=${c.flip_x} label="Mirror image (left / right)" onChange=${(v) => edit(b.bus, i, { flip_x: v })} />
++          </div>`)}
++        </div>`)}
++  </div>`;
++}
+diff --git a/launcher/ui/js/pages/settings-schema.js b/launcher/ui/js/pages/settings-schema.js
+index 419a07e8..23cc3a67 100644
+--- a/launcher/ui/js/pages/settings-schema.js
++++ b/launcher/ui/js/pages/settings-schema.js
+@@ -501,11 +501,19 @@ const general = {
+ };
+ 
+ /** AI Lists: no settings - the page draws its own editor (ai-lists.js). */
++/** LOCAL (hof-auto): the package's add-ons (switches) and the door cameras (hof-auto.js). */
++const hofAutoTab = {
++  id: 'hofauto',
++  label: 'Mods',
++  cols: [{ title: 'HOF-Auto add-ons', rows: [{ type: 'custom', id: 'hofauto' }] }],
++  when: (s, p) => !mobile(s, p),
++};
++
+ const aiLists = { id: 'ailists', label: 'AI Lists', page: 'ailists', cols: [], when: (s, p) => !mobile(s, p) };
+ 
+ // (the content test, once a tab here, is the model test of Help -> Troubleshooting now: troubleshoot.js;
+ // the Settings tab "Troubleshooting" leads there, settings.js)
+-export const SETTINGS_TABS = [graphics, driving, camera, sound, gameplay, general, aiLists];
++export const SETTINGS_TABS = [graphics, driving, camera, sound, gameplay, general, hofAutoTab, aiLists];
+ 
+ /** The settings a saved graphics profile holds (`GRAPHICS_PROFILE_KEYS`). */
+ export const GRAPHICS_PROFILE_KEYS = [
+diff --git a/launcher/ui/js/pages/settings.js b/launcher/ui/js/pages/settings.js
+index 73833c15..b54af104 100644
+--- a/launcher/ui/js/pages/settings.js
++++ b/launcher/ui/js/pages/settings.js
+@@ -12,6 +12,7 @@ import { UpdateRow, checkUpdates } from '../updates.js';
+ import { SETTINGS_TABS, GRAPHICS_PROFILE_KEYS } from './settings-schema.js';
+ import { VersionsDialog } from './versions.js';
+ import { RadioStations } from './radio-stations.js';
++import { HofAutoMods } from './hof-auto.js'; // LOCAL (hof-auto)
+ import { AiListsPage } from './ai-lists.js';
+ import { OptimiseBlock } from './optimise.js';
+ 
+@@ -232,6 +233,7 @@ const CUSTOM = {
+   reset: ({ ask }) => html`<${ResetRow} ask=${ask} />`,
+   support: () => html`<${SupportRow} />`,
+   radio: () => html`<${RadioStations} />`,
++  hofauto: () => html`<${HofAutoMods} />`, // LOCAL (hof-auto)
+ };
+ 
+ 
+diff --git a/launcher/ui/js/store.js b/launcher/ui/js/store.js
+index 88062e3d..74928733 100644
+--- a/launcher/ui/js/store.js
++++ b/launcher/ui/js/store.js
+@@ -21,6 +21,7 @@ export const S = {
+   depotGroups: [],
+   depotGroup: remembered('depot-group', ''),
+   hof: '',
++  hofAuto: null, // LOCAL (hof-auto): the last `hof_auto` answer
+   ibis: null,
+   situations: [],
+   profiles: null,
