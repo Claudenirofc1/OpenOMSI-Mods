@@ -10,7 +10,7 @@
 param(
     [switch]$Desinstalar,
     [switch]$SoPerfil,
-    [ValidateSet('Menu', 'Instalar', 'Atualizar', 'Reparar', 'Diagnostico', 'Restaurar', 'Exportar', 'Importar')][string]$Modo = 'Instalar',
+    [ValidateSet('Menu', 'Instalar', 'Atualizar', 'Reparar', 'Diagnostico', 'Restaurar', 'Exportar', 'Importar', 'Pastas')][string]$Modo = 'Instalar',
     [switch]$Silencioso,
     [string]$RespostaPadrao = 'Yes',
     [string]$PastaJogo = '',
@@ -37,7 +37,17 @@ if ($RaizTeste) {
     $homeCfg = Join-Path $env:USERPROFILE '.openomsi'
     $perfilDir = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'openOMSI-HOF-Auto\perfil'
 }
-$bkRaiz = Join-Path $dadosDir 'backup'
+$bkAntigo = Join-Path $dadosDir 'backup'
+$bkRaiz = $bkAntigo
+$videoDir = ''
+$cfgPastas = Join-Path $dadosDir 'pastas.json'
+# Pastas escolhidas (Gerenciador > Pastas). Padrao: disco D: quando existir (nunca no teste automatizado).
+$_p = $null
+if (Test-Path -LiteralPath $cfgPastas) { try { $_p = Get-Content -LiteralPath $cfgPastas -Raw -Encoding UTF8 | ConvertFrom-Json } catch { } }
+if ($_p -and $_p.backup) { $bkRaiz = [string]$_p.backup }
+elseif (-not $RaizTeste -and (Test-Path -LiteralPath 'D:\')) { $bkRaiz = 'D:\Backups\OpenOMSI-Mods' }
+if ($_p -and $_p.videos) { $videoDir = [string]$_p.videos }
+elseif (-not $RaizTeste -and (Test-Path -LiteralPath 'D:\')) { $videoDir = 'D:\Videos\OpenOMSI-Dashcam' }
 $logf = Join-Path $dadosDir 'instalacao.log.txt'
 $estadoF = Join-Path $dadosDir 'estado.json'
 $pendF = Join-Path $dadosDir 'pendente.txt'
@@ -313,7 +323,8 @@ function Novo-Backup([string]$dest, $manifesto, [string]$vj) {
 }
 function Listar-Backups {
     $r = @()
-    foreach ($d in @(Get-ChildItem -LiteralPath $bkRaiz -Directory -ErrorAction SilentlyContinue | Sort-Object Name -Descending)) {
+    $raizes = @($bkRaiz); if ($bkAntigo -ne $bkRaiz) { $raizes += $bkAntigo }
+    foreach ($d in @($raizes | ForEach-Object { Get-ChildItem -LiteralPath $_ -Directory -ErrorAction SilentlyContinue } | Sort-Object Name -Descending)) {
         $m = Ler-Json (Join-Path $d.FullName 'backup.json')
         $dest = ''
         if ($m) { $dest = [string]$m.pasta_do_jogo }
@@ -390,10 +401,45 @@ function Baixar-Atualizacao([string]$versaoBase, $atual) {
     Expand-Archive -LiteralPath $zip -DestinationPath (Join-Path $tmp 'x') -Force
     return @{ Estado = 'baixado'; Tag = $tag; Pasta = (Join-Path $tmp 'x'); Publicado = [string]$asset.updated_at }
 }
+function Aplicar-Pastas {
+    # a dashcam le a pasta dos videos de ~\.openomsi\dashcam-dir.txt (so este arquivo do mod; nada pessoal e tocado)
+    if ($videoDir) {
+        try {
+            New-Item -ItemType Directory -Force $homeCfg | Out-Null
+            New-Item -ItemType Directory -Force $videoDir -ErrorAction SilentlyContinue | Out-Null
+            Set-Content -LiteralPath (Join-Path $homeCfg 'dashcam-dir.txt') -Value $videoDir -Encoding UTF8
+            Log "pasta dos videos da dashcam: $videoDir"
+        } catch { Log "pasta dos videos nao aplicada: $_" }
+    }
+}
+function Configurar-Pastas {
+    $f = New-Object System.Windows.Forms.Form
+    $f.Text = 'Pastas - OpenOMSI Mod Manager'; $f.StartPosition = 'CenterScreen'; $f.FormBorderStyle = 'FixedDialog'; $f.MaximizeBox = $false
+    $f.ClientSize = New-Object System.Drawing.Size(560, 190)
+    $campos = @{}
+    $y = 14
+    foreach ($par in @(@('backup', 'Backups (arquivos do jogo e configuracoes)', $bkRaiz), @('videos', 'Videos da dashcam (MP4)', $videoDir))) {
+        $l = New-Object System.Windows.Forms.Label; $l.Text = $par[1]; $l.Location = New-Object System.Drawing.Point(16, $y); $l.AutoSize = $true; $f.Controls.Add($l)
+        $t = New-Object System.Windows.Forms.TextBox; $t.Text = $par[2]; $t.Location = New-Object System.Drawing.Point(16, $y + 20); $t.Size = New-Object System.Drawing.Size(430, 24); $f.Controls.Add($t)
+        $b = New-Object System.Windows.Forms.Button; $b.Text = 'Procurar...'; $b.Tag = $t; $b.Location = New-Object System.Drawing.Point(456, $y + 18); $b.Size = New-Object System.Drawing.Size(90, 28)
+        $b.Add_Click({ $d = New-Object System.Windows.Forms.FolderBrowserDialog; if ($d.ShowDialog() -eq 'OK') { $this.Tag.Text = $d.SelectedPath } })
+        $f.Controls.Add($b)
+        $campos[$par[0]] = $t; $y += 64
+    }
+    $ok = New-Object System.Windows.Forms.Button; $ok.Text = 'Salvar'; $ok.Location = New-Object System.Drawing.Point(350, 146); $ok.Size = New-Object System.Drawing.Size(90, 30); $ok.DialogResult = 'OK'
+    $ca = New-Object System.Windows.Forms.Button; $ca.Text = 'Cancelar'; $ca.Location = New-Object System.Drawing.Point(456, 146); $ca.Size = New-Object System.Drawing.Size(90, 30); $ca.DialogResult = 'Cancel'
+    $f.Controls.Add($ok); $f.Controls.Add($ca); $f.AcceptButton = $ok; $f.CancelButton = $ca
+    if ($f.ShowDialog() -ne 'OK') { return }
+    $script:bkRaiz = $campos['backup'].Text.Trim(); $script:videoDir = $campos['videos'].Text.Trim()
+    $o = [ordered]@{ backup = $script:bkRaiz; videos = $script:videoDir }
+    ConvertTo-Json -InputObject $o | Set-Content -LiteralPath $cfgPastas -Encoding UTF8
+    Aplicar-Pastas
+    Msg "Pastas salvas.`nBackups: $($script:bkRaiz)`nVideos da dashcam: $($script:videoDir)" 'openOMSI Mod Manager' 'OK' 'Information' | Out-Null
+}
 function Menu-Gerenciador {
     $f = New-Object System.Windows.Forms.Form
     $f.Text = 'OpenOMSI Mod Manager'; $f.StartPosition = 'CenterScreen'; $f.FormBorderStyle = 'FixedDialog'; $f.MaximizeBox = $false
-    $itens = @(@('Instalar', 'Instalar / escolher mods'), @('Atualizar', 'Atualizar (consulta o GitHub)'), @('Reparar', 'Reparar (diagnostico + autorizacao)'), @('Diagnostico', 'Diagnostico'), @('Restaurar', 'Restaurar backup (escolher a versao)'), @('Exportar', 'Exportar perfil (backup recuperavel)'), @('Importar', 'Importar perfil'))
+    $itens = @(@('Instalar', 'Instalar / escolher mods'), @('Atualizar', 'Atualizar (consulta o GitHub)'), @('Reparar', 'Reparar (diagnostico + autorizacao)'), @('Diagnostico', 'Diagnostico'), @('Restaurar', 'Restaurar backup (escolher a versao)'), @('Exportar', 'Exportar perfil (backup recuperavel)'), @('Importar', 'Importar perfil'), @('Pastas', 'Pastas (backups e videos da dashcam)'))
     $f.ClientSize = New-Object System.Drawing.Size(360, (28 + 42 * $itens.Count))
     $y = 14
     $script:escolhaMenu = $null
@@ -438,6 +484,7 @@ function Principal {
         return 0
     }
     if ($script:Modo -eq 'Menu') { $sel = Menu-Gerenciador; if (-not $sel) { return 0 }; $script:Modo = $sel }
+    if ($script:Modo -eq 'Pastas') { Configurar-Pastas; return 0 }
     $modo = $script:Modo
 
     if ($modo -eq 'Exportar') {
@@ -567,6 +614,7 @@ function Principal {
     }
     Gravar-Mods $escolha
     Salvar-Perfil
+    Aplicar-Pastas
     Estado-Gravar $dest $manifesto $script:publicadoNovo $vj
     Remove-Item -LiteralPath $pendF -Force -ErrorAction SilentlyContinue
     $aviso = ''

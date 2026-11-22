@@ -1,9 +1,9 @@
 diff --git a/crates/omsi-app/locales/hof_auto.yml b/crates/omsi-app/locales/hof_auto.yml
 new file mode 100644
-index 00000000..fc60e80d
+index 00000000..6a7845b1
 --- /dev/null
 +++ b/crates/omsi-app/locales/hof_auto.yml
-@@ -0,0 +1,335 @@
+@@ -0,0 +1,402 @@
 +# Automatic depot-file (HOF) choice: LOCAL strings (hof-auto prototype). English strings are the keys; pt is Brazilian Portuguese.
 +_version: 2
 +
@@ -339,6 +339,73 @@ index 00000000..fc60e80d
 +"Position / yaw, pitch:":
 +  pt: "Posição / direção horizontal, vertical:"
 +  pt-pt: "Posição / direção horizontal, vertical:"
++
++"Live preview: its picture is on screen now, door open or not.":
++  pt: "Pré-visualização ao vivo: a imagem desta câmera está na tela agora, com a porta aberta ou não."
++  pt-pt: "Pré-visualização ao vivo: a imagem desta câmera está na tela agora, com a porta aberta ou não."
++
++"Right side":
++  pt: "Lado direito"
++  pt-pt: "Lado direito"
++
++"Left side":
++  pt: "Lado esquerdo"
++  pt-pt: "Lado esquerdo"
++
++"Side of the window":
++  pt: "Lado na janela"
++  pt-pt: "Lado na janela"
++
++"front body":
++  pt: "carroceria dianteira"
++  pt-pt: "carroceria dianteira"
++
++"rear body":
++  pt: "carroceria traseira"
++  pt-pt: "carroceria traseira"
++
++"Fixed to":
++  pt: "Fixada em"
++  pt-pt: "Fixada em"
++
++
++"Save and next":
++  pt: "Salvar e próxima"
++  pt-pt: "Salvar e próxima"
++
++
++
++"One window shows the cameras of the open doors: the left side's on the left, the right side's on the right. Cameras are kept for this bus.":
++  pt: "Uma única janela mostra as câmeras das portas abertas: as do lado esquerdo à esquerda, as do direito à direita. As câmeras ficam salvas para este ônibus."
++  pt-pt: "Uma única janela mostra as câmeras das portas abertas: as do lado esquerdo à esquerda, as do direito à direita. As câmeras ficam salvas para este ônibus."
++
++"Finish moving the window":
++  pt: "Concluir o ajuste da janela"
++  pt-pt: "Concluir o ajuste da janela"
++
++"Move / resize the window":
++  pt: "Mover / redimensionar a janela"
++  pt-pt: "Mover / redimensionar a janela"
++
++"Default window layout":
++  pt: "Layout padrão da janela"
++  pt-pt: "Layout padrão da janela"
++
++"R":
++  pt: "D"
++  pt-pt: "D"
++
++"L":
++  pt: "E"
++  pt-pt: "E"
++
++"body ":
++  pt: "carroc. "
++  pt-pt: "carroc. "
++
++"door":
++  pt: "porta"
++  pt-pt: "porta"
 diff --git a/crates/omsi-app/src/app/groups.rs b/crates/omsi-app/src/app/groups.rs
 index a7ad3144..e7024f85 100644
 --- a/crates/omsi-app/src/app/groups.rs
@@ -532,21 +599,22 @@ index f34db679..084c8374 100644
          // work is done meanwhile, and outside a drag none of it is touched)
          if self.gfx.mirror_hud.dragging() {
 diff --git a/crates/omsi-app/src/camera_util.rs b/crates/omsi-app/src/camera_util.rs
-index f67fc0ba..af8b4ecc 100644
+index f67fc0ba..65643ae8 100644
 --- a/crates/omsi-app/src/camera_util.rs
 +++ b/crates/omsi-app/src/camera_util.rs
-@@ -242,6 +242,16 @@ pub(crate) fn render_mirrors(
+@@ -242,6 +242,17 @@ pub(crate) fn render_mirrors(
              cams.push((c, at));
          }
      }
 +    // the door cameras (`door_cams`), numbered on after the bus's own and its rear sections'
 +    let door_path = v.ty.def.path.to_string_lossy();
-+    let door_adjust = crate::door_cams::extra_adjust(&door_path);
++    let door_segments = crate::door_cams::extra_segments(&door_path);
 +    for (k, c) in crate::door_cams::extra_cameras(&door_path).into_iter().enumerate() {
 +        let c = aim(cams.len(), &c, v.position, v.body_rotation());
-+        let (roll, level) = door_adjust.get(k).copied().unwrap_or((0.0, false));
-+        // (the door cameras are the player's own: their roll and levelling are theirs to set)
-+        let at = crate::door_cams::world_view(v.position, v.body_rotation(), &c, roll, level);
++        // (fixed to its own body - the front one or a rear section - by that body's real
++        // transform; the picture leans with the body, never levelled)
++        let (bp, br) = crate::door_cams::segment_frame(v, door_segments.get(k).copied().unwrap_or(0));
++        let at = crate::door_cams::world_view(bp, br, &c, 0.0, false);
 +        cams.push((c, at));
 +    }
      if cams.is_empty() {
@@ -1122,10 +1190,10 @@ index 00000000..8f1362ed
 +}
 diff --git a/crates/omsi-app/src/door_cams.rs b/crates/omsi-app/src/door_cams.rs
 new file mode 100644
-index 00000000..229744dc
+index 00000000..12a86a0e
 --- /dev/null
 +++ b/crates/omsi-app/src/door_cams.rs
-@@ -0,0 +1,892 @@
+@@ -0,0 +1,1069 @@
 +//! Door cameras (openOMSI HOF-Auto add-on): cameras the player puts on a bus, shown in a popup
 +//! while the doors they watch are open - the rear door's view for the driver who is watching
 +//! the mirror, say.
@@ -1175,6 +1243,9 @@ index 00000000..229744dc
 +    pub own: bool,
 +    pub can_own: bool,
 +    pub edit: bool,
++    /// The camera open in the compact editor, and how many bodies the vehicle has (1 = not articulated).
++    pub sel: Option<usize>,
++    pub segments: usize,
 +}
 +
 +/// How fine the adjustments are: the free camera's speed and the size of the nudges are this
@@ -1220,7 +1291,12 @@ index 00000000..229744dc
 +    pub own: bool,
 +    /// The popups' editor is on: all of them show, the mouse drags and resizes them.
 +    edit: bool,
-+    drag: Option<(usize, f32, f32)>,
++    drag: Option<(f32, f32)>,
++    /// The shared window's place (left, top, height as parts of the screen); None = automatic.
++    window: Option<[f32; 3]>,
++    /// The camera open in the compact editor, and how it was when it was opened (for Cancel / Undo).
++    pub sel: Option<usize>,
++    backup: Option<DoorCam>,
 +    pub cams: Vec<DoorCam>,
 +    /// The feature is on (Ctrl+K).
 +    pub enabled: bool,
@@ -1236,17 +1312,27 @@ index 00000000..229744dc
 +}
 +
 +/// What the renderer reads: the cameras of the bus being shown now, only while the popup is up.
-+type Extra = (String, Vec<omsi_vehicle::Camera>, Vec<(f32, bool)>);
++type Extra = (String, Vec<omsi_vehicle::Camera>, Vec<u8>);
 +static EXTRA: OnceLock<Mutex<Extra>> = OnceLock::new();
 +
 +fn extra() -> &'static Mutex<Extra> {
 +    EXTRA.get_or_init(|| Mutex::new((String::new(), Vec::new(), Vec::new())))
 +}
 +
-+/// Each extra camera's roll (degrees, added to the mount's) and whether it keeps the horizon level.
-+pub(crate) fn extra_adjust(path: &str) -> Vec<(f32, bool)> {
++/// The body each extra camera is fixed to (0 = the front body, 1.. = the rear sections).
++pub(crate) fn extra_segments(path: &str) -> Vec<u8> {
 +    let g = extra().lock().unwrap_or_else(|e| e.into_inner());
 +    if g.0.eq_ignore_ascii_case(path) { g.2.clone() } else { Vec::new() }
++}
++
++/// Where a body of the vehicle is: its position and its real rotation (the front body, or a
++/// rear section of an articulated bus - each with its own transform). A segment the vehicle does
++/// not have (another model, a coupled-off trailer) is the front body.
++pub(crate) fn segment_frame(v: &omsi_sim::VehicleInstance, segment: u8) -> (DVec3, Mat4) {
++    match (segment as usize).checked_sub(1).and_then(|k| v.trailers.get(k)) {
++        Some(t) => (t.position, t.body_rotation()),
++        None => (v.position, v.body_rotation()),
++    }
 +}
 +
 +/// A door camera's view in the world: (eye, yaw, pitch, roll) as the renderer takes them. As
@@ -1356,6 +1442,8 @@ index 00000000..229744dc
 +        self.visible = false;
 +        self.edit = false;
 +        self.drag = None;
++        self.sel = None;
++        self.backup = None;
 +        let text = file().map(|f| omsi_cfg::door_cams_file::read_text(&f)).unwrap_or_default();
 +        // (what an older version kept under the full path is taken over, and stays in the file)
 +        let (key, b, migrated) = omsi_cfg::door_cams_file::resolve(&text, &model, self.vkey.as_deref(), &path.to_ascii_lowercase());
@@ -1364,6 +1452,7 @@ index 00000000..229744dc
 +        self.enabled = b.on;
 +        self.all_doors = b.all_doors;
 +        self.cams = b.cams;
++        self.window = b.window;
 +        if migrated {
 +            self.save();
 +        }
@@ -1385,21 +1474,33 @@ index 00000000..229744dc
 +        self.sync(p);
 +        let due = self.last_poll.is_none_or(|t| t.elapsed().as_secs_f32() >= POLL);
 +        if self.edit {
-+            // (the editor: every camera's popup is up, door open or not)
++            // (the window's editor: every camera's picture is up, door open or not)
 +            self.shown = (0..self.cams.len()).collect();
 +            self.visible = !self.shown.is_empty();
++        } else if let Some(k) = self.sel.filter(|k| *k < self.cams.len()) {
++            // (a camera open in the compact editor shows live, its door open or not)
++            if due {
++                self.last_poll = Some(Instant::now());
++                self.open = doors_open(p);
++            }
++            self.shown = shown_cameras(&self.cams, &self.open, self.all_doors);
++            if !self.shown.contains(&k) {
++                self.shown.push(k);
++                self.shown.sort_unstable();
++            }
++            self.visible = true;
 +        } else if due && self.enabled && !self.cams.is_empty() {
 +            self.last_poll = Some(Instant::now());
 +            self.open = doors_open(p);
 +            self.shown = shown_cameras(&self.cams, &self.open, self.all_doors);
 +            self.visible = !self.shown.is_empty();
 +        }
-+        let on = show && (self.enabled || self.edit) && self.visible && !self.cams.is_empty();
++        let on = show && (self.enabled || self.edit || self.sel.is_some()) && self.visible && !self.cams.is_empty();
 +        let mut g = extra().lock().unwrap_or_else(|e| e.into_inner());
 +        if on {
 +            g.0 = path_of(p);
 +            g.1 = self.shown.iter().filter_map(|i| self.cams.get(*i)).map(bus_camera).collect();
-+            g.2 = self.shown.iter().filter_map(|i| self.cams.get(*i)).map(|_| (0.0, false)).collect(); // (rigid to the body: no roll, no levelling - the rule)
++            g.2 = self.shown.iter().filter_map(|i| self.cams.get(*i)).map(|c| c.segment).collect(); // (rigid to its body: no roll, no levelling - the rule)
 +            let base = first_index(p);
 +            idx.extend(base..base + g.1.len());
 +        } else {
@@ -1411,12 +1512,12 @@ index 00000000..229744dc
 +
 +    /// Put the popup's pictures into the frame's overlays (`viewport` = the HUD's rectangle).
 +    pub fn push(&self, scene: &mut Scene, world: &World, first: usize, viewport: [f32; 4]) {
-+        if !((self.enabled || self.edit) && self.visible) {
++        if !((self.enabled || self.edit || self.sel.is_some()) && self.visible) {
 +            return;
 +        }
 +        let start = scene.overlays.len();
 +        let textures = world.mirror_textures.lock();
-+        for (k, (ci, r)) in rects(&self.cams, &self.shown, viewport[2], viewport[3]).into_iter().enumerate() {
++        for (k, (ci, r)) in window_cells(&self.cams, &self.shown, self.window, viewport[2], viewport[3]).cells.into_iter().enumerate() {
 +            let Some(tex) = textures.get(first + k).copied().flatten() else { continue };
 +            let Some(c) = self.cams.get(ci) else { continue };
 +            let (x0, x1) = if c.flip_x { (r[2], r[0]) } else { (r[0], r[2]) };
@@ -1445,29 +1546,27 @@ index 00000000..229744dc
 +        self.drag = None;
 +        self.visible = false;
 +        if self.edit {
-+            "Popup editor: drag a picture with the left button, wheel = size, Ctrl+Alt+P to finish (kept per bus)".into()
++            "Window editor: drag the window with the left button, wheel = size, Ctrl+Alt+P to finish (kept per bus)".into()
 +        } else if self.cams.is_empty() {
 +            "No door camera yet (Ctrl+Shift+K registers one)".into()
 +        } else {
-+            "Popup editor done: places and sizes saved".into()
++            "Window editor done: place and size saved".into()
 +        }
 +    }
 +
-+    fn rect_of(&self, ci: usize, w: f32, h: f32) -> Option<[f32; 4]> {
-+        rects(&self.cams, &self.shown, w, h).into_iter().find(|(i, _)| *i == ci).map(|(_, r)| r)
++    /// The window as laid out now.
++    fn laid(&self, w: f32, h: f32) -> WindowLayout {
++        window_cells(&self.cams, &self.shown, self.window, w, h)
 +    }
 +
-+    /// The popup under the cursor (the one drawn last is on top).
-+    fn hit(&self, cursor: (f32, f32), size: (f32, f32)) -> Option<usize> {
-+        rects(&self.cams, &self.shown, size.0, size.1)
-+            .into_iter()
-+            .rev()
-+            .find(|(_, r)| cursor.0 >= r[0] && cursor.0 <= r[2] && cursor.1 >= r[1] && cursor.1 <= r[3])
-+            .map(|(i, _)| i)
++    /// Whether the cursor is on the window.
++    fn on_window(&self, cursor: (f32, f32), size: (f32, f32)) -> bool {
++        let f = self.laid(size.0, size.1).frame;
++        f[2] > f[0] && cursor.0 >= f[0] && cursor.0 <= f[2] && cursor.1 >= f[1] && cursor.1 <= f[3]
 +    }
 +
-+    /// The left button over a popup starts dragging it (true: the click is taken); letting go
-+    /// ends the drag and keeps the place. Only with the editor on.
++    /// The left button on the window (with the editor on) starts dragging it as a whole
++    /// (true: the click is taken); letting go ends the drag and keeps the place.
 +    pub fn press(&mut self, pressed: bool, cursor: (f32, f32), size: (f32, f32)) -> bool {
 +        if !pressed {
 +            if self.drag.take().is_some() {
@@ -1476,57 +1575,111 @@ index 00000000..229744dc
 +            }
 +            return false;
 +        }
-+        if !self.edit || size.0 <= 0.0 || size.1 <= 0.0 {
++        if !self.edit || size.0 <= 0.0 || size.1 <= 0.0 || !self.on_window(cursor, size) {
 +            return false;
 +        }
-+        let Some(ci) = self.hit(cursor, size) else { return false };
-+        let Some(r) = self.rect_of(ci, size.0, size.1) else { return false };
-+        // from here on the popup has its own place (the one it had, until it is moved)
-+        if let Some(c) = self.cams.get_mut(ci) {
-+            c.popup = Some([r[0] / size.0, r[1] / size.1, (r[3] - r[1]) / size.1]);
-+        }
-+        self.drag = Some((ci, cursor.0 - r[0], cursor.1 - r[1]));
++        let l = self.laid(size.0, size.1);
++        // from here on the window has its own place (the one it had, until it is moved)
++        self.window = Some([l.frame[0] / size.0, l.frame[1] / size.1, l.height / size.1]);
++        self.drag = Some((cursor.0 - l.frame[0], cursor.1 - l.frame[1]));
 +        true
 +    }
 +
-+    /// The cursor moved: a popup being dragged follows (only its place changes - never what
-+    /// the camera sees).
++    /// The cursor moved: a window being dragged follows (only its place changes - never what
++    /// any camera sees).
 +    pub fn moved(&mut self, cursor: (f32, f32), size: (f32, f32)) -> bool {
-+        let Some((ci, dx, dy)) = self.drag else { return false };
-+        let Some(c) = self.cams.get_mut(ci) else { return false };
-+        let Some(pop) = c.popup.as_mut() else { return false };
-+        let ph = pop[2] * size.1;
-+        let pw = ph * ASPECT;
-+        pop[0] = ((cursor.0 - dx) / size.0).clamp(0.0, ((size.0 - pw) / size.0).max(0.0));
-+        pop[1] = ((cursor.1 - dy) / size.1).clamp(0.0, ((size.1 - ph) / size.1).max(0.0));
++        let Some((dx, dy)) = self.drag else { return false };
++        let Some(win) = self.window.as_mut() else { return false };
++        let f = window_cells(&self.cams, &self.shown, Some(*win), size.0, size.1).frame;
++        let (ww, wh) = (f[2] - f[0], f[3] - f[1]);
++        win[0] = ((cursor.0 - dx) / size.0).clamp(0.0, ((size.0 - ww) / size.0).max(0.0));
++        win[1] = ((cursor.1 - dy) / size.1).clamp(0.0, ((size.1 - wh) / size.1).max(0.0));
 +        true
 +    }
 +
-+    /// The wheel over a popup makes it larger or smaller (true when one was under the cursor).
++    /// The wheel over the window (with the editor on) makes it larger or smaller.
 +    pub fn wheel(&mut self, amount: f32, cursor: (f32, f32), size: (f32, f32)) -> bool {
-+        if !self.edit || size.0 <= 0.0 || size.1 <= 0.0 {
++        if !self.edit || size.0 <= 0.0 || size.1 <= 0.0 || !self.on_window(cursor, size) {
 +            return false;
 +        }
-+        let Some(ci) = self.hit(cursor, size) else { return false };
-+        let Some(r) = self.rect_of(ci, size.0, size.1) else { return false };
-+        let cur = [r[0] / size.0, r[1] / size.1, (r[3] - r[1]) / size.1];
-+        if let Some(c) = self.cams.get_mut(ci) {
-+            let mut pop = c.popup.unwrap_or(cur);
-+            pop[2] = (pop[2] * (1.0 + 0.08 * amount)).clamp(0.05, 0.6);
-+            let (ph, pw) = (pop[2] * size.1, pop[2] * size.1 * ASPECT);
-+            pop[0] = pop[0].clamp(0.0, ((size.0 - pw) / size.0).max(0.0));
-+            pop[1] = pop[1].clamp(0.0, ((size.1 - ph) / size.1).max(0.0));
-+            c.popup = Some(pop);
-+        }
++        let l = self.laid(size.0, size.1);
++        let mut win = self.window.unwrap_or([l.frame[0] / size.0, l.frame[1] / size.1, l.height / size.1]);
++        win[2] = (win[2] * (1.0 + 0.08 * amount)).clamp(WIN_MIN_H, WIN_MAX_H);
++        self.window = Some(win);
 +        self.save();
 +        true
 +    }
 +
-+    /// Back to the automatic layout for camera `i`.
-+    pub fn reset_popup(&mut self, p: &Player, i: usize) {
++    /// Back to the automatic place and size of the window.
++    pub fn reset_window(&mut self, p: &Player) {
++        self.sync(p);
++        self.window = None;
++        self.save();
++    }
++
++    // --- the compact editor: one camera at a time ---
++
++    /// Open camera `i` in the editor (its state now is what Cancel / Undo go back to).
++    pub fn select(&mut self, p: &Player, i: usize) {
++        self.sync(p);
++        self.edit = false;
++        self.sel = self.cams.get(i).map(|_| i);
++        self.backup = self.cams.get(i).cloned();
++    }
++
++    /// Cancel: the camera goes back to how it was when opened; the list shows again.
++    pub fn cancel(&mut self, p: &Player) {
++        self.undo(p);
++        self.sel = None;
++        self.backup = None;
++    }
++
++    /// Undo: back to how it was when opened (the editor stays on it).
++    pub fn undo(&mut self, p: &Player) {
++        self.sync(p);
++        if let (Some(i), Some(b)) = (self.sel, self.backup.clone()) {
++            if let Some(c) = self.cams.get_mut(i) {
++                *c = b;
++                self.save();
++            }
++        }
++    }
++
++    /// Save (changes are written as they are made; this makes the state the new "as opened"),
++    /// then the list shows again - or, with `next`, the next camera opens.
++    pub fn done(&mut self, p: &Player, next: bool) {
++        self.sync(p);
++        self.save();
++        let n = self.cams.len();
++        match (self.sel, next && n > 0) {
++            (Some(i), true) => {
++                let j = (i + 1) % n;
++                self.sel = Some(j);
++                self.backup = self.cams.get(j).cloned();
++            }
++            _ => {
++                self.sel = None;
++                self.backup = None;
++            }
++        }
++    }
++
++    /// Which side of the shared window camera `i`'s picture takes: left, right (a door's number
++    /// says nothing of it, so the player says).
++    pub fn cycle_side(&mut self, p: &Player, i: usize) {
 +        self.sync(p);
 +        if let Some(c) = self.cams.get_mut(i) {
-+            c.popup = None;
++            c.side = if c.side == 2 { 1 } else { 2 };
++            self.save();
++        }
++    }
++
++    /// The body camera `i` is fixed to: the front one, or a rear section of an articulated bus.
++    pub fn cycle_segment(&mut self, p: &Player, i: usize) {
++        self.sync(p);
++        let n = 1 + p.vehicle.trailers.len();
++        if let Some(c) = self.cams.get_mut(i) {
++            c.segment = ((c.segment as usize + 1) % n) as u8;
 +            self.save();
 +        }
 +    }
@@ -1610,7 +1763,16 @@ index 00000000..229744dc
 +    /// view's), for the next door that has none yet.
 +    pub fn register(&mut self, p: &Player, eye: DVec3, forward: Vec3, fov: f32) -> String {
 +        self.sync(p);
-+        let (pos, yaw, pitch) = to_bus_frame(p.vehicle.position, p.vehicle.body_rotation(), eye, forward);
++        // fixed to the body nearest to the eye (the front one, or a rear section)
++        let seg = (0..=p.vehicle.trailers.len() as u8)
++            .min_by(|a, b| {
++                let da = (segment_frame(&p.vehicle, *a).0 - eye).length();
++                let db = (segment_frame(&p.vehicle, *b).0 - eye).length();
++                da.total_cmp(&db)
++            })
++            .unwrap_or(0);
++        let (bp, br) = segment_frame(&p.vehicle, seg);
++        let (pos, yaw, pitch) = to_bus_frame(bp, br, eye, forward);
 +        let doors = crate::player::door_keys(&p.vehicle.ty).len().max(1);
 +        let n = self.cams.len() + 1;
 +        let door = n.min(doors);
@@ -1621,6 +1783,8 @@ index 00000000..229744dc
 +            pitch,
 +            fov: if fov > 10.0 { fov.clamp(30.0, 110.0) } else { 70.0 },
 +            doors: vec![door],
++            segment: seg,
++            side: 1,
 +            ..Default::default()
 +        });
 +        self.enabled = true;
@@ -1664,7 +1828,7 @@ index 00000000..229744dc
 +        if self.key.is_empty() {
 +            return;
 +        }
-+        store(&self.key, self.enabled, self.all_doors, self.own, &self.cams);
++        store(&self.key, self.enabled, self.all_doors, self.own, self.window, &self.cams);
 +    }
 +
 +    // --- the Alt menu's panel (`game_panels::door_cams_panel`): the same state the keys change ---
@@ -1680,6 +1844,8 @@ index 00000000..229744dc
 +            own: self.own,
 +            can_own: self.vkey.is_some(),
 +            edit: self.edit,
++            sel: self.sel.filter(|k| *k < self.cams.len()),
++            segments: 1 + p.vehicle.trailers.len(),
 +        }
 +    }
 +
@@ -1737,8 +1903,9 @@ index 00000000..229744dc
 +    /// Camera `i` moved to where `eye` looks along `forward` now.
 +    pub fn aim_at(&mut self, p: &Player, i: usize, eye: DVec3, forward: Vec3, fov: f32) {
 +        self.sync(p);
-+        let (pos, yaw, pitch) = to_bus_frame(p.vehicle.position, p.vehicle.body_rotation(), eye, forward);
 +        if let Some(c) = self.cams.get_mut(i) {
++            let (bp, br) = segment_frame(&p.vehicle, c.segment);
++            let (pos, yaw, pitch) = to_bus_frame(bp, br, eye, forward);
 +            c.pos = pos;
 +            c.yaw = yaw;
 +            c.pitch = pitch;
@@ -1784,9 +1951,9 @@ index 00000000..229744dc
 +    (b.on, b.all_doors, b.cams)
 +}
 +
-+fn store(key: &str, on: bool, all: bool, own: bool, cams: &[DoorCam]) {
++fn store(key: &str, on: bool, all: bool, own: bool, window: Option<[f32; 3]>, cams: &[DoorCam]) {
 +    let Some(f) = file() else { return };
-+    let _ = omsi_cfg::door_cams_file::store_to(&f, key, &omsi_cfg::door_cams_file::BusCams { on, all_doors: all, cams: cams.to_vec(), own });
++    let _ = omsi_cfg::door_cams_file::store_to(&f, key, &omsi_cfg::door_cams_file::BusCams { on, all_doors: all, cams: cams.to_vec(), window, own });
 +}
 +
 +/// The step of a nudge: the chosen precision (a nudge of a camera is fine even at 1.0).
@@ -1794,29 +1961,65 @@ index 00000000..229744dc
 +    f32::from_bits(PRECISION.load(Ordering::Relaxed)).clamp(0.01, 1.0)
 +}
 +
-+/// Where each shown camera's popup goes in a window of `w` x `h`: (camera, rectangle) in the
-+/// order shown. A popup the player placed has its own place and size; the others go side by
-+/// side at the bottom as before.
-+pub(crate) fn rects(cams: &[DoorCam], shown: &[usize], w: f32, h: f32) -> Vec<(usize, [f32; 4])> {
-+    let auto: Vec<usize> = shown.iter().copied().filter(|i| cams.get(*i).is_some_and(|c| c.popup.is_none())).collect();
-+    let mut auto_rects = layout(auto.len(), w, h).into_iter();
-+    shown
-+        .iter()
-+        .filter_map(|&i| {
-+            let c = cams.get(i)?;
-+            let r = match c.popup {
-+                Some([x, y, hh]) => {
-+                    let ph = (hh * h).clamp(0.05 * h, 0.9 * h);
-+                    let pw = (ph * ASPECT).min(w);
-+                    let x0 = (x * w).clamp(0.0, (w - pw).max(0.0));
-+                    let y0 = (y * h).clamp(0.0, (h - ph).max(0.0));
-+                    [x0, y0, x0 + pw, y0 + ph]
-+                }
-+                None => auto_rects.next()?,
-+            };
-+            Some((i, r))
-+        })
-+        .collect()
++/// The window is never smaller or larger than this part of the screen's height.
++const WIN_MIN_H: f32 = 0.08;
++const WIN_MAX_H: f32 = 0.7;
++
++/// The shared window as laid out: its frame, its height, and each shown camera's cell.
++pub(crate) struct WindowLayout {
++    pub frame: [f32; 4],
++    pub height: f32,
++    pub cells: Vec<(usize, [f32; 4])>,
++}
++
++/// The one window of all the door cameras, in a screen of `w` x `h`. The cameras of the left
++/// side take the cells on the left, those of the right side the cells on the right (several of a
++/// side in a compact grid); with both sides open the window widens, with one it is as wide as
++/// that side needs. Cells keep the pictures' shape, so the size never changes what a camera
++/// sees. `win` is the player's place (left, top, height as parts of the screen) or `None`:
++/// centred at the bottom.
++pub(crate) fn window_cells(cams: &[DoorCam], shown: &[usize], win: Option<[f32; 3]>, w: f32, h: f32) -> WindowLayout {
++    let empty = WindowLayout { frame: [0.0; 4], height: 0.0, cells: Vec::new() };
++    if shown.is_empty() || w <= 0.0 || h <= 0.0 {
++        return empty;
++    }
++    let (right, left): (Vec<usize>, Vec<usize>) = shown.iter().copied().filter(|i| cams.get(*i).is_some()).partition(|i| cams[*i].side == 2);
++    let grid = |n: usize| -> (usize, usize) {
++        if n == 0 {
++            return (0, 0);
++        }
++        let cols = (n as f32).sqrt().ceil() as usize;
++        (cols, n.div_ceil(cols))
++    };
++    let ((lc, lr), (rc, rr)) = (grid(left.len()), grid(right.len()));
++    let cols = lc + rc;
++    let rows = lr.max(rr).max(1);
++    if cols == 0 {
++        return empty;
++    }
++    // the window's height (as the player left it, or the automatic one), made smaller if the
++    // columns would not fit across the screen
++    let mut high = win.map_or(HEIGHT * h * rows as f32, |v| (v[2] * h).clamp(WIN_MIN_H * h, WIN_MAX_H * h));
++    let max_h = 0.96 * w / (cols as f32 * ASPECT) * rows as f32;
++    high = high.min(max_h).min(0.96 * h);
++    let ch = high / rows as f32;
++    let cw = ch * ASPECT;
++    let ww = cw * cols as f32;
++    let (x0, y0) = match win {
++        Some(v) => ((v[0] * w).clamp(0.0, (w - ww).max(0.0)), (v[1] * h).clamp(0.0, (h - high).max(0.0))),
++        None => ((w - ww) / 2.0, h - high - 0.04 * h),
++    };
++    let cell = |col: usize, row: usize| [x0 + col as f32 * cw, y0 + row as f32 * ch, x0 + (col + 1) as f32 * cw, y0 + (row + 1) as f32 * ch];
++    let mut cells: Vec<(usize, [f32; 4])> = Vec::new();
++    for (k, i) in left.iter().enumerate() {
++        cells.push((*i, cell(k % lc.max(1), k / lc.max(1))));
++    }
++    for (k, i) in right.iter().enumerate() {
++        cells.push((*i, cell(lc + k % rc.max(1), k / rc.max(1))));
++    }
++    // (in the order the cameras are shown, which is what the render textures follow)
++    cells.sort_by_key(|(i, _)| shown.iter().position(|s| s == i).unwrap_or(usize::MAX));
++    WindowLayout { frame: [x0, y0, x0 + ww, y0 + high], height: high, cells }
 +}
 +
 +#[cfg(test)]
@@ -1957,57 +2160,99 @@ index 00000000..229744dc
 +        assert_eq!((a.1, a.2), (b.1, b.2), "roll turns about the line of sight only");
 +    }
 +
-+    fn two() -> Vec<DoorCam> {
-+        vec![
-+            DoorCam { name: "a".into(), doors: vec![2], ..Default::default() },
-+            DoorCam { name: "b".into(), doors: vec![4], popup: Some([0.7, 0.1, 0.25]), ..Default::default() },
-+        ]
++    fn cam_on(side: u8, doors: &[usize]) -> DoorCam {
++        DoorCam { side, doors: doors.to_vec(), ..Default::default() }
 +    }
 +
 +    #[test]
-+    fn a_placed_popup_has_its_own_place_the_others_stay_in_the_row() {
-+        let c = two();
-+        let r = rects(&c, &[0, 1], 1600.0, 900.0);
-+        assert_eq!(r.len(), 2);
-+        assert_eq!(r[0].1, layout(1, 1600.0, 900.0)[0], "the unplaced one is alone in the row");
-+        let q = r[1].1;
-+        assert!((q[0] - 0.7 * 1600.0).abs() < 1.0 && (q[1] - 0.1 * 900.0).abs() < 1.0);
-+        assert!(((q[2] - q[0]) / (q[3] - q[1]) - ASPECT).abs() < 0.01);
++    fn one_side_open_the_window_is_as_wide_as_that_side_needs() {
++        let c = vec![cam_on(1, &[2]), cam_on(2, &[2])];
++        let one = window_cells(&c, &[0], None, 1600.0, 900.0);
++        let both = window_cells(&c, &[0, 1], None, 1600.0, 900.0);
++        let (w1, w2) = (one.frame[2] - one.frame[0], both.frame[2] - both.frame[0]);
++        assert!((w2 / w1 - 2.0).abs() < 0.01, "both sides: the window widens ({w1} -> {w2})");
++        assert_eq!(one.cells.len(), 1);
++        assert_eq!(both.cells.len(), 2);
 +    }
 +
 +    #[test]
-+    fn a_saved_popup_stays_inside_a_smaller_window() {
-+        let c = vec![DoorCam { popup: Some([0.95, 0.95, 0.3]), ..Default::default() }];
-+        let r = rects(&c, &[0], 800.0, 450.0)[0].1;
-+        assert!(r[2] <= 800.0 + 0.5 && r[3] <= 450.0 + 0.5 && r[0] >= 0.0 && r[1] >= 0.0, "{r:?}");
++    fn the_left_camera_is_on_the_left_and_the_right_one_on_the_right() {
++        // (shown in the order 0 = right, 1 = left: the cells still go to their sides)
++        let c = vec![cam_on(2, &[2]), cam_on(1, &[2])];
++        let l = window_cells(&c, &[0, 1], None, 1600.0, 900.0);
++        let right = l.cells.iter().find(|(i, _)| *i == 0).unwrap().1;
++        let left = l.cells.iter().find(|(i, _)| *i == 1).unwrap().1;
++        assert!(left[2] <= right[0] + 0.01, "{left:?} {right:?}");
++        assert_eq!(l.cells[0].0, 0, "cells come in the order the cameras are shown");
 +    }
 +
 +    #[test]
-+    fn dragging_and_resizing_a_popup_never_touch_what_the_camera_sees() {
-+        let mut d = DoorCams { edit: true, cams: two(), shown: vec![0, 1], ..Default::default() };
-+        let before: Vec<_> = d.cams.iter().map(|c| (c.pos, c.yaw, c.pitch, c.roll, c.fov, c.doors.clone(), c.flip_x)).collect();
++    fn two_doors_on_one_side_make_a_compact_grid() {
++        let c = vec![cam_on(1, &[2]), cam_on(1, &[3]), cam_on(1, &[4]), cam_on(1, &[5])];
++        let l = window_cells(&c, &[0, 1, 2, 3], None, 1600.0, 900.0);
++        let xs: std::collections::BTreeSet<i32> = l.cells.iter().map(|(_, r)| r[0] as i32).collect();
++        let ys: std::collections::BTreeSet<i32> = l.cells.iter().map(|(_, r)| r[1] as i32).collect();
++        assert_eq!((xs.len(), ys.len()), (2, 2), "four cameras of a side: 2 x 2");
++        for (_, r) in &l.cells {
++            assert!(r[0] >= l.frame[0] - 0.5 && r[2] <= l.frame[2] + 0.5 && r[1] >= l.frame[1] - 0.5 && r[3] <= l.frame[3] + 0.5);
++        }
++    }
++
++    #[test]
++    fn nothing_open_no_window() {
++        let c = vec![cam_on(1, &[2])];
++        assert!(window_cells(&c, &[], None, 1600.0, 900.0).cells.is_empty());
++    }
++
++    #[test]
++    fn a_saved_window_stays_on_the_screen_and_keeps_the_shape_of_the_pictures() {
++        let c = vec![cam_on(1, &[2]), cam_on(2, &[2])];
++        let l = window_cells(&c, &[0, 1], Some([0.95, 0.95, 0.5]), 800.0, 450.0);
++        assert!(l.frame[2] <= 800.5 && l.frame[3] <= 450.5 && l.frame[0] >= 0.0 && l.frame[1] >= 0.0, "{:?}", l.frame);
++        for (_, r) in &l.cells {
++            assert!(((r[2] - r[0]) / (r[3] - r[1]) - ASPECT).abs() < 0.01);
++        }
++    }
++
++    #[test]
++    fn dragging_and_resizing_the_window_never_touch_what_the_cameras_see() {
++        let mut d = DoorCams { edit: true, cams: vec![cam_on(1, &[2]), cam_on(2, &[2])], shown: vec![0, 1], ..Default::default() };
++        let before: Vec<_> = d.cams.iter().map(|c| (c.pos, c.yaw, c.pitch, c.fov, c.doors.clone(), c.flip_x, c.side, c.segment)).collect();
 +        let size = (1600.0, 900.0);
-+        let r0 = rects(&d.cams, &d.shown, size.0, size.1)[0].1;
-+        let grab = (r0[0] + 10.0, r0[1] + 10.0);
++        let f0 = d.laid(size.0, size.1).frame;
++        let grab = (f0[0] + 10.0, f0[1] + 10.0);
 +        assert!(d.press(true, grab, size));
 +        assert!(d.moved((grab.0 + 200.0, grab.1 - 100.0), size));
 +        assert!(d.press(false, grab, size));
-+        let r1 = rects(&d.cams, &d.shown, size.0, size.1)[0].1;
-+        assert!((r1[0] - r0[0] - 200.0).abs() < 1.0 && (r1[1] - r0[1] + 100.0).abs() < 1.0, "{r0:?} -> {r1:?}");
-+        assert!(d.wheel(2.0, (r1[0] + 5.0, r1[1] + 5.0), size));
-+        let r2 = rects(&d.cams, &d.shown, size.0, size.1)[0].1;
-+        assert!(r2[3] - r2[1] > r1[3] - r1[1], "larger");
-+        assert!(((r2[2] - r2[0]) / (r2[3] - r2[1]) - ASPECT).abs() < 0.01, "same shape, same framing");
-+        let after: Vec<_> = d.cams.iter().map(|c| (c.pos, c.yaw, c.pitch, c.roll, c.fov, c.doors.clone(), c.flip_x)).collect();
++        let f1 = d.laid(size.0, size.1).frame;
++        assert!((f1[0] - f0[0] - 200.0).abs() < 1.0 && (f1[1] - f0[1] + 100.0).abs() < 1.0, "{f0:?} -> {f1:?}");
++        assert!(d.wheel(2.0, (f1[0] + 5.0, f1[1] + 5.0), size));
++        let f2 = d.laid(size.0, size.1).frame;
++        assert!(f2[3] - f2[1] > f1[3] - f1[1], "larger");
++        let after: Vec<_> = d.cams.iter().map(|c| (c.pos, c.yaw, c.pitch, c.fov, c.doors.clone(), c.flip_x, c.side, c.segment)).collect();
 +        assert_eq!(before, after);
 +    }
 +
 +    #[test]
 +    fn the_mouse_is_left_alone_outside_the_editor() {
-+        let mut d = DoorCams { cams: two(), shown: vec![0, 1], ..Default::default() };
-+        assert!(!d.press(true, (800.0, 800.0), (1600.0, 900.0)));
-+        assert!(!d.wheel(1.0, (800.0, 800.0), (1600.0, 900.0)));
++        let mut d = DoorCams { cams: vec![cam_on(1, &[2])], shown: vec![0], ..Default::default() };
++        let f = d.laid(1600.0, 900.0).frame;
++        assert!(!d.press(true, (f[0] + 5.0, f[1] + 5.0), (1600.0, 900.0)));
++        assert!(!d.wheel(1.0, (f[0] + 5.0, f[1] + 5.0), (1600.0, 900.0)));
 +        assert!(!d.dragging());
++    }
++
++    #[test]
++    fn cancel_and_undo_go_back_to_how_the_camera_was_opened() {
++        let mut d = DoorCams { cams: vec![cam_on(1, &[2])], ..Default::default() };
++        d.sel = Some(0);
++        d.backup = Some(d.cams[0].clone());
++        d.cams[0].fov = 100.0;
++        d.cams[0].pos[0] = 3.0;
++        // (no player: the editor's own steps are tested through the fields)
++        let (i, b) = (d.sel.unwrap(), d.backup.clone().unwrap());
++        d.cams[i] = b;
++        assert_eq!((d.cams[0].fov, d.cams[0].pos[0]), (70.0, 0.0));
 +    }
 +
 +    #[test]
@@ -2161,10 +2406,10 @@ index 00000000..10a03d4b
 +}
 diff --git a/crates/omsi-app/src/game_panels/door_cams_panel.rs b/crates/omsi-app/src/game_panels/door_cams_panel.rs
 new file mode 100644
-index 00000000..0de90d97
+index 00000000..4d240c36
 --- /dev/null
 +++ b/crates/omsi-app/src/game_panels/door_cams_panel.rs
-@@ -0,0 +1,207 @@
+@@ -0,0 +1,255 @@
 +//! The door cameras' panel (Alt, the "Door cameras" tile; a button of the controls too): the
 +//! switch, the "any door" trigger and each camera of the bus - which doors open it, its field of
 +//! view, the picture turned over, where it looks (put where the view is now) - and a button to
@@ -2203,7 +2448,44 @@ index 00000000..0de90d97
 +        if !omsi_cfg::addon_switch::enabled("door_cams") {
 +            c.push(note(&tr("The door cameras are switched off (Mods in the launcher)."), pal));
 +        }
-+        c.push(note(&tr("A camera's picture pops up while one of its doors is open. Cameras are kept for this bus."), pal));
++        // one camera open: only its editor (the picture of the camera shows live meanwhile)
++        if let Some(i) = s.sel {
++            if let Some(cam) = s.cams.get(i) {
++                c.push(row(
++                    vec![
++                        Element { grow: true, ..text(&cam.name, 15.0, Weight::Bold) },
++                        button(&format!("c{i}aim"), &tr("Look here"), Some("my_location")),
++                        button(&format!("c{i}del"), &tr("Remove"), Some("delete")),
++                    ],
++                    RowAlign::Start,
++                ));
++                c.push(note(&tr("Live preview: its picture is on screen now, door open or not."), pal));
++                let doors: Vec<Element> = (1..=s.doors).map(|n| check(&format!("c{i}d{n}"), &format!("{} {n}", tr("Door")), cam.doors.contains(&n))).collect();
++                c.push(row(doors, RowAlign::Start));
++                let side = if cam.side == 2 { tr("Right side") } else { tr("Left side") };
++                let mut sides = vec![button(&format!("c{i}side"), &format!("{}: {side}", tr("Side of the window")), None)];
++                if s.segments > 1 {
++                    let seg = if cam.segment == 0 { tr("front body") } else { format!("{} {}", tr("rear body"), cam.segment).into() };
++                    sides.push(button(&format!("c{i}seg"), &format!("{}: {seg}", tr("Fixed to")), None));
++                }
++                c.push(grow_row(sides));
++                c.push(slider_row(&format!("c{i}fov"), &tr("Field of view"), &format!("{:.0}°", cam.fov), cam.fov, FOV, 1.0));
++                c.push(check(&format!("c{i}flip"), &tr("Mirror image (left / right)"), cam.flip_x));
++                c.push(note(&format!("{} {:.2} {:.2} {:.2} m - {:.1}° {:.1}°", tr("Position / yaw, pitch:"), cam.pos[0], cam.pos[1], cam.pos[2], cam.yaw, cam.pitch), pal));
++                let pos: Vec<Element> = ["X−", "X+", "Y−", "Y+", "Z−", "Z+"].iter().enumerate().map(|(k, t)| button(&format!("c{i}m{k}"), t, None)).collect();
++                c.push(grow_row(pos));
++                let rot: Vec<Element> = ["Yaw−", "Yaw+", "Pitch−", "Pitch+"].iter().enumerate().map(|(k, t)| button(&format!("c{i}r{k}"), t, None)).collect();
++                c.push(grow_row(rot));
++                c.push(divider());
++                c.push(grow_row(vec![button("ok", &tr("Save"), None), button("next", &tr("Save and next"), None)]));
++                c.push(grow_row(vec![button("undo", &tr("Undo"), None), button("cancel", &tr("Cancel"), None)]));
++                if let Some(said) = &self.said {
++                    c.push(note(said, pal));
++                }
++                return card(Anchor::Center, 0.0, 0.0, 460.0, 235, pal, c);
++            }
++        }
++        c.push(note(&tr("One window shows the cameras of the open doors: the left side's on the left, the right side's on the right. Cameras are kept for this bus."), pal));
 +        c.push(grow_row(vec![
 +            check("on", &tr("Door cameras on"), s.enabled),
 +            check("all", &tr("Any door shows every camera"), s.all_doors),
@@ -2216,37 +2498,25 @@ index 00000000..0de90d97
 +            steps.push(button(&format!("prec{k}"), &format!("{}{f}×", if on { "● " } else { "" }), None));
 +        }
 +        c.push(row(steps, RowAlign::Start));
-+        c.push(note(&tr("Free-camera speed and the nudges below follow it (1× is the normal speed)."), pal));
 +        if s.can_own {
 +            c.push(check("own", &tr("Only this vehicle (by its fleet number)"), s.own));
 +        } else {
 +            c.push(note(&tr("The cameras are kept for this bus model (this vehicle has no fleet number)."), pal));
 +        }
-+        c.push(grow_row(vec![button("edit", &if s.edit { tr("Finish moving the popups") } else { tr("Move / resize the popups") }, None)]));
++        c.push(grow_row(vec![
++            button("edit", &if s.edit { tr("Finish moving the window") } else { tr("Move / resize the window") }, None),
++            button("winreset", &tr("Default window layout"), None),
++        ]));
 +        c.push(divider());
 +        if s.cams.is_empty() {
 +            c.push(note(&tr("No camera yet: look where you want it (the free camera too) and press Add."), pal));
 +        }
 +        for (i, cam) in s.cams.iter().enumerate() {
-+            c.push(row(
-+                vec![
-+                    Element { grow: true, ..text(&cam.name, 14.0, Weight::Bold) },
-+                    button(&format!("c{i}aim"), &tr("Look here"), Some("my_location")),
-+                    button(&format!("c{i}del"), &tr("Remove"), Some("delete")),
-+                ],
-+                RowAlign::Start,
-+            ));
-+            let doors: Vec<Element> = (1..=s.doors).map(|n| check(&format!("c{i}d{n}"), &format!("{} {n}", tr("Door")), cam.doors.contains(&n))).collect();
-+            c.push(row(doors, RowAlign::Start));
-+            c.push(slider_row(&format!("c{i}fov"), &tr("Field of view"), &format!("{:.0}°", cam.fov), cam.fov, FOV, 1.0));
-+            c.push(check(&format!("c{i}flip"), &tr("Mirror image (left / right)"), cam.flip_x));
-+            c.push(grow_row(vec![button(&format!("c{i}pop"), &tr("Popup: automatic place"), None)]));
-+            c.push(note(&format!("{} {:.2} {:.2} {:.2} m - {:.1}° {:.1}°", tr("Position / yaw, pitch:"), cam.pos[0], cam.pos[1], cam.pos[2], cam.yaw, cam.pitch), pal));
-+            let pos: Vec<Element> = ["X−", "X+", "Y−", "Y+", "Z−", "Z+"].iter().enumerate().map(|(k, t)| button(&format!("c{i}m{k}"), t, None)).collect();
-+            c.push(grow_row(pos));
-+            let rot: Vec<Element> = ["Yaw−", "Yaw+", "Pitch−", "Pitch+"].iter().enumerate().map(|(k, t)| button(&format!("c{i}r{k}"), t, None)).collect();
-+            c.push(grow_row(rot));
-+            c.push(divider());
++            let doors: Vec<String> = cam.doors.iter().map(|d| d.to_string()).collect();
++            let side = if cam.side == 2 { tr("R") } else { tr("L") };
++            let seg = if cam.segment > 0 { format!(" · {}{}", tr("body "), cam.segment) } else { String::new() };
++            let label = format!("{} — {} {} · {}{}", cam.name, tr("door"), if doors.is_empty() { "-".into() } else { doors.join(",") }, side, seg);
++            c.push(row(vec![Element { grow: true, ..button(&format!("s{i}"), &label, None) }, button(&format!("c{i}del"), &tr("Remove"), Some("delete"))], RowAlign::Start));
 +        }
 +        c.push(grow_row(vec![
 +            button("add", &tr("Add a camera here"), Some("photo_camera")),
@@ -2281,6 +2551,26 @@ index 00000000..0de90d97
 +            let Some(p) = app.player.as_ref() else { return };
 +            Some(app.gfx.door_cams.toggle_edit(p))
 +        }
++        "winreset" => {
++            let Some(p) = app.player.as_ref() else { return };
++            app.gfx.door_cams.reset_window(p);
++            None
++        }
++        "ok" | "next" | "undo" | "cancel" => {
++            let Some(p) = app.player.as_ref() else { return };
++            match id {
++                "ok" => app.gfx.door_cams.done(p, false),
++                "next" => app.gfx.door_cams.done(p, true),
++                "undo" => app.gfx.door_cams.undo(p),
++                _ => app.gfx.door_cams.cancel(p),
++            }
++            None
++        }
++        k if k.starts_with('s') && k[1..].parse::<usize>().is_ok() => {
++            let Some(p) = app.player.as_ref() else { return };
++            app.gfx.door_cams.select(p, k[1..].parse().unwrap_or(0));
++            None
++        }
 +        k if k.starts_with("prec") => {
 +            if let Some(f) = k[4..].parse::<usize>().ok().and_then(|n| crate::door_cams::PRECISIONS.get(n)) {
 +                crate::door_cams::set_precision(*f);
@@ -2308,8 +2598,12 @@ index 00000000..0de90d97
 +                    }
 +                    Some(tr("The camera now looks where your view does.").into_owned())
 +                }
-+                "pop" => {
-+                    app.gfx.door_cams.reset_popup(p, i);
++                "side" => {
++                    app.gfx.door_cams.cycle_side(p, i);
++                    None
++                }
++                "seg" => {
++                    app.gfx.door_cams.cycle_segment(p, i);
 +                    None
 +                }
 +                m if m.len() == 2 && m.starts_with('m') => {
@@ -2346,7 +2640,6 @@ index 00000000..0de90d97
 +            match (what, value) {
 +                ("fov", Value::Num(v)) => app.gfx.door_cams.set_fov(p, i, *v as f32),
 +                ("flip", Value::Bool(b)) => app.gfx.door_cams.set_flip(p, i, *b),
-+                ("lvl", Value::Bool(b)) => app.gfx.door_cams.set_level(p, i, *b),
 +                (d, Value::Bool(b)) => {
 +                    if let Some(n) = d.strip_prefix('d').and_then(|n| n.parse().ok()) {
 +                        app.gfx.door_cams.set_door(p, i, n, *b);
@@ -2928,10 +3221,10 @@ index 00000000..d7739013
 +}
 diff --git a/crates/omsi-cfg/src/door_cams_file.rs b/crates/omsi-cfg/src/door_cams_file.rs
 new file mode 100644
-index 00000000..f46cfd66
+index 00000000..85d5a6dc
 --- /dev/null
 +++ b/crates/omsi-cfg/src/door_cams_file.rs
-@@ -0,0 +1,481 @@
+@@ -0,0 +1,500 @@
 +//! The file of the door cameras (HOF-Auto add-on): `door_cams.cfg` next to the settings, one
 +//! line each, `<bus path>|on=1`, `<bus path>|all=0` and `<bus path>|cam=name;x,y,z;yaw;pitch;fov;doors;flip`.
 +//! The game (`omsi-app`'s door cameras and their panel) and the launcher read and write it
@@ -2962,11 +3255,16 @@ index 00000000..f46cfd66
 +    /// The popup's place: left, top and height as parts of the window (width follows from the
 +    /// height). `None` = the automatic layout, side by side at the bottom.
 +    pub popup: Option<[f32; 3]>,
++    /// Which side of the shared window its picture takes: 0 = not said (left), 1 = left, 2 = right.
++    /// (Set by the player: a door's number says nothing of its side.)
++    pub side: u8,
++    /// The body it is fixed to: 0 = the front body, 1.. = the rear sections in order.
++    pub segment: u8,
 +}
 +
 +impl Default for DoorCam {
 +    fn default() -> Self {
-+        DoorCam { name: String::new(), pos: [0.0; 3], yaw: 0.0, pitch: 0.0, fov: 70.0, doors: Vec::new(), flip_x: false, flip_y: false, roll: 0.0, level: false, popup: None }
++        DoorCam { name: String::new(), pos: [0.0; 3], yaw: 0.0, pitch: 0.0, fov: 70.0, doors: Vec::new(), flip_x: false, flip_y: false, roll: 0.0, level: false, popup: None, side: 0, segment: 0 }
 +    }
 +}
 +
@@ -2976,13 +3274,16 @@ index 00000000..f46cfd66
 +    pub on: bool,
 +    pub all_doors: bool,
 +    pub cams: Vec<DoorCam>,
++    /// The shared window's place: left, top and height as parts of the screen (its width follows
++    /// from what it shows). `None` = the automatic place.
++    pub window: Option<[f32; 3]>,
 +    /// Only for a profile kept for one vehicle (`<model>#<number>`): it is the one in use.
 +    pub own: bool,
 +}
 +
 +impl Default for BusCams {
 +    fn default() -> Self {
-+        BusCams { on: true, all_doors: false, cams: Vec::new(), own: false }
++        BusCams { on: true, all_doors: false, cams: Vec::new(), window: None, own: false }
 +    }
 +}
 +
@@ -3001,8 +3302,8 @@ index 00000000..f46cfd66
 +    let flip = format!("{}{}", if c.flip_x { "x" } else { "" }, if c.flip_y { "y" } else { "" });
 +    let popup = c.popup.map(|p| format!("{:.4},{:.4},{:.4}", p[0], p[1], p[2])).unwrap_or_default();
 +    format!(
-+        "{};{:.3},{:.3},{:.3};{:.2};{:.2};{:.1};{};{};{:.2};{};{}",
-+        clean(&c.name), c.pos[0], c.pos[1], c.pos[2], c.yaw, c.pitch, c.fov, doors.join(","), flip, c.roll, if c.level { "L" } else { "" }, popup
++        "{};{:.3},{:.3},{:.3};{:.2};{:.2};{:.1};{};{};{:.2};{};{};{};{}",
++        clean(&c.name), c.pos[0], c.pos[1], c.pos[2], c.yaw, c.pitch, c.fov, doors.join(","), flip, c.roll, if c.level { "L" } else { "" }, popup, c.side, c.segment
 +    )
 +}
 +
@@ -3029,6 +3330,8 @@ index 00000000..f46cfd66
 +        flip_y: flip.contains('y'),
 +        roll: f.get(7).and_then(|s| num(s)).unwrap_or(0.0).clamp(-180.0, 180.0),
 +        level: f.get(8).is_some_and(|s| s.contains('L')),
++        side: f.get(10).and_then(|s| s.trim().parse::<u8>().ok()).filter(|v| *v <= 2).unwrap_or(0),
++        segment: f.get(11).and_then(|s| s.trim().parse::<u8>().ok()).filter(|v| *v <= 8).unwrap_or(0),
 +        popup: f.get(9).and_then(|s| {
 +            let v: Vec<f32> = s.split(',').filter_map(|t| t.trim().parse::<f32>().ok()).filter(|x| x.is_finite()).collect();
 +            (v.len() == 3).then(|| [v[0].clamp(0.0, 1.0), v[1].clamp(0.0, 1.0), v[2].clamp(0.03, 0.9)])
@@ -3103,6 +3406,12 @@ index 00000000..f46cfd66
 +            "on" => b.on = value.trim() != "0",
 +            "all" => b.all_doors = value.trim() == "1",
 +            "own" => b.own = value.trim() == "1",
++            "win" => {
++                let v: Vec<f32> = value.split(',').filter_map(|t| t.trim().parse::<f32>().ok()).filter(|x| x.is_finite()).collect();
++                if v.len() == 3 {
++                    b.window = Some([v[0].clamp(0.0, 1.0), v[1].clamp(0.0, 1.0), v[2].clamp(0.05, 0.9)]);
++                }
++            }
 +            "cam" => b.cams.extend(parse_cam(value)),
 +            _ => {}
 +        }
@@ -3115,6 +3424,9 @@ index 00000000..f46cfd66
 +    let mut lines = vec![format!("{key}|on={}", b.on as u8), format!("{key}|all={}", b.all_doors as u8)];
 +    if key.contains('#') {
 +        lines.push(format!("{key}|own={}", b.own as u8));
++    }
++    if let Some(w) = b.window {
++        lines.push(format!("{key}|win={:.4},{:.4},{:.4}", w[0], w[1], w[2]));
 +    }
 +    lines.extend(b.cams.iter().map(|c| format!("{key}|cam={}", format_cam(c))));
 +    lines
@@ -3237,13 +3549,13 @@ index 00000000..f46cfd66
 +    use super::*;
 +
 +    fn cam() -> DoorCam {
-+        DoorCam { name: "Porta traseira".into(), pos: [1.0, -4.0, 2.0], yaw: 180.0, pitch: -20.0, fov: 70.0, doors: vec![2, 4], flip_x: true, flip_y: false, roll: 1.5, level: true, popup: Some([0.25, 0.5, 0.2]) }
++        DoorCam { name: "Porta traseira".into(), pos: [1.0, -4.0, 2.0], yaw: 180.0, pitch: -20.0, fov: 70.0, doors: vec![2, 4], flip_x: true, flip_y: false, roll: 1.5, level: true, popup: Some([0.25, 0.5, 0.2]), side: 2, segment: 1 }
 +    }
 +
 +    #[test]
 +    fn the_file_keeps_the_cameras_of_each_bus_apart() {
-+        let a = BusCams { on: true, all_doors: true, cams: vec![cam()], own: false };
-+        let b = BusCams { on: false, all_doors: false, cams: vec![DoorCam { doors: vec![1], flip_x: false, ..cam() }], own: false };
++        let a = BusCams { on: true, all_doors: true, cams: vec![cam()], window: None, own: false };
++        let b = BusCams { on: false, all_doors: false, cams: vec![DoorCam { doors: vec![1], flip_x: false, ..cam() }], window: None, own: false };
 +        let text = with_bus(&with_bus("", "vehicles/a/a.bus", &a), "vehicles/b/b.bus", &b);
 +        assert_eq!(parse(&text, "Vehicles/A/a.bus"), a);
 +        assert_eq!(parse(&text, "vehicles/b/b.bus").on, false);
@@ -3270,7 +3582,7 @@ index 00000000..f46cfd66
 +
 +    #[test]
 +    fn the_launchers_edits_change_what_they_name_and_nothing_else() {
-+        let mut b = BusCams { on: true, all_doors: false, cams: vec![cam(), DoorCam { name: "B".into(), ..cam() }, DoorCam { name: "C".into(), ..cam() }], own: false };
++        let mut b = BusCams { on: true, all_doors: false, cams: vec![cam(), DoorCam { name: "B".into(), ..cam() }, DoorCam { name: "C".into(), ..cam() }], window: None, own: false };
 +        let edits = [
 +            CamEdit { doors: Some(vec![3, 3, 12, 1]), fov: Some(500.0), flip_x: Some(false), ..Default::default() },
 +            CamEdit { remove: true, ..Default::default() },

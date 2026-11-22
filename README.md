@@ -40,7 +40,7 @@ Sem o ffmpeg, só a dashcam fica indisponível; o resto funciona.
 | Mod | O que faz |
 |---|---|
 | **HOF automático** | Abrir o jogo → mapa → ônibus → linha/tour → jogar, sem escolher o HOF à mão quando o jogo consegue provar qual é o correto. |
-| **Câmeras das portas** | Cadastre câmeras por ônibus, no ponto de vista que quiser. Ao abrir uma porta ligada a câmeras, aparece **um popup** só com as câmeras **daquela porta** (a porta 2 mostra só as câmeras da 2); some quando elas fecham. Gatilho opcional: abrir qualquer porta mostra todas. |
+| **Câmeras das portas** | Cadastre câmeras por ônibus, no ponto de vista que quiser. Ao abrir uma porta ligada a câmeras, aparece **uma janela única** só com as câmeras **daquela porta** (a porta 2 mostra só as câmeras da 2); some quando elas fecham. Gatilho opcional: abrir qualquer porta mostra todas. |
 | **Dashcam** | Câmera fixa no ônibus que grava a viagem em **MP4** (visão limpa ou estilo câmera de segurança com relógio e nome). O painel diz **para onde ela está olhando** e mostra `● REC mm:ss` enquanto grava. |
 | **IAs travadas** (`ai_unstick`) | Recupera trânsito de IA parado de vez, por cima do que o jogo já faz: só age depois de bastante tempo sem progresso e sem motivo legítimo (semáforo, parada, pedestres, o seu veículo…), confirma em verificações seguidas, remove **só o carro causador**, **só fora da vista de qualquer jogador**, nunca ônibus de linha. Registra tudo no log do jogo (`ai-unstick:`). |
 
@@ -48,11 +48,11 @@ Sem o ffmpeg, só a dashcam fica indisponível; o resto funciona.
 
 **Câmeras das portas**
 1. Toque em **`Alt`** → vá à **página 3** → **Câmeras das portas**.
-2. Olhe (câmera livre) para onde quer a câmera e aperte **Adicionar uma câmera aqui**.
-3. Marque as **portas** que abrem essa câmera. Dá para ajustar campo de visão, espelhar e remover.
-4. Repita para outras câmeras/portas. Ao abrir a porta, o popup mostra só as câmeras dela.
-5. **Ajuste fino** (no mesmo painel): escolha o **passo fino** (1× / 0,25× / 0,10× / 0,05×) — ele reduz a velocidade da câmera livre e o tamanho de cada toque nos botões **X± Y± Z±** (posição no ônibus) e **Yaw/Pitch ± (direção horizontal/vertical)**. A câmera fica **rigidamente presa à carroceria**: acompanha curvas, subidas e inclinações do ônibus (sem nivelar o horizonte e sem rolagem manual).
-6. **Popups**: botão **Mover / redimensionar os popups** (ou `Ctrl+Alt+P`): arraste com o mouse e use a roda para o tamanho; tudo fica salvo por ônibus e **não altera o enquadramento da câmera**.
+2. Olhe (câmera livre) para onde quer a câmera e aperte **Adicionar uma câmera aqui**. Ela fica presa à carroceria mais próxima (dianteira ou, num articulado, traseira).
+3. Toque na câmera na lista: abre **só o editor dela**, com **pré-visualização ao vivo** (a imagem aparece mesmo com a porta fechada). Escolha as **portas**, o **lado na janela** (esquerdo/direito — o número da porta não diz o lado, então você escolhe), a **carroceria** (em articulados), campo de visão, espelhamento e ajuste fino. **Salvar**, **Salvar e próxima**, **Desfazer** e **Cancelar** estão no fim.
+4. **Uma única janela** mostra as câmeras das portas abertas: as do lado esquerdo à esquerda, as do direito à direita. Com os dois lados abertos ela se alarga; fecha-se um lado e ela volta ao tamanho necessário; fechadas todas as portas, some. Várias câmeras do mesmo lado formam uma grade compacta.
+5. **Mover / redimensionar a janela** (ou `Ctrl+Alt+P`): arraste com o mouse e use a roda para o tamanho; **Layout padrão da janela** restaura. A posição e o tamanho ficam salvos por ônibus e **não alteram o enquadramento das câmeras**.
+6. **Ajuste fino**: escolha o **passo fino** (1× / 0,25× / 0,10× / 0,05×) — reduz a velocidade da câmera livre e o tamanho de cada toque nos botões **X± Y± Z±** e **Yaw/Pitch ±**. A câmera é **rigidamente presa à carroceria**: acompanha curvas, subidas e inclinações (sem nivelar o horizonte e sem rolagem manual).
 
 **Onde ficam salvas (e a limitação honesta):** as câmeras ficam salvas **por modelo de ônibus** (não dependem de mapa, linha, escala nem de reiniciar o jogo/PC) em `%USERPROFILE%\.openomsi\door_cams.cfg`, com cópia de segurança `door_cams.cfg.bak`. O jogo **não tem identidade permanente por veículo**: o único identificador é o **número de frota** escolhido ao iniciar. Por isso, a opção **“Só este veículo”** (aparece se o veículo tem número de frota) guarda um perfil por *modelo + número*; sem número de frota, o perfil é do modelo (todos os ônibus daquele modelo compartilham). Câmeras criadas por versões anteriores são migradas automaticamente, sem apagar nada.
 
@@ -65,7 +65,7 @@ Sem o ffmpeg, só a dashcam fica indisponível; o resto funciona.
 
 **Launcher:** Ajustes → **Mods** (liga/desliga cada mod e edita as câmeras por ônibus).
 
-**Atalhos de teclado (opcionais):** `Ctrl+K` liga/desliga as câmeras das portas · `Ctrl+Shift+K` cadastra uma câmera na visão atual · `Ctrl+Shift+1..9` liga/desliga a porta N da última câmera · `Ctrl+Alt+K` remove a última · `Ctrl+Alt+Shift+K` gatilho "qualquer porta" · `Ctrl+Alt+P` editor dos popups · `Ctrl+J` inicia/para a dashcam · `Ctrl+Shift+J` posiciona · `Ctrl+Alt+J` troca o visual.
+**Atalhos de teclado (opcionais):** `Ctrl+K` liga/desliga as câmeras das portas · `Ctrl+Shift+K` cadastra uma câmera na visão atual · `Ctrl+Shift+1..9` liga/desliga a porta N da última câmera · `Ctrl+Alt+K` remove a última · `Ctrl+Alt+Shift+K` gatilho "qualquer porta" · `Ctrl+Alt+P` editor da janela · `Ctrl+J` inicia/para a dashcam · `Ctrl+Shift+J` posiciona · `Ctrl+Alt+J` troca o visual.
 
 ## O que o instalador faz (e não faz)
 
