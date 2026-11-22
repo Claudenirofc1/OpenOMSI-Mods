@@ -1,9 +1,9 @@
 diff --git a/crates/omsi-app/locales/hof_auto.yml b/crates/omsi-app/locales/hof_auto.yml
 new file mode 100644
-index 00000000..091b2b8c
+index 00000000..fc60e80d
 --- /dev/null
 +++ b/crates/omsi-app/locales/hof_auto.yml
-@@ -0,0 +1,339 @@
+@@ -0,0 +1,335 @@
 +# Automatic depot-file (HOF) choice: LOCAL strings (hof-auto prototype). English strings are the keys; pt is Brazilian Portuguese.
 +_version: 2
 +
@@ -332,17 +332,13 @@ index 00000000..091b2b8c
 +  pt: "Mover / redimensionar os popups"
 +  pt-pt: "Mover / redimensionar os popups"
 +
-+"Level the horizon":
-+  pt: "Nivelar o horizonte"
-+  pt-pt: "Nivelar o horizonte"
-+
 +"Popup: automatic place":
 +  pt: "Popup: posição automática"
 +  pt-pt: "Popup: posição automática"
 +
-+"Position / yaw, pitch, roll:":
-+  pt: "Posição / giro, inclinação, rolagem:"
-+  pt-pt: "Posição / giro, inclinação, rolagem:"
++"Position / yaw, pitch:":
++  pt: "Posição / direção horizontal, vertical:"
++  pt-pt: "Posição / direção horizontal, vertical:"
 diff --git a/crates/omsi-app/src/app/groups.rs b/crates/omsi-app/src/app/groups.rs
 index a7ad3144..e7024f85 100644
 --- a/crates/omsi-app/src/app/groups.rs
@@ -558,10 +554,10 @@ index f67fc0ba..af8b4ecc 100644
      }
 diff --git a/crates/omsi-app/src/dashcam.rs b/crates/omsi-app/src/dashcam.rs
 new file mode 100644
-index 00000000..bbf86a3b
+index 00000000..8f1362ed
 --- /dev/null
 +++ b/crates/omsi-app/src/dashcam.rs
-@@ -0,0 +1,540 @@
+@@ -0,0 +1,562 @@
 +//! Dashcam (openOMSI HOF-Auto add-on): a camera on the bus - the windscreen's, or wherever the
 +//! player put it - recorded to an `.mp4` from the moment he starts it until he stops it, while
 +//! he plays and records the screen with whatever he likes. A second view of the trip: the
@@ -662,6 +658,7 @@ index 00000000..bbf86a3b
 +    rec: Option<Recording>,
 +    pending: Option<Pending>,
 +    last: Option<Instant>,
++    read_fails: u32,
 +}
 +
 +/// The `ffmpeg` command's arguments for frames of `w` x `h` read from the standard input.
@@ -718,6 +715,19 @@ index 00000000..bbf86a3b
 +}
 +
 +fn output_dir() -> PathBuf {
++    // where the player wants the videos: OPENOMSI_DASHCAM_DIR, or the first line of
++    // `~/.openomsi/dashcam-dir.txt` (e.g. D:\Videos\OpenOMSI-Dashcam); else Videos\openOMSI-dashcam
++    if let Some(d) = std::env::var_os("OPENOMSI_DASHCAM_DIR").map(PathBuf::from).filter(|p| !p.as_os_str().is_empty()) {
++        return d;
++    }
++    if let Some(h) = std::env::var_os("USERPROFILE").or_else(|| std::env::var_os("HOME")).map(PathBuf::from) {
++        if let Ok(t) = std::fs::read_to_string(h.join(".openomsi").join("dashcam-dir.txt")) {
++            let l = t.lines().next().unwrap_or("").trim();
++            if !l.is_empty() {
++                return PathBuf::from(l);
++            }
++        }
++    }
 +    let home = std::env::var_os("USERPROFILE").or_else(|| std::env::var_os("HOME")).map(PathBuf::from);
 +    match home {
 +        Some(h) if h.join("Videos").is_dir() => h.join("Videos").join("openOMSI-dashcam"),
@@ -909,7 +919,7 @@ index 00000000..bbf86a3b
 +            return None;
 +        }
 +        self.last = Some(now);
-+        let tex = *self.tex.get_or_insert_with(|| renderer.add_render_texture(scene, WIDTH, HEIGHT));
++        let tex = *self.tex.get_or_insert_with(|| renderer.add_capture_texture(scene, WIDTH, HEIGHT));
 +        let c = self.camera(p);
 +        let (eye, yaw, pitch, roll) = p.vehicle.camera_world_full(&c);
 +        let cam = Camera {
@@ -926,9 +936,17 @@ index 00000000..bbf86a3b
 +            Ok(x) => x,
 +            Err(e) => {
 +                log::warn!("dashcam: the picture could not be read: {e}");
++                // (no REC without a picture: after a few failures the request is dropped, said)
++                self.read_fails += 1;
++                if self.read_fails >= 5 && self.rec.is_none() {
++                    self.pending = None;
++                    self.read_fails = 0;
++                    return Some(format!("Dashcam: no picture could be captured from the GPU ({e}); recording cancelled"));
++                }
 +                return None;
 +            }
 +        };
++        self.read_fails = 0;
 +        if size != (WIDTH, HEIGHT) {
 +            return None;
 +        }
@@ -1104,7 +1122,7 @@ index 00000000..bbf86a3b
 +}
 diff --git a/crates/omsi-app/src/door_cams.rs b/crates/omsi-app/src/door_cams.rs
 new file mode 100644
-index 00000000..c57c5d01
+index 00000000..229744dc
 --- /dev/null
 +++ b/crates/omsi-app/src/door_cams.rs
 @@ -0,0 +1,892 @@
@@ -1381,7 +1399,7 @@ index 00000000..c57c5d01
 +        if on {
 +            g.0 = path_of(p);
 +            g.1 = self.shown.iter().filter_map(|i| self.cams.get(*i)).map(bus_camera).collect();
-+            g.2 = self.shown.iter().filter_map(|i| self.cams.get(*i)).map(|c| (c.roll, c.level)).collect();
++            g.2 = self.shown.iter().filter_map(|i| self.cams.get(*i)).map(|_| (0.0, false)).collect(); // (rigid to the body: no roll, no levelling - the rule)
 +            let base = first_index(p);
 +            idx.extend(base..base + g.1.len());
 +        } else {
@@ -2143,10 +2161,10 @@ index 00000000..10a03d4b
 +}
 diff --git a/crates/omsi-app/src/game_panels/door_cams_panel.rs b/crates/omsi-app/src/game_panels/door_cams_panel.rs
 new file mode 100644
-index 00000000..ea4d3ea0
+index 00000000..0de90d97
 --- /dev/null
 +++ b/crates/omsi-app/src/game_panels/door_cams_panel.rs
-@@ -0,0 +1,210 @@
+@@ -0,0 +1,207 @@
 +//! The door cameras' panel (Alt, the "Door cameras" tile; a button of the controls too): the
 +//! switch, the "any door" trigger and each camera of the bus - which doors open it, its field of
 +//! view, the picture turned over, where it looks (put where the view is now) - and a button to
@@ -2222,14 +2240,11 @@ index 00000000..ea4d3ea0
 +            c.push(row(doors, RowAlign::Start));
 +            c.push(slider_row(&format!("c{i}fov"), &tr("Field of view"), &format!("{:.0}°", cam.fov), cam.fov, FOV, 1.0));
 +            c.push(check(&format!("c{i}flip"), &tr("Mirror image (left / right)"), cam.flip_x));
-+            c.push(grow_row(vec![
-+                check(&format!("c{i}lvl"), &tr("Level the horizon"), cam.level),
-+                button(&format!("c{i}pop"), &tr("Popup: automatic place"), None),
-+            ]));
-+            c.push(note(&format!("{} {:.2} {:.2} {:.2} m - {:.1}° {:.1}° {:.1}°", tr("Position / yaw, pitch, roll:"), cam.pos[0], cam.pos[1], cam.pos[2], cam.yaw, cam.pitch, cam.roll), pal));
++            c.push(grow_row(vec![button(&format!("c{i}pop"), &tr("Popup: automatic place"), None)]));
++            c.push(note(&format!("{} {:.2} {:.2} {:.2} m - {:.1}° {:.1}°", tr("Position / yaw, pitch:"), cam.pos[0], cam.pos[1], cam.pos[2], cam.yaw, cam.pitch), pal));
 +            let pos: Vec<Element> = ["X−", "X+", "Y−", "Y+", "Z−", "Z+"].iter().enumerate().map(|(k, t)| button(&format!("c{i}m{k}"), t, None)).collect();
 +            c.push(grow_row(pos));
-+            let rot: Vec<Element> = ["Yaw−", "Yaw+", "Pitch−", "Pitch+", "Roll−", "Roll+"].iter().enumerate().map(|(k, t)| button(&format!("c{i}r{k}"), t, None)).collect();
++            let rot: Vec<Element> = ["Yaw−", "Yaw+", "Pitch−", "Pitch+"].iter().enumerate().map(|(k, t)| button(&format!("c{i}r{k}"), t, None)).collect();
 +            c.push(grow_row(rot));
 +            c.push(divider());
 +        }
@@ -4568,10 +4583,36 @@ index acb5e6af..ac5d2ad2 100644
      pub(super) fn random_bus_number(&self) -> String {
          self.bus()
 diff --git a/crates/omsi-render/src/resources/textures.rs b/crates/omsi-render/src/resources/textures.rs
-index cd1a36a4..b1ff8fc9 100644
+index cd1a36a4..bedb2b98 100644
 --- a/crates/omsi-render/src/resources/textures.rs
 +++ b/crates/omsi-render/src/resources/textures.rs
-@@ -912,6 +912,20 @@ impl Renderer {
+@@ -883,6 +883,16 @@ impl Renderer {
+ 
+     /// A texture the scene can be rendered into (`render_to_texture`), e.g. a rear-view mirror.
+     pub fn add_render_texture(&self, scene: &mut Scene, width: u32, height: u32) -> TextureId {
++        self.add_render_texture_with(scene, width, height, wgpu::TextureUsages::empty())
++    }
++
++    /// A render texture whose pixels can be read back (`read_render_texture`): the dashcam's.
++    /// (Only this one carries `COPY_SRC`; the mirrors' do not.)
++    pub fn add_capture_texture(&self, scene: &mut Scene, width: u32, height: u32) -> TextureId {
++        self.add_render_texture_with(scene, width, height, wgpu::TextureUsages::COPY_SRC)
++    }
++
++    fn add_render_texture_with(&self, scene: &mut Scene, width: u32, height: u32, extra: wgpu::TextureUsages) -> TextureId {
+         let (width, height) = fit_size(width.max(1), height.max(1), self.device.limits().max_texture_dimension_2d);
+         let size = wgpu::Extent3d {
+             width,
+@@ -896,7 +906,7 @@ impl Renderer {
+             sample_count: 1,
+             dimension: wgpu::TextureDimension::D2,
+             format: self.format,
+-            usage: wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::TEXTURE_BINDING,
++            usage: wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::TEXTURE_BINDING | extra,
+             view_formats: &[],
+         });
+         let view = texture.create_view(&Default::default());
+@@ -912,6 +922,20 @@ impl Renderer {
          scene.textures.len() - 1
      }
  

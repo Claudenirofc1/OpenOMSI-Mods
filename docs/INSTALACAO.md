@@ -21,7 +21,7 @@
 Seus ônibus, mapas, HOFs e saves **não são tocados**.
 
 ## Usar
-- **Câmeras das portas:** no jogo, `Alt` → página 3 → **Câmeras das portas**. Olhe para onde quer a câmera e aperte **Adicionar uma câmera aqui**; marque as **portas** que a abrem. Ao abrir uma porta, o popup mostra **só as câmeras dessa porta**. Ajuste fino (passos 1×/0,25×/0,10×/0,05×, posição, giro/inclinação/rolagem, nivelar horizonte) e mover/redimensionar popups ficam no mesmo painel; tudo é salvo por modelo de ônibus (ou por veículo, se tiver número de frota) e entra no backup/perfil do gerenciador.
+- **Câmeras das portas:** no jogo, `Alt` → página 3 → **Câmeras das portas**. Olhe para onde quer a câmera e aperte **Adicionar uma câmera aqui**; marque as **portas** que a abrem. Ao abrir uma porta, o popup mostra **só as câmeras dessa porta**. Ajuste fino (passos 1×/0,25×/0,10×/0,05×, posição e direção) e mover/redimensionar popups ficam no mesmo painel; tudo é salvo por modelo de ônibus (ou por veículo, se tiver número de frota) e entra no backup/perfil do gerenciador.
 - **Dashcam:** `Alt` → página 3 → **Dashcam** → **Posicionar a câmera aqui** (fica fixa no ônibus; o painel diz para onde ela olha) → **Iniciar gravação** / **Parar gravação**. Enquanto grava aparece `● REC mm:ss` na tela. Vídeos: `Vídeos\openOMSI-dashcam`.
 - **Botões do volante/teclado:** em **Controles**, dê a qualquer botão as ações "Câmeras das portas: …" e "Dashcam: …".
 - **Launcher:** Ajustes → **Mods** (liga/desliga cada mod; ajusta portas, campo de visão, espelho e remoção das câmeras; campo de visão, estilo e nome da dashcam).
